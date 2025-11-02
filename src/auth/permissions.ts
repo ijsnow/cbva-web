@@ -2,7 +2,7 @@ import { createAccessControl } from "better-auth/plugins/access"
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access"
 
 export const statement = {
-  tournament: ["create", "update", "delete"],
+  tournament: ["create", "update", "delete", "teehee"],
   venues: ["create", "update", "delete"],
   ...defaultStatements,
 } as const

@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as VenuesVenueIdRouteImport } from './routes/venues/$venueId'
+import { Route as TournamentsCreateRouteImport } from './routes/tournaments/create'
 import { Route as ProfileProfileIdRouteImport } from './routes/profile/$profileId'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as AccountSetupRouteImport } from './routes/account/setup'
@@ -85,6 +86,11 @@ const VenuesVenueIdRoute = VenuesVenueIdRouteImport.update({
   path: '/venues/$venueId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TournamentsCreateRoute = TournamentsCreateRouteImport.update({
+  id: '/tournaments/create',
+  path: '/tournaments/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileProfileIdRoute = ProfileProfileIdRouteImport.update({
   id: '/profile/$profileId',
   path: '/profile/$profileId',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/account/setup': typeof AccountSetupRoute
   '/api/files': typeof ApiFilesRoute
   '/profile/$profileId': typeof ProfileProfileIdRoute
+  '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
   '/account': typeof AccountIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/account/setup': typeof AccountSetupRoute
   '/api/files': typeof ApiFilesRoute
   '/profile/$profileId': typeof ProfileProfileIdRoute
+  '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
   '/account': typeof AccountIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/account/setup': typeof AccountSetupRoute
   '/api/files': typeof ApiFilesRoute
   '/profile/$profileId': typeof ProfileProfileIdRoute
+  '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
   '/account/': typeof AccountIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
@@ -214,6 +223,7 @@ export interface FileRouteTypes {
     | '/account/setup'
     | '/api/files'
     | '/profile/$profileId'
+    | '/tournaments/create'
     | '/venues/$venueId'
     | '/account'
     | '/tournaments'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/account/setup'
     | '/api/files'
     | '/profile/$profileId'
+    | '/tournaments/create'
     | '/venues/$venueId'
     | '/account'
     | '/tournaments'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/account/setup'
     | '/api/files'
     | '/profile/$profileId'
+    | '/tournaments/create'
     | '/venues/$venueId'
     | '/account/'
     | '/tournaments/'
@@ -281,6 +293,7 @@ export interface RootRouteChildren {
   AccountSetupRoute: typeof AccountSetupRoute
   ApiFilesRoute: typeof ApiFilesRoute
   ProfileProfileIdRoute: typeof ProfileProfileIdRoute
+  TournamentsCreateRoute: typeof TournamentsCreateRoute
   VenuesVenueIdRoute: typeof VenuesVenueIdRoute
   AccountIndexRoute: typeof AccountIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VenuesVenueIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tournaments/create': {
+      id: '/tournaments/create'
+      path: '/tournaments/create'
+      fullPath: '/tournaments/create'
+      preLoaderRoute: typeof TournamentsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile/$profileId': {
       id: '/profile/$profileId'
       path: '/profile/$profileId'
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountSetupRoute: AccountSetupRoute,
   ApiFilesRoute: ApiFilesRoute,
   ProfileProfileIdRoute: ProfileProfileIdRoute,
+  TournamentsCreateRoute: TournamentsCreateRoute,
   VenuesVenueIdRoute: VenuesVenueIdRoute,
   AccountIndexRoute: AccountIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,

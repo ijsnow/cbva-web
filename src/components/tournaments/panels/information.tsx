@@ -1,6 +1,5 @@
-import { subtitle, title } from "@/components/base/primitives"
+import { subtitle } from "@/components/base/primitives"
 import { RichTextDisplay } from "@/components/base/rich-text-editor/display"
-import { RichTextEditorModal } from "@/components/base/rich-text-editor/modal"
 import { TabPanel } from "@/components/base/tabs"
 import { AddDirector } from "@/components/directors/add"
 import { RemoveDirector } from "@/components/directors/remove"

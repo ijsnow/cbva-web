@@ -27,7 +27,7 @@ This command will also report linter errors that were not automatically fixable.
 ## Architecture
 
 - **Frontend**: TanStack Start (SSR framework for React and other frameworks) with file-based routing in `src/routes/`
-- **Database**: PostgreSQL with Drizzle ORM, schema in `src/db/schema.ts`
+- **Database**: PostgreSQL with Drizzle ORM, schema in `src/db/schema/*.ts`
 - **Services**: Docker Compose setup (Postgres on 54321)
 - **Styling**: Tailwind CSS v4
 - **Authentication**: better-auth
@@ -39,7 +39,6 @@ This command will also report linter errors that were not automatically fixable.
 - **Imports**: Use `@/*` path aliases for `src/` directory imports
 - **Components**: React 19 with JSX transform, functional components preferred
 - **Server DB**: Drizzle ORM with PostgreSQL dialect, schema-first approach
-- **Client DB**: TanStack DB with Query Collections
 - **Routing**: File-based with TanStack Router, use `Link` component for navigation
 - **Testing**: Vitest with @testing-library/react for component tests
 - **file names** should always use kebab-case

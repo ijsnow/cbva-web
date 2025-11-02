@@ -2,55 +2,57 @@ import {
   DateFormatter,
   getLocalTimeZone,
   parseDate,
-} from "@internationalized/date";
-import { useDateFormatter } from "@react-aria/i18n";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import clsx from "clsx";
-import { CheckIcon } from "lucide-react";
-import { match, P } from "ts-pattern";
+} from "@internationalized/date"
+import { useDateFormatter } from "@react-aria/i18n"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
+import clsx from "clsx"
+import { CheckIcon } from "lucide-react"
+import { match, P } from "ts-pattern"
+import { useViewerHasPermission } from "@/auth/shared"
 import {
   DropdownMenu,
+  DropdownMenuItem,
   DropdownMenuItemLink,
-} from "@/components/base/dropdown-menu";
-import { subtitle, title } from "@/components/base/primitives";
-import { Tab, TabList, Tabs } from "@/components/base/tabs";
-import { GamesPanel } from "@/components/tournaments/panels/games";
-import { InformationPanel } from "@/components/tournaments/panels/information";
-import { PlayoffsPanel } from "@/components/tournaments/panels/playoffs";
-import { PoolsPanel } from "@/components/tournaments/panels/pools";
-import { TeamsPanel } from "@/components/tournaments/panels/teams";
-import { tournamentQueryOptions } from "@/data/tournaments";
-import { getTournamentDivisionDisplay } from "@/hooks/tournament";
-import { DefaultLayout } from "@/layouts/default";
+} from "@/components/base/dropdown-menu"
+import { subtitle, title } from "@/components/base/primitives"
+import { Tab, TabList, Tabs } from "@/components/base/tabs"
+import { GamesPanel } from "@/components/tournaments/panels/games"
+import { InformationPanel } from "@/components/tournaments/panels/information"
+import { PlayoffsPanel } from "@/components/tournaments/panels/playoffs"
+import { PoolsPanel } from "@/components/tournaments/panels/pools"
+import { TeamsPanel } from "@/components/tournaments/panels/teams"
+import { tournamentQueryOptions } from "@/data/tournaments"
+import { getTournamentDivisionDisplay } from "@/hooks/tournament"
+import { DefaultLayout } from "@/layouts/default"
 
 const dateFormatter = new DateFormatter("EN-US", {
   dateStyle: "short",
-});
+})
 
 export const Route = createFileRoute("/tournaments/$tournamentId/$divisionId")({
   component: RouteComponent,
   validateSearch: (
-    search: Record<string, unknown>,
+    search: Record<string, unknown>
   ): {
-    pools: number[];
-    courts: string[];
+    pools: number[]
+    courts: string[]
   } => {
     return {
       pools: Array.isArray(search?.pools) ? search.pools : [],
       courts: Array.isArray(search?.courts) ? search.courts : [],
-    };
+    }
   },
   loader: async ({ params: { tournamentId }, context: { queryClient } }) => {
     const tournament = await queryClient.ensureQueryData(
-      tournamentQueryOptions(Number.parseInt(tournamentId, 10)),
-    );
+      tournamentQueryOptions(Number.parseInt(tournamentId, 10))
+    )
 
     if (!tournament) {
-      throw new Error("not found");
+      throw new Error("not found")
     }
 
-    return tournament;
+    return tournament
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -58,7 +60,7 @@ export const Route = createFileRoute("/tournaments/$tournamentId/$divisionId")({
           {
             title: [
               dateFormatter.format(
-                parseDate(loaderData.date).toDate(getLocalTimeZone()),
+                parseDate(loaderData.date).toDate(getLocalTimeZone())
               ),
               loaderData.name,
               `${loaderData.venue.name}, ${loaderData.venue.city}`,
@@ -67,33 +69,37 @@ export const Route = createFileRoute("/tournaments/$tournamentId/$divisionId")({
         ]
       : undefined,
   }),
-});
+})
 
 function RouteComponent() {
-  const { tournamentId, divisionId } = Route.useParams();
+  const canCreateTournament = useViewerHasPermission({
+    tournament: ["create"],
+  })
+
+  const { tournamentId, divisionId } = Route.useParams()
 
   const { data } = useSuspenseQuery(
-    tournamentQueryOptions(Number.parseInt(tournamentId, 10)),
-  );
+    tournamentQueryOptions(Number.parseInt(tournamentId, 10))
+  )
 
-  const tournament = data!;
+  const tournament = data!
 
-  const parsedDate = parseDate(tournament.date);
+  const parsedDate = parseDate(tournament.date)
 
   const activeDivision =
     tournament.tournamentDivisions.find(
-      ({ id }) => id.toString() === divisionId,
-    ) ?? tournament.tournamentDivisions[0];
+      ({ id }) => id.toString() === divisionId
+    ) ?? tournament.tournamentDivisions[0]
 
-  const { name, venue } = tournament || {};
+  const { name, venue } = tournament || {}
 
   const dateFormatter = useDateFormatter({
     dateStyle: "full",
-  });
+  })
 
   const formattedDate = dateFormatter.format(
-    parsedDate.toDate(getLocalTimeZone()),
-  );
+    parsedDate.toDate(getLocalTimeZone())
+  )
 
   const { venueClassName, dateClassName } = match({
     name: tournament.name,
@@ -109,7 +115,7 @@ function RouteComponent() {
       () => ({
         venueClassName: title(),
         dateClassName: subtitle({ class: "font-bold my-3" }),
-      }),
+      })
     )
     .with(
       {
@@ -120,12 +126,24 @@ function RouteComponent() {
       () => ({
         venueClassName: subtitle({ class: "font-bold my-0" }),
         dateClassName: subtitle({ class: "my-0" }),
-      }),
+      })
     )
-    .exhaustive();
+    .exhaustive()
 
   return (
-    <DefaultLayout classNames={{ content: "bg-white" }}>
+    <DefaultLayout classNames={{ content: "bg-white relative" }}>
+      {canCreateTournament && (
+        <DropdownMenu buttonClassName="absolute top-6 right-6">
+          <DropdownMenuItemLink
+            to="/tournaments/create"
+            search={{
+              template: tournamentId.toString(),
+            }}
+          >
+            Duplicate
+          </DropdownMenuItemLink>
+        </DropdownMenu>
+      )}
       <div>
         <div className="py-12 max-w-lg mx-auto flex flex-col space-y-6">
           <div className="text-center flex flex-col space-y-2">
@@ -157,7 +175,7 @@ function RouteComponent() {
                 search={{ pools: [], courts: [] }}
                 className={clsx(
                   "w-full flex flex-row justify-between",
-                  id === activeDivision?.id && "font-semibold",
+                  id === activeDivision?.id && "font-semibold"
                 )}
               >
                 <span>{getTournamentDivisionDisplay(division)}</span>
@@ -201,5 +219,5 @@ function RouteComponent() {
         </Tabs>
       </div>
     </DefaultLayout>
-  );
+  )
 }
