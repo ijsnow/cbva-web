@@ -1,5 +1,5 @@
 {
-  "id": "f4253200-bac2-4a2f-8c52-d9c24fa499f2",
+  "id": "07f36c8c-a143-4933-8465-b398278c2c3f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -160,6 +160,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "impersonated_by": {
+          "name": "impersonated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -175,6 +181,19 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "sessions_impersonated_by_users_id_fk": {
+          "name": "sessions_impersonated_by_users_id_fk",
+          "tableFrom": "sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "impersonated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -208,13 +227,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "role": {
-          "name": "role",
-          "type": "role",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false
-        },
         "email": {
           "name": "email",
           "type": "text",
@@ -242,6 +254,31 @@
         "image": {
           "name": "image",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ban_reason": {
+          "name": "ban_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ban_date": {
+          "name": "ban_date",
+          "type": "date",
           "primaryKey": false,
           "notNull": false
         },
@@ -844,7 +881,7 @@
         },
         "preferred_role": {
           "name": "preferred_role",
-          "type": "role",
+          "type": "player_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": false
@@ -2424,6 +2461,16 @@
     }
   },
   "enums": {
+    "public.role": {
+      "name": "role",
+      "schema": "public",
+      "values": [
+        "user",
+        "td",
+        "admin",
+        "superadmin"
+      ]
+    },
     "public.gender": {
       "name": "gender",
       "schema": "public",
@@ -2443,20 +2490,20 @@
         "cancelled"
       ]
     },
+    "public.player_role": {
+      "name": "player_role",
+      "schema": "public",
+      "values": [
+        "blocker",
+        "defender"
+      ]
+    },
     "public.right_left": {
       "name": "right_left",
       "schema": "public",
       "values": [
         "right",
         "left"
-      ]
-    },
-    "public.role": {
-      "name": "role",
-      "schema": "public",
-      "values": [
-        "blocker",
-        "defender"
       ]
     },
     "public.set_status": {

@@ -1,13 +1,16 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link } from "@tanstack/react-router"
 
-// import { useViewerHasPermissions } from "@/hooks/viewer";
+import { useViewerHasPermission } from "@/auth/shared"
 import { DropdownMenu, DropdownMenuItem } from "@/components/base/dropdown-menu"
 import { venuesQueryOptions } from "@/data/venues"
 
 export function VenuesList() {
   const { data: venues } = useSuspenseQuery(venuesQueryOptions())
-  // const canCreateVenue = useViewerHasPermissions("venues.create");
+
+  const canCreateVenue = useViewerHasPermission({
+    venues: ["create"],
+  })
 
   return (
     <div className={"m1ax-w-4xl m-auto flex flex-col space-y-12 py-8"}>
@@ -18,13 +21,13 @@ export function VenuesList() {
             <br /> Tournaments
           </h2>
 
-          {/*{canCreateVenue && (
+          {canCreateVenue && (
             <DropdownMenu>
               <DropdownMenuItem href="/venue/create">
                 Create New
               </DropdownMenuItem>
             </DropdownMenu>
-          )}*/}
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-6">

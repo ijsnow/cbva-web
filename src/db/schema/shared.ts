@@ -1,61 +1,61 @@
-import { jsonb, pgEnum } from "drizzle-orm/pg-core";
-import { createSelectSchema } from "drizzle-zod";
-import type z from "zod";
+import { jsonb, pgEnum } from "drizzle-orm/pg-core"
+import { createSelectSchema } from "drizzle-zod"
+import type z from "zod"
 
 export type LexicalState = {
   root: {
-    children: Array<any>;
-    direction: "ltr" | "rtl" | null;
-    format: "" | "left" | "start" | "center" | "right" | "end" | "justify" | "";
-    indent: number;
-    type: "root";
-    version: number;
-  };
-};
-
-export function richText() {
-  return jsonb().$type<LexicalState>();
+    children: Array<any>
+    direction: "ltr" | "rtl" | null
+    format: "" | "left" | "start" | "center" | "right" | "end" | "justify" | ""
+    indent: number
+    type: "root"
+    version: number
+  }
 }
 
-export const genderEnum = pgEnum("gender", ["male", "female", "coed"]);
+export function richText() {
+  return jsonb().$type<LexicalState>()
+}
 
-export const genderSchema = createSelectSchema(genderEnum);
+export const genderEnum = pgEnum("gender", ["male", "female", "coed"])
 
-export type Gender = z.infer<typeof genderSchema>;
+export const genderSchema = createSelectSchema(genderEnum)
 
-export const rightLeftEnum = pgEnum("right_left", ["right", "left"]);
+export type Gender = z.infer<typeof genderSchema>
 
-export const roleEnum = pgEnum("role", ["blocker", "defender"]);
+export const rightLeftEnum = pgEnum("right_left", ["right", "left"])
+
+export const playerRoleEnum = pgEnum("player_role", ["blocker", "defender"])
 
 export const tournamentStatusEnum = pgEnum("tournament_status", [
   "closed",
   "running",
   "paused",
   "complete",
-]);
+])
 
 export const teamStatusEnum = pgEnum("team_status", [
   "registered",
   "waitlisted",
   "confirmed",
   "cancelled",
-]);
+])
 
 export const venueStatusEnum = pgEnum("venue_status", [
   "active",
   "hidden",
   "legacy",
-]);
+])
 
 export const matchStatusEnum = pgEnum("match_status", [
   "scheduled",
   "in_progress",
   "completed",
   "cancelled",
-]);
+])
 
 export const setStatusEnum = pgEnum("set_status", [
   "not_started",
   "in_progress",
   "completed",
-]);
+])

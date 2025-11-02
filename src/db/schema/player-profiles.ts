@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm"
 import {
   check,
   date,
@@ -8,15 +8,15 @@ import {
   serial,
   text,
   uuid,
-} from "drizzle-orm/pg-core";
-import { createSchemaFactory } from "drizzle-zod";
-import { z } from "zod";
-import { users } from "./auth";
-import { levels } from "./levels";
-import { genderEnum, rightLeftEnum, roleEnum } from "./shared";
+} from "drizzle-orm/pg-core"
+import { createSchemaFactory } from "drizzle-zod"
+import { z } from "zod"
+import { users } from "./auth"
+import { levels } from "./levels"
+import { genderEnum, playerRoleEnum, rightLeftEnum } from "./shared"
 
 const { createInsertSchema, createSelectSchema, createUpdateSchema } =
-  createSchemaFactory({ zodInstance: z });
+  createSchemaFactory({ zodInstance: z })
 
 export const playerProfiles = pgTable(
   "player_profiles",
@@ -38,7 +38,7 @@ export const playerProfiles = pgTable(
     heightFeet: integer(),
     heightInches: integer(),
     dominantArm: rightLeftEnum(),
-    preferredRole: roleEnum(),
+    preferredRole: playerRoleEnum(),
     preferredSide: rightLeftEnum(),
     club: text(),
     highSchoolGraduationYear: integer(),
@@ -49,32 +49,32 @@ export const playerProfiles = pgTable(
   (table) => [
     check(
       "height_feet_check",
-      sql`${table.heightFeet} >= 0 AND ${table.heightFeet} <= 8`,
+      sql`${table.heightFeet} >= 0 AND ${table.heightFeet} <= 8`
     ),
     check(
       "height_inches_check",
-      sql`${table.heightInches} >= 0 AND ${table.heightInches} < 12`,
+      sql`${table.heightInches} >= 0 AND ${table.heightInches} < 12`
     ),
-  ],
-);
+  ]
+)
 
-export const selectPlayerProfileSchema = createSelectSchema(playerProfiles);
+export const selectPlayerProfileSchema = createSelectSchema(playerProfiles)
 export const createPlayerProfileSchema = createInsertSchema(
-  playerProfiles,
+  playerProfiles
 ).omit({
   id: true,
   externalRef: true,
-});
+})
 export const updatePlayerProfileSchema = createUpdateSchema(
-  playerProfiles,
+  playerProfiles
 ).omit({
   id: true,
   externalRef: true,
-});
+})
 
-export type PlayerProfile = z.infer<typeof selectPlayerProfileSchema>;
-export type CreatePlayerProfile = z.infer<typeof createPlayerProfileSchema>;
-export type UpdatePlayerProfile = z.infer<typeof updatePlayerProfileSchema>;
+export type PlayerProfile = z.infer<typeof selectPlayerProfileSchema>
+export type CreatePlayerProfile = z.infer<typeof createPlayerProfileSchema>
+export type UpdatePlayerProfile = z.infer<typeof updatePlayerProfileSchema>
 
 export const playerProfileRelations = relations(playerProfiles, ({ one }) => ({
   user: one(users, {
@@ -85,4 +85,4 @@ export const playerProfileRelations = relations(playerProfiles, ({ one }) => ({
     fields: [playerProfiles.levelId],
     references: [levels.id],
   }),
-}));
+}))

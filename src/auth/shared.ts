@@ -80,6 +80,6 @@ export function useViewerHasPermission<P extends Permissions>(permissions: P) {
 
   return authClient.admin.checkRolePermission({
     permissions,
-    role: "admin",
+    role: viewer.role,
   })
 }

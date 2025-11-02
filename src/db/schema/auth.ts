@@ -14,12 +14,7 @@ import { playerProfiles } from "./player-profiles"
 const { createInsertSchema, createSelectSchema, createUpdateSchema } =
   createSchemaFactory({ zodInstance: z })
 
-const roleEnum = pgEnum("role", [
-  "player",
-  "tournament_director",
-  "admin",
-  "superadmin",
-])
+export const roleEnum = pgEnum("role", ["user", "td", "admin", "superadmin"])
 
 export const users = pgTable("users", {
   id: text().primaryKey(),

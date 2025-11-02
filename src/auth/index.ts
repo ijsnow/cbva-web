@@ -5,7 +5,7 @@ import { reactStartCookies } from "better-auth/react-start"
 
 import { db } from "@/db/connection"
 import * as schema from "@/db/schema/auth"
-import { ac, admin, td, user } from "./permissions"
+import { ac, admin, type Role, td, user } from "./permissions"
 
 export const auth = betterAuth({
   plugins: [
@@ -34,10 +34,6 @@ export const auth = betterAuth({
   },
   user: {
     additionalFields: {
-      role: {
-        type: "string",
-        required: false,
-      },
       phone: {
         type: "string",
         required: true,
@@ -70,4 +66,6 @@ export const auth = betterAuth({
 })
 
 export type Session = typeof auth.$Infer.Session
-export type Viewer = Session["user"]
+export type Viewer = Omit<Session["user"], "role"> & {
+  role: Role
+}

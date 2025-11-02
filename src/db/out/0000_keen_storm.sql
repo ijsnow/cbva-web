@@ -1,7 +1,8 @@
+CREATE TYPE "public"."role" AS ENUM('user', 'td', 'admin', 'superadmin');--> statement-breakpoint
 CREATE TYPE "public"."gender" AS ENUM('male', 'female', 'coed');--> statement-breakpoint
 CREATE TYPE "public"."match_status" AS ENUM('scheduled', 'in_progress', 'completed', 'cancelled');--> statement-breakpoint
+CREATE TYPE "public"."player_role" AS ENUM('blocker', 'defender');--> statement-breakpoint
 CREATE TYPE "public"."right_left" AS ENUM('right', 'left');--> statement-breakpoint
-CREATE TYPE "public"."role" AS ENUM('blocker', 'defender');--> statement-breakpoint
 CREATE TYPE "public"."set_status" AS ENUM('not_started', 'in_progress', 'completed');--> statement-breakpoint
 CREATE TYPE "public"."team_status" AS ENUM('registered', 'waitlisted', 'confirmed', 'cancelled');--> statement-breakpoint
 CREATE TYPE "public"."tournament_status" AS ENUM('closed', 'running', 'paused', 'complete');--> statement-breakpoint
@@ -31,18 +32,22 @@ CREATE TABLE "sessions" (
 	"ip_address" text,
 	"user_agent" text,
 	"user_id" text NOT NULL,
+	"impersonated_by" text,
 	CONSTRAINT "sessions_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
-	"role" "role",
 	"email" text NOT NULL,
 	"email_verified" boolean NOT NULL,
 	"phone" text NOT NULL,
 	"phone_verified" boolean NOT NULL,
 	"image" text,
+	"role" "role",
+	"banned" boolean,
+	"ban_reason" text,
+	"ban_date" date,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email"),
@@ -131,7 +136,7 @@ CREATE TABLE "player_profiles" (
 	"height_feet" integer,
 	"height_inches" integer,
 	"dominant_arm" "right_left",
-	"preferred_role" "role",
+	"preferred_role" "player_role",
 	"preferred_side" "right_left",
 	"club" text,
 	"high_school_graduation_year" integer,
@@ -298,6 +303,7 @@ CREATE TABLE "venues" (
 --> statement-breakpoint
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_impersonated_by_users_id_fk" FOREIGN KEY ("impersonated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "blocks" ADD CONSTRAINT "blocks_page_pages_path_fk" FOREIGN KEY ("page") REFERENCES "public"."pages"("path") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "directors" ADD CONSTRAINT "directors_profile_id_player_profiles_id_fk" FOREIGN KEY ("profile_id") REFERENCES "public"."player_profiles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "match_sets" ADD CONSTRAINT "match_sets_pool_match_id_pool_matches_id_fk" FOREIGN KEY ("pool_match_id") REFERENCES "public"."pool_matches"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

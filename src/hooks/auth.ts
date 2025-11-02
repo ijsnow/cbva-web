@@ -17,7 +17,7 @@ export async function fetchViewer() {
 export function useViewer(): Viewer | null | undefined {
   const { data: session, isPending } = authClient.useSession()
 
-  return isPending ? undefined : (session?.user ?? null)
+  return isPending ? undefined : ((session?.user ?? null) as Viewer | null)
 }
 
 export function useUpdateViewerCache() {
@@ -52,8 +52,6 @@ export function useLoggedInRedirect(to: FileRouteTypes["to"]) {
 
 export function useNotLoggedInRedirect(to: FileRouteTypes["to"]) {
   const viewer = useViewer()
-
-  console.log(viewer)
 
   useRedirect(to, viewer === null)
 }

@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import type * as React from "react"
-import { viewerIdQueryOptions } from "@/auth/shared"
+import { viewerIdQueryOptions, viewerQueryOptions } from "@/auth/shared"
 import appCss from "../styles.css?url"
 
 interface RouterContext {
@@ -37,7 +37,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   }),
   shellComponent: RootDocument,
   beforeLoad: async ({ context: { queryClient } }) => {
-    await queryClient.ensureQueryData(viewerIdQueryOptions())
+    await Promise.all([
+      queryClient.ensureQueryData(viewerIdQueryOptions()),
+      queryClient.ensureQueryData(viewerQueryOptions()),
+    ])
   },
   component: () => (
     <>
