@@ -1,15 +1,16 @@
-import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "./index";
-import type { Session, Viewer } from "./index";
+import { getRequestHeaders } from "@tanstack/react-start/server"
+
+import type { Session, Viewer } from "./index"
+import { auth } from "./index"
 
 export async function getViewer(): Promise<Viewer | null | undefined> {
-  const headers = getRequestHeaders();
+  const headers = getRequestHeaders()
 
   const session = await auth.api.getSession({
     headers,
-  });
+  })
 
-  return session?.user;
+  return session?.user
 }
 
-export { type Session, type Viewer };
+export type { Session, Viewer }

@@ -1,20 +1,20 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from "react"
 import {
   composeRenderProps,
   Button as RACButton,
   type ButtonProps as RACButtonProps,
   TooltipTrigger,
-} from "react-aria-components";
-import { tv, type VariantProps } from "tailwind-variants";
-import { Tooltip } from "./tooltip";
-import { focusRing } from "./utils";
+} from "react-aria-components"
+import { tv, type VariantProps } from "tailwind-variants"
+import { Tooltip } from "./tooltip"
+import { focusRing } from "./utils"
 
-type ButtonVariants = VariantProps<typeof button>;
+type ButtonVariants = VariantProps<typeof button>
 
 export interface ButtonProps extends ButtonVariants, RACButtonProps {
-  className?: string;
-  children: React.ReactNode;
-  tooltip?: ReactNode;
+  className?: string
+  children: React.ReactNode
+  tooltip?: ReactNode
 }
 
 export const button = tv({
@@ -43,6 +43,8 @@ export const button = tv({
       sm: "h-6 px-3 text-xs",
       md: "h-8 px-4 text-sm",
       lg: "h-10 px-6 text-md",
+      xl: "h-10 px-6 text-md",
+      "4xl": "h-12 px-5 text-4xl ",
     },
     radius: {
       md: ["rounded-md"],
@@ -238,7 +240,7 @@ export const button = tv({
     radius: "md",
     variant: "solid",
   },
-});
+})
 
 export function Button(props: ButtonProps) {
   const node = (
@@ -252,10 +254,10 @@ export function Button(props: ButtonProps) {
           size: props.size,
           radius: props.radius,
           className,
-        }),
+        })
       )}
     />
-  );
+  )
 
   if (props.tooltip) {
     return (
@@ -263,8 +265,8 @@ export function Button(props: ButtonProps) {
         {node}
         <Tooltip>{props.tooltip}</Tooltip>
       </TooltipTrigger>
-    );
+    )
   }
 
-  return node;
+  return node
 }

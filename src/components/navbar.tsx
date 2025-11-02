@@ -9,18 +9,16 @@ import {
   MenuSection,
   MenuTrigger,
 } from "react-aria-components"
-
+import type { Viewer } from "@/auth"
+import { useViewerId } from "@/auth/shared"
 import { Popover } from "@/components/base/popover"
-import { useViewer } from "@/hooks/auth"
-
-type Viewer = object
 
 const links: {
   className?: string
   subMenuClassName?: string
   to: LinkProps["to"]
   label: ReactNode
-  visible?: (viewer?: Viewer | null) => boolean
+  visible?: (viewer?: Viewer["id"] | null) => boolean
 }[] = [
   {
     to: "/tournaments",
@@ -66,10 +64,10 @@ const linkClassName =
   "uppercase text-navbar-foreground hover:bg-navbar-foreground hover:text-navbar-foreground-hover px-3 py-1 font-bold tracking-wide"
 
 export function Navbar() {
-  const viewer = useViewer()
+  const viewerId = useViewerId()
 
   const visibleLinks = links.filter(({ visible = () => true }) =>
-    visible(viewer)
+    visible(viewerId)
   )
 
   return (
