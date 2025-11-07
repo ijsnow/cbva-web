@@ -1,7 +1,8 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { useServerFn } from "@tanstack/react-start"
-import { useState } from "react"
+import { XIcon } from "lucide-react"
+import { Profiler, useRef, useState } from "react"
 import { useAsyncList } from "react-stately"
 import z from "zod"
 import { Button } from "@/components/base/button"
@@ -9,13 +10,15 @@ import { useAppForm } from "@/components/base/form"
 import { Modal } from "@/components/base/modal"
 import { title } from "@/components/base/primitives"
 import type { Option } from "@/components/base/select"
+import { ProfileName } from "@/components/profiles/name"
+import { ProfilePhoto } from "@/components/profiles/photo"
 import {
   searchProfiles,
   searchProfilesQueryOptions,
   searchProfilesSchema,
 } from "@/data/profiles"
 import { duplicateTournamentOptions } from "@/data/tournaments/schedule"
-import type { Division, TournamentDivision } from "@/db/schema"
+import type { Division, PlayerProfile, TournamentDivision } from "@/db/schema"
 import { getTournamentDivisionDisplay } from "@/hooks/tournament"
 
 export type AddTeamFormProps = {
@@ -61,10 +64,18 @@ export function AddTeamForm({
     },
     onSubmit: ({ value: { players } }) => {
       console.log(players)
+
+      onOpenChange(false)
     },
   })
 
-  const searchProfilesFn = useServerFn(searchProfiles)
+  const profiles = useRef<PlayerProfile[]>([])
+
+  const [selectedProfiles, setSelectedProfiles] = useState<
+    (PlayerProfile | null)[]
+  >([])
+
+  const queryClient = useQueryClient()
 
   return (
     <Modal {...props} onOpenChange={onOpenChange}>
@@ -93,55 +104,86 @@ export function AddTeamForm({
             children={(field) =>
               field.state.value.map((_, i) => (
                 <form.AppField key={i} name={`players[${i}]`}>
-                  {(subField) => (
-                    <subField.AsyncComboBox
-                      isRequired
-                      className="col-span-3"
-                      label="Player"
-                      field={subField}
-                      fetchOptions={{
-                        load: async ({ signal, filterText }) => {
-                          const parse = searchProfilesSchema.safeParse({
-                            name: filterText,
-                          })
+                  {(subField) => {
+                    const player = selectedProfiles[i]
 
-                          if (!parse.success) {
-                            return {
-                              items: [],
+                    return player ? (
+                      <div className="flex flex-row justify-between items-center">
+                        <span className="flex flex-row space-x-2">
+                          <ProfilePhoto {...player} />
+                          <ProfileName {...player} />
+                        </span>
+                        <Button
+                          className="text-red-500"
+                          variant="icon"
+                          onPress={() => subField.handleChange(null)}
+                        >
+                          <XIcon size={16} />
+                        </Button>
+                      </div>
+                    ) : (
+                      <subField.AsyncComboBox
+                        isRequired
+                        className="col-span-3"
+                        label="Player"
+                        field={subField}
+                        onSelectionChange={(id) => {
+                          const player = profiles.current?.find(
+                            ({ id }) => id === subField.state.value
+                          )
+
+                          setSelectedProfiles((state) => {
+                            const next = [...state]
+                            next[i] = player || null
+                            return next
+                          })
+                        }}
+                        fetchOptions={{
+                          load: async ({ filterText }) => {
+                            const parse = searchProfilesSchema.safeParse({
+                              name: filterText,
+                            })
+
+                            if (!parse.success) {
+                              return {
+                                items: [],
+                              }
                             }
-                          }
 
-                          const result = await searchProfilesFn({
-                            data: parse.data,
-                            signal,
-                          })
+                            const result = await queryClient.ensureQueryData(
+                              searchProfilesQueryOptions(parse.data)
+                            )
 
-                          return {
-                            items: result.map(
-                              ({ id, preferredName, firstName, lastName }) => ({
-                                display: `${preferredName || firstName} ${lastName}`,
-                                value: id,
-                              })
-                            ),
-                          }
-                        },
-                      }}
-                    />
-                  )}
+                            profiles.current = result
+
+                            return {
+                              items: result.map(
+                                ({
+                                  id,
+                                  preferredName,
+                                  firstName,
+                                  lastName,
+                                }) => ({
+                                  display: `${preferredName || firstName} ${lastName}`,
+                                  value: id,
+                                })
+                              ),
+                            }
+                          },
+                        }}
+                      />
+                    )
+                  }}
                 </form.AppField>
               ))
             }
           />
 
           <form.AppForm>
-            <form.StateDebugger />
-          </form.AppForm>
-
-          <form.AppForm>
             <form.Footer className="col-span-full">
               <Button onPress={() => onOpenChange(false)}>Cancel</Button>
 
-              <form.SubmitButton>Create</form.SubmitButton>
+              <form.SubmitButton>Add Team</form.SubmitButton>
             </form.Footer>
           </form.AppForm>
         </form>

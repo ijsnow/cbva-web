@@ -14,6 +14,7 @@ export function ComboBoxField<T extends Key>({
   options,
   isDisabled,
   disabledKeys,
+  onSelectionChange,
   ...props
 }: ComboBoxFieldProps<T>) {
   return (
@@ -24,8 +25,11 @@ export function ComboBoxField<T extends Key>({
       disabledKeys={disabledKeys}
       selectedKey={field.state.value}
       onSelectionChange={(value) => {
-        console.log("->", value)
         field.handleChange(value)
+
+        if (onSelectionChange) {
+          onSelectionChange(value)
+        }
       }}
       onOpenChange={(open) => {
         if (!open) {
