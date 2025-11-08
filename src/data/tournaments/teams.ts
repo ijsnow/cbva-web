@@ -3,14 +3,15 @@ import { notFound } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { setResponseStatus } from "@tanstack/react-start/server"
 import { eq, inArray, sql } from "drizzle-orm"
-import orderBy from "lodash/orderBy"
-import sum from "lodash/sum"
 import z from "zod"
 import { db } from "@/db/connection"
 import {
+  levels,
+  playerProfiles,
   selectTournamentSchema,
   teamPlayers,
   teams,
+  tournamentDivisions,
   tournamentDivisionTeams,
 } from "@/db/schema"
 
@@ -104,23 +105,7 @@ const calculateSeedsFn = createServerFn()
       with: {
         tournamentDivisions: {
           with: {
-            teams: {
-              with: {
-                team: {
-                  with: {
-                    players: {
-                      with: {
-                        profile: {
-                          with: {
-                            level: true,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
+            teams: true,
           },
         },
       },
@@ -143,36 +128,51 @@ const calculateSeedsFn = createServerFn()
       )
     }
 
-    // TODO: lift ordering into the database query
-    const updates = tournament.tournamentDivisions.flatMap((division) => {
-      const weights = division.teams.map(({ id, team: { players } }) => ({
-        id,
-        weight: sum(players.map(({ profile: { level } }) => level?.order ?? 0)),
-        rank: sum(players.map(({ profile: { rank } }) => rank)),
-      }))
+    const updates = await db
+      .select({
+        id: tournamentDivisionTeams.id,
+        tournamentDivisionId: tournamentDivisionTeams.tournamentDivisionId,
+        weight: sql<number>`SUM(COALESCE(${levels.order}, 0))`,
+        totalRank: sql<number>`SUM(${playerProfiles.rank})`,
+        seed: sql<number>`ROW_NUMBER() OVER (
+          PARTITION BY ${tournamentDivisionTeams.tournamentDivisionId}
+          ORDER BY SUM(COALESCE(${levels.order}, 0)) DESC, SUM(${playerProfiles.rank}) ASC
+        )`,
+      })
+      .from(tournamentDivisionTeams)
+      .innerJoin(teams, eq(tournamentDivisionTeams.teamId, teams.id))
+      .innerJoin(teamPlayers, eq(teams.id, teamPlayers.teamId))
+      .innerJoin(
+        playerProfiles,
+        eq(teamPlayers.playerProfileId, playerProfiles.id)
+      )
+      .leftJoin(levels, eq(playerProfiles.levelId, levels.id))
+      .innerJoin(
+        tournamentDivisions,
+        eq(tournamentDivisionTeams.tournamentDivisionId, tournamentDivisions.id)
+      )
+      .where(eq(tournamentDivisions.tournamentId, tournamentId))
+      .groupBy(
+        tournamentDivisionTeams.id,
+        tournamentDivisionTeams.tournamentDivisionId
+      )
 
-      const ordered = orderBy(weights, ["weight", "rank"], ["desc", "asc"])
-
-      return ordered.map(({ id }, idx) => ({
-        id,
-        seed: idx + 1,
-      }))
-    })
-
-    await db.transaction(async (txn) => {
-      await Promise.all(
+    const seeded = await db.transaction(async (txn) => {
+      return await Promise.all(
         updates.map(({ id, seed }) =>
           txn
             .update(tournamentDivisionTeams)
             .set({ seed })
             .where(eq(tournamentDivisionTeams.id, id))
+            .returning({
+              id: tournamentDivisionTeams.id,
+              seed: tournamentDivisionTeams.seed,
+            })
         )
       )
     })
 
-    return {
-      success: true,
-    } as { success: true }
+    return seeded.flat()
   })
 
 export const calculateSeedsMutationOptions = () =>
