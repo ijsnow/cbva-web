@@ -1,14 +1,13 @@
 import { createHeadlessEditor } from "@lexical/headless"
 import { $generateHtmlFromNodes } from "@lexical/html"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { createIsomorphicFn } from "@tanstack/react-start"
+import { createIsomorphicFn, createServerFn } from "@tanstack/react-start"
 import { JSDOM } from "jsdom"
 import type { SerializedEditorState } from "lexical"
 import { Suspense } from "react"
 import type { LexicalState } from "@/db/schema/shared"
 import { EDITOR_CONFIG_DEFAULTS } from "./config"
 import { RichTextEditorModal } from "./modal"
-import { createServerFn } from "@tanstack/react-start"
 
 export type RichTextDisplayProps = {
   name: string
@@ -32,13 +31,14 @@ function setupDom() {
   }
 }
 
-// const generateHtml = createIsomorphicFn()
-const generateHtml = createServerFn()
-  .inputValidator(({ name, state }: { name: string; state: string }) => ({
-    name,
-    state,
-  }))
-  .handler(async ({ data: { name, state } }) => {
+const generateHtml = createIsomorphicFn()
+  // const generateHtml = createServerFn()
+  // .inputValidator(({ name, state }: { name: string; state: string }) => ({
+  //   name,
+  //   state,
+  // }))
+  // .handler(async ({ data: { name, state } }) => {
+  .server(async (name: string, state: string) => {
     return await new Promise<string>((resolve) => {
       const editor = createHeadlessEditor({
         ...EDITOR_CONFIG_DEFAULTS,
@@ -63,29 +63,29 @@ const generateHtml = createServerFn()
       })
     })
   })
-// .client(async (name: string, state: string) => {
-//   return await new Promise<string>((resolve) => {
-//     const editor = createHeadlessEditor({
-//       ...EDITOR_CONFIG_DEFAULTS,
-//       namespace: name,
-//       onError(error: Error) {
-//         throw error
-//       },
-//     })
+  .client(async (name: string, state: string) => {
+    return await new Promise<string>((resolve) => {
+      const editor = createHeadlessEditor({
+        ...EDITOR_CONFIG_DEFAULTS,
+        namespace: name,
+        onError(error: Error) {
+          throw error
+        },
+      })
 
-//     editor.setEditorState(editor.parseEditorState(state))
+      editor.setEditorState(editor.parseEditorState(state))
 
-//     editor.update(() => {
-//       try {
-//         const _html = $generateHtmlFromNodes(editor, null)
+      editor.update(() => {
+        try {
+          const _html = $generateHtmlFromNodes(editor, null)
 
-//         resolve(_html)
-//       } catch (e) {
-//         console.log(e)
-//       }
-//     })
-//   })
-// })
+          resolve(_html)
+        } catch (e) {
+          console.log(e)
+        }
+      })
+    })
+  })
 
 export function RichTextDisplay({
   name,
@@ -96,7 +96,7 @@ export function RichTextDisplay({
 
   const { data: html } = useSuspenseQuery({
     queryKey: [state],
-    queryFn: () => generateHtml({ data: { name, state } }),
+    queryFn: () => generateHtml(name, state),
   })
 
   return (

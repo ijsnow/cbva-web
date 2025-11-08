@@ -160,7 +160,7 @@ export function AddTeamForm({
                             }
 
                             const result = await queryClient.ensureQueryData(
-                              searchProfilesQueryOptions(parse.data, signal)
+                              searchProfilesQueryOptions(parse.data)
                             )
 
                             profiles.current = result
