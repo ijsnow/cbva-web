@@ -24,8 +24,6 @@ const matchSetActionSchema = selectMatchSetSchema
 export function applyMatchSetAction(
 	{ action, teamA }: z.infer<typeof matchSetActionSchema>,
 	current: MatchSet,
-	// teamAId: number | null,
-	// teamBId: number | null,
 ) {
 	const next = { ...current };
 
@@ -47,7 +45,6 @@ export function applyMatchSetAction(
 	if (isDone) {
 		next.status = "completed";
 		next.endedAt = new Date();
-		// next.winnerId = next.teamAScore > next.teamBScore ? teamAId : teamBId;
 	}
 
 	return next;
