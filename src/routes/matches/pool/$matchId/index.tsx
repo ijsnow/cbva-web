@@ -86,8 +86,8 @@ function RouteComponent() {
 		...updateScoreMutationOptions(),
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-			  queryKey: poolMatchQuery.queryKey
-			})
+				queryKey: poolMatchQuery.queryKey,
+			});
 		},
 	});
 
@@ -123,9 +123,9 @@ function RouteComponent() {
 
 	const { data, isLoading } = useSuspenseQuery(poolMatchQuery);
 
-	const isDone = data?.status === 'completed';
+	const isDone = data?.status === "completed";
 
-	const isActionDisabled = isLoading || isPending
+	const isActionDisabled = isLoading || isPending;
 
 	return (
 		<DefaultLayout>
@@ -209,7 +209,7 @@ function RouteComponent() {
 										>
 											{score ?? "-"}
 										</div>
-										{s.status === 'in_progress' && (
+										{s.status === "in_progress" && (
 											<div className="flex flex-col gap-3 justify-center">
 												<Button
 													onPress={() => handleIncrement(s.id, i === 0)}

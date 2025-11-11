@@ -1,16 +1,16 @@
-import { createServerFn } from "@tanstack/react-start";
-import z from "zod";
-import { eq, sql } from "drizzle-orm";
 import { mutationOptions } from "@tanstack/react-query";
+import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
+import z from "zod";
 
 import { requireAuthenticated } from "@/auth/shared";
 import { db } from "@/db/connection";
-import { MatchSet, matchSets, selectMatchSetSchema } from "@/db/schema";
+import { type MatchSet, matchSets, selectMatchSetSchema } from "@/db/schema";
 import { notFound } from "@/lib/responses";
 
 const findMatchSetSchema = selectMatchSetSchema.pick({
-  id: true
-})
+	id: true,
+});
 
 const matchSetActionSchema = selectMatchSetSchema
 	.pick({
@@ -67,10 +67,7 @@ const updateScoreFn = createServerFn()
 
 		const next = applyMatchSetAction({ id, teamA, action }, matchSet);
 
-		await db
-			.update(matchSets)
-			.set(next)
-			.where(eq(matchSets.id, id));
+		await db.update(matchSets).set(next).where(eq(matchSets.id, id));
 	});
 
 export const updateScoreMutationOptions = () =>
@@ -82,9 +79,7 @@ export const updateScoreMutationOptions = () =>
 
 const startMatchFn = createServerFn()
 	.middleware([requireAuthenticated])
-	.inputValidator(
-		findMatchSetSchema,
-	)
+	.inputValidator(findMatchSetSchema)
 	.handler(async ({ data: { id } }) => {
 		const matchSet = await db.query.matchSets.findFirst({
 			where: (t, { and, eq }) => and(eq(t.id, id), eq(t.status, "not_started")),
