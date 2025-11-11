@@ -36,11 +36,11 @@ export function PoolsPanel({
 		<TabPanel id="pools">
 			<div className="max-w-4xl mx-auto py-12 px-3 flex flex-col gap-12">
 				{pools?.map(({ pool, stats }) => {
-  				if (stats) {
-    				pool.teams.sort((a, b) => {
-     					return stats[a.teamId]?.rank - stats[b.teamId]?.rank;
-    				});
-  				}
+					if (stats) {
+						pool.teams.sort((a, b) => {
+							return stats[a.teamId]?.rank - stats[b.teamId]?.rank;
+						});
+					}
 
 					const orderedTeams = pool.teams;
 
@@ -90,13 +90,21 @@ export function PoolsPanel({
 										return (
 											<TableRow key={id}>
 												<TableCell>
-                          {finish ?? (stats || {})[teamId]?.rank ?? "-"}
+													{finish ?? (stats || {})[teamId]?.rank ?? "-"}
 												</TableCell>
 												<TableCell>{seed ?? "-"}</TableCell>
 												<TableCell>
-													<span className="flex flex-col md:flex-row">
-														{players.map(({ profile }) => (
-															<ProfileName key={profile.id} {...profile} />
+													<span className="flex flex-col md:flex-row gap-1">
+														{players.map(({ profile }, i) => (
+															<>
+																<ProfileName key={profile.id} {...profile} />{" "}
+																{i === players.length - 1 ? null : (
+																	<span className="hidden md:inline-block">
+																		{" "}
+																		&{" "}
+																	</span>
+																)}
+															</>
 														))}
 													</span>
 												</TableCell>

@@ -64,8 +64,6 @@ export async function importTournamentsForYear(
 	console.log(`${batch.length} legacy tournaments`);
 
 	if (batch.length === 0) {
-		console.log("skipping");
-
 		return;
 	}
 

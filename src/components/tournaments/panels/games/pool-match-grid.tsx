@@ -54,7 +54,6 @@ export function PoolMatchGrid({
 	id,
 	sets,
 	matchNumber,
-	winnerId,
 	teamA,
 	teamB,
 	refetch,
@@ -68,6 +67,7 @@ export function PoolMatchGrid({
 		| "startedAt"
 		| "endedAt"
 		| "setNumber"
+		| "status"
 	>[];
 	teamA: MatchTeam | null;
 	teamB: MatchTeam | null;
@@ -87,7 +87,7 @@ export function PoolMatchGrid({
 					<Link to="/matches/pool/$matchId" params={{ matchId: id.toString() }}>
 						{sets.length > 1 ? "Match" : "Game"} {matchNumber}
 					</Link>
-					{winnerId === null ? (
+					{sets.some(({ status }) => status === 'in_progress') ? (
 						<Button
 							size="sm"
 							className="rounded-sm px-2"

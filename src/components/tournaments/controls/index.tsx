@@ -12,13 +12,22 @@ import { AddTeamForm } from "./add-team";
 import { CalculateSeedsForm } from "./calculate-seeds";
 import { CreatePoolsForm } from "./create-pools";
 import { DuplicateForm } from "./duplicate";
+import { CreatePoolMatchesForm } from "./create-pool-matches";
 
 export type TournamentAdminControlsProps = {
 	tournamentId: number;
 	division: TournamentDivision & { division: Division };
 };
 
-type ModalKind = "duplicate" | "add-team" | "calc-seeds" | "gen-pools";
+// type ModalKind = "duplicate" | "add-team" | "calc-seeds" | "gen-pools" | 'gen-pool-matches';
+
+enum ModalKind {
+  Duplicate,
+  AddTeam,
+  CalculateSeeds,
+  CreatePools,
+  CreatePoolMatches
+}
 
 export function TournamentControls({
 	tournamentId,
@@ -38,6 +47,15 @@ export function TournamentControls({
 		return null;
 	}
 
+  const makeModalOpenProps = (kind: ModalKind) => ({
+   	isOpen: activeModal === kind,
+   	onOpenChange: (open: boolean) => {
+  			const next = open ? kind : undefined;
+
+  			setActiveModal(next);
+   	}
+  })
+
 	return (
 		<>
 			<DropdownMenu
@@ -45,21 +63,24 @@ export function TournamentControls({
 				buttonIcon={<SettingsIcon />}
 			>
 				{canCreate && (
-					<DropdownMenuItem onPress={() => setActiveModal("duplicate")}>
+					<DropdownMenuItem onPress={() => setActiveModal(ModalKind.Duplicate)}>
 						Duplicate
 					</DropdownMenuItem>
 				)}
 
 				{canUpdate && (
 					<>
-						<DropdownMenuItem onPress={() => setActiveModal("add-team")}>
+						<DropdownMenuItem onPress={() => setActiveModal(ModalKind.AddTeam)}>
 							Add Team
 						</DropdownMenuItem>
-						<DropdownMenuItem onPress={() => setActiveModal("calc-seeds")}>
+						<DropdownMenuItem onPress={() => setActiveModal(ModalKind.CalculateSeeds)}>
 							Calculate Seeds
 						</DropdownMenuItem>
-						<DropdownMenuItem onPress={() => setActiveModal("gen-pools")}>
+						<DropdownMenuItem onPress={() => setActiveModal(ModalKind.CreatePools)}>
 							Create Pools
+						</DropdownMenuItem>
+						<DropdownMenuItem onPress={() => setActiveModal(ModalKind.CreatePoolMatches)}>
+							Create Pool Matches
 						</DropdownMenuItem>
 					</>
 				)}
@@ -67,45 +88,31 @@ export function TournamentControls({
 
 			<DuplicateForm
 				tournamentId={tournamentId}
-				isOpen={activeModal === "duplicate"}
-				onOpenChange={(open) => {
-					const next = open ? "duplicate" : undefined;
-
-					setActiveModal(next);
-				}}
+				{...makeModalOpenProps(ModalKind.Duplicate)}
 			/>
 
 			<AddTeamForm
 				tournamentId={tournamentId}
 				division={division}
-				isOpen={activeModal === "add-team"}
-				onOpenChange={(open) => {
-					const next = open ? "add-team" : undefined;
-
-					setActiveModal(next);
-				}}
-			/>
-
-			<CreatePoolsForm
-				tournamentId={tournamentId}
-				division={division}
-				isOpen={activeModal === "gen-pools"}
-				onOpenChange={(open) => {
-					const next = open ? "gen-pools" : undefined;
-
-					setActiveModal(next);
-				}}
+				{...makeModalOpenProps(ModalKind.AddTeam)}
 			/>
 
 			<CalculateSeedsForm
 				tournamentId={tournamentId}
 				division={division}
-				isOpen={activeModal === "calc-seeds"}
-				onOpenChange={(open) => {
-					const next = open ? "calc-seeds" : undefined;
+				{...makeModalOpenProps(ModalKind.CalculateSeeds)}
+			/>
 
-					setActiveModal(next);
-				}}
+			<CreatePoolsForm
+				tournamentId={tournamentId}
+				division={division}
+				{...makeModalOpenProps(ModalKind.CreatePools)}
+			/>
+
+			<CreatePoolMatchesForm
+				tournamentId={tournamentId}
+				division={division}
+				{...makeModalOpenProps(ModalKind.CreatePoolMatches)}
 			/>
 		</>
 	);

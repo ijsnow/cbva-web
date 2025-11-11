@@ -49,16 +49,13 @@ export function GamesPanel({
 	}, [data]);
 
 	const courtFilterOptions = useMemo(() => {
-		return sortBy(
-			data?.map((p) => p.court).filter(isNotNull) ?? [],
-			(v) => {
-				if (Number.isNaN(v)) {
-					return v;
-				}
+		return sortBy(data?.map((p) => p.court).filter(isNotNull) ?? [], (v) => {
+			if (Number.isNaN(v)) {
+				return v;
+			}
 
-				return Number.parseInt(v, 10);
-			},
-		).map((court) => {
+			return Number.parseInt(v, 10);
+		}).map((court) => {
 			return {
 				display: court,
 				value: court,

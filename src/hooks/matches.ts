@@ -86,9 +86,9 @@ export function getPoolStats({
 		sets: Pick<MatchSet, "teamAScore" | "teamBScore" | "winnerId">[];
 	})[];
 }): PoolStats | undefined {
-  if (matches.length === 0) {
-    return undefined
-  }
+	if (matches.length === 0) {
+		return undefined;
+	}
 
 	const stats = teams.reduce<PoolStats>((memo, { teamId }) => {
 		memo[teamId] = {
@@ -108,9 +108,9 @@ export function getPoolStats({
 		const { teamAId, teamBId, winnerId, sets } = match;
 
 		if (teamAId === null || teamBId === null || winnerId === null) {
-			console.log("skipping", teamAId, teamBId, winnerId);
+		  return undefined
 
-			continue;
+			// continue;
 		}
 
 		// Record wins and losses

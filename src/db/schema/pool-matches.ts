@@ -6,7 +6,8 @@ import {
 	pgTable,
 	serial,
 	text,
-	timestamp,
+	time,
+	unique,
 	uuid,
 } from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
@@ -35,7 +36,7 @@ export const poolMatches = pgTable(
 		teamBId: integer().references(() => tournamentDivisionTeams.id, {
 			onDelete: "cascade",
 		}),
-		scheduledTime: timestamp(),
+		scheduledTime: time(),
 		status: matchStatusEnum().notNull().default("scheduled"),
 		winnerId: integer().references(() => tournamentDivisionTeams.id),
 		externalRef: uuid().unique(),
@@ -48,6 +49,10 @@ export const poolMatches = pgTable(
 		index("pool_matches_pool_idx").on(table.poolId),
 		index("pool_matches_team_a_idx").on(table.teamAId),
 		index("pool_matches_team_b_idx").on(table.teamBId),
+		unique("pool_matches_pool_id_match_number").on(
+			table.poolId,
+			table.matchNumber,
+		)
 	],
 );
 

@@ -147,7 +147,7 @@ export function AddTeamForm({
 													});
 												}}
 												fetchOptions={{
-													load: async ({ filterText, signal }) => {
+													load: async ({ filterText }) => {
 														const parse = searchProfilesSchema.safeParse({
 															name: filterText,
 															levels: levelsForDivision?.map(({ id }) => id),

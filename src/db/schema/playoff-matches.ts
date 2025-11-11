@@ -34,8 +34,12 @@ export const playoffMatches = pgTable(
 		court: text(),
 		teamAId: integer().references(() => tournamentDivisionTeams.id),
 		teamBId: integer().references(() => tournamentDivisionTeams.id),
-		teamAPoolId: integer().references(() => pools.id),
-		teamBPoolId: integer().references(() => pools.id),
+		teamAPoolId: integer().references(() => pools.id, {
+			onDelete: "set null",
+		}),
+		teamBPoolId: integer().references(() => pools.id, {
+			onDelete: "set null",
+		}),
 		teamAPreviousMatchId: integer().references(
 			(): AnyPgColumn => playoffMatches.id,
 		),
