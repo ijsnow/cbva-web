@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 
 import { db } from "@/db/connection";
-import { selectTournamentDivisionTeamSchema } from "@/db";
+import { selectTournamentDivisionTeamSchema } from "@/db/schema";
 
 async function readTeams({
 	tournamentDivisionId,
