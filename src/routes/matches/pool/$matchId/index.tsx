@@ -1,4 +1,8 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import clsx from "clsx";
 import { MinusIcon, PlusIcon } from "lucide-react";
@@ -11,6 +15,10 @@ import { poolMatchQueryOptions } from "@/data/matches";
 import { DefaultLayout } from "@/layouts/default";
 import { playerNames } from "@/utils/profiles";
 import { isNotNull } from "@/utils/types";
+import {
+	applyMatchSetAction,
+	updateScoreMutationOptions,
+} from "@/data/tournaments/matches";
 
 export const Route = createFileRoute("/matches/pool/$matchId/")({
 	loader: async ({ params: { matchId }, context: { queryClient } }) => {
@@ -59,9 +67,47 @@ const scoreStyles = tv({
 function RouteComponent() {
 	const { matchId } = Route.useParams();
 
-	const { data } = useSuspenseQuery(
-		poolMatchQueryOptions(Number.parseInt(matchId, 10)),
-	);
+	const queryClient = useQueryClient();
+
+	const poolMatchQuery = poolMatchQueryOptions(Number.parseInt(matchId, 10));
+
+	const { mutate } = useMutation({
+		// TODO: optimistically update score
+		...updateScoreMutationOptions(),
+		onSuccess: () => {
+			//  queryClient.invalidateQueries({
+			// 	queryKey: poolMatchQuery.queryKey
+			// })
+		},
+	});
+
+	const makeUpdateScoreHandler =
+		(action: "increment" | "decrement") =>
+		(matchSetId: number, teamA: boolean) => {
+			mutate({
+				id: matchSetId,
+				action,
+				teamA,
+			});
+
+			queryClient.setQueryData(poolMatchQuery.queryKey, (data) => {
+				if (!data) {
+					return undefined;
+				}
+
+				return {
+					...data,
+					sets: data?.sets.map((set) =>
+						set.id === matchSetId ? applyMatchSetAction(set) : set,
+					),
+				};
+			});
+		};
+
+	const handleIncrement = makeUpdateScoreHandler("increment");
+	const handleDecrement = makeUpdateScoreHandler("decrement");
+
+	const { data } = useSuspenseQuery(poolMatchQuery);
 
 	const isDone = data?.winnerId;
 
@@ -145,14 +191,14 @@ function RouteComponent() {
 										<div
 											className={scoreStyles({ variant: i === 0 ? "a" : "b" })}
 										>
-											{score || "-"}
+											{score ?? "-"}
 										</div>
 										{!isDone && (
 											<div className="flex flex-col gap-3 justify-center">
-												<Button>
+												<Button onPress={() => handleIncrement(s.id, i === 0)}>
 													<PlusIcon size={28} />
 												</Button>
-												<Button>
+												<Button onPress={() => handleDecrement(s.id, i === 0)}>
 													<MinusIcon size={28} />
 												</Button>
 											</div>

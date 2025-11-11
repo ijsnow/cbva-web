@@ -2,7 +2,7 @@ import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseStatus } from "@tanstack/react-start/server";
 import range from "lodash/range";
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import z from "zod";
 
 import { requirePermissions } from "@/auth/shared";
@@ -19,7 +19,6 @@ import {
 } from "@/db/schema";
 import { snake } from "@/lib/snake-draft";
 import { badRequest, notFound } from "@/lib/responses";
-import { P } from "node_modules/better-auth/dist/shared/better-auth.BUpnjBGu";
 
 export const createPoolsSchema = selectTournamentDivisionSchema
 	.pick({
@@ -46,7 +45,13 @@ const createPoolsFn = createServerFn()
 			throw new Error("Pool count exceeds limit");
 		}
 
-		const createPoolsQuery = db
+		if (overwrite) {
+			await db
+				.delete(pools)
+				.where(eq(pools.tournamentDivisionId, tournamentDivisionId));
+		}
+
+		const createdPools = await db
 			.insert(pools)
 			.values(
 				range(0, count).map((i) => ({
@@ -58,17 +63,6 @@ const createPoolsFn = createServerFn()
 				id: pools.id,
 				name: pools.name,
 			});
-
-		if (overwrite) {
-			await db
-				.delete(pools)
-				.where(eq(pools.tournamentDivisionId, tournamentDivisionId));
-		}
-
-		// TODO: maybe delete and let db clean up team assignments, games, etc
-		const createdPools = await (overwrite
-			? createPoolsQuery.onConflictDoNothing()
-			: createPoolsQuery);
 
 		const teams = await db.query.tournamentDivisionTeams.findMany({
 			columns: {
@@ -239,12 +233,13 @@ export const createPoolMatchesFn = createServerFn()
 			.returning({ id: poolMatches.id, poolId: poolMatches.poolId });
 
 		// Now create match sets with correct poolMatchId references
-		const setValues: CreateMatchSet[] = createdMatches.flatMap(({ id, poolId }) =>
-			poolMatchSetsSettings[poolId].map((winScore, setIdx) => ({
-				poolMatchId: id,
-				setNumber: setIdx + 1,
-				winScore,
-			})),
+		const setValues: CreateMatchSet[] = createdMatches.flatMap(
+			({ id, poolId }) =>
+				poolMatchSetsSettings[poolId].map((winScore, setIdx) => ({
+					poolMatchId: id,
+					setNumber: setIdx + 1,
+					winScore,
+				})),
 		);
 
 		await db.insert(matchSets).values(setValues);

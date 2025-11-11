@@ -104,6 +104,20 @@ export function roleHasPermission<P extends Permissions>(
 	});
 }
 
+export const requireAuthenticated = createMiddleware()
+	.middleware([authMiddleware])
+	.server(async ({ next, context }) => {
+		const { viewer } = context;
+
+		if (!viewer) {
+			setResponseStatus(401);
+
+			throw new Error("Unauthorized");
+		}
+
+		return await next({ context });
+	});
+
 /**
  * Creates a middleware that ensures the logged-in user has the specified permissions.
  *
