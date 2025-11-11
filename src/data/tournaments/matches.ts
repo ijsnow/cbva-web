@@ -8,6 +8,10 @@ import { db } from "@/db/connection";
 import { MatchSet, matchSets, selectMatchSetSchema } from "@/db/schema";
 import { notFound } from "@/lib/responses";
 
+const findMatchSetSchema = selectMatchSetSchema.pick({
+  id: true
+})
+
 const matchSetActionSchema = selectMatchSetSchema
 	.pick({
 		id: true,
@@ -20,8 +24,8 @@ const matchSetActionSchema = selectMatchSetSchema
 export function applyMatchSetAction(
 	{ action, teamA }: z.infer<typeof matchSetActionSchema>,
 	current: MatchSet,
-	// teamAId: number,
-	// teamBId: number,
+	// teamAId: number | null,
+	// teamBId: number | null,
 ) {
 	const next = { ...current };
 
@@ -61,8 +65,6 @@ const updateScoreFn = createServerFn()
 			throw notFound();
 		}
 
-		// TODO: referees
-
 		const next = applyMatchSetAction({ id, teamA, action }, matchSet);
 
 		await db
@@ -75,5 +77,72 @@ export const updateScoreMutationOptions = () =>
 	mutationOptions({
 		mutationFn: async (data: z.infer<typeof matchSetActionSchema>) => {
 			return await updateScoreFn({ data });
+		},
+	});
+
+const startMatchFn = createServerFn()
+	.middleware([requireAuthenticated])
+	.inputValidator(
+		findMatchSetSchema,
+	)
+	.handler(async ({ data: { id } }) => {
+		const matchSet = await db.query.matchSets.findFirst({
+			where: (t, { and, eq }) => and(eq(t.id, id), eq(t.status, "not_started")),
+		});
+
+		if (!matchSet) {
+			throw notFound();
+		}
+
+		await db
+			.update(matchSets)
+			.set({
+				status: "in_progress",
+				startedAt: new Date(),
+			})
+			.where(eq(matchSets.id, id));
+	});
+
+export const startMatchMutationOptions = () =>
+	mutationOptions({
+		mutationFn: async (data: z.infer<typeof findMatchSetSchema>) => {
+			return await startMatchFn({ data });
+		},
+	});
+
+const restartMatchFn = createServerFn()
+	.middleware([requireAuthenticated])
+	.inputValidator(
+		selectMatchSetSchema.pick({
+			id: true,
+		}),
+	)
+	.handler(async ({ data: { id } }) => {
+		const matchSet = await db.query.matchSets.findFirst({
+			where: (t, { and, eq }) => and(eq(t.id, id), eq(t.status, "completed")),
+		});
+
+		if (!matchSet) {
+			throw notFound();
+		}
+
+		const { teamAScore, teamBScore } = matchSet;
+		const isTeamAWinner = teamAScore > teamBScore;
+
+		await db
+			.update(matchSets)
+			.set({
+				status: "in_progress",
+				endedAt: null,
+				teamAScore: isTeamAWinner ? Math.max(0, teamAScore - 1) : teamAScore,
+				teamBScore: isTeamAWinner ? teamBScore : Math.max(0, teamBScore - 1),
+			})
+			.where(eq(matchSets.id, id));
+	});
+
+export const restartMatchMutationOptions = () =>
+	mutationOptions({
+		mutationFn: async (data: z.infer<typeof findMatchSetSchema>) => {
+			return await restartMatchFn({ data });
 		},
 	});
