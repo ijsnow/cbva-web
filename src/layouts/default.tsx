@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Navbar } from "@/components/navbar";
 
 export function DefaultLayout({
-	classNames = { content: "pt-18 pb-12 space-y-12 w-full" },
+	classNames = { content: "pt-18 pb-12 space-y-12 w-full relative" },
 	children,
 }: {
 	classNames?: { content?: string };

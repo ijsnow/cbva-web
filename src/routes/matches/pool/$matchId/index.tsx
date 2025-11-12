@@ -3,23 +3,25 @@ import {
 	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import clsx from "clsx";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { ChevronLeftIcon, MinusIcon, PlusIcon } from "lucide-react";
+import { useState } from "react";
 import { tv } from "tailwind-variants";
-
 import { Button } from "@/components/base/button";
 import { subtitle, title } from "@/components/base/primitives";
 import { Tab, TabList, TabPanel, Tabs } from "@/components/base/tabs";
+import { TournamentDirectorMatchControls } from "@/components/matches/director-controls";
+import { RefereeControls } from "@/components/matches/referee-controls";
 import { poolMatchQueryOptions } from "@/data/matches";
-import { DefaultLayout } from "@/layouts/default";
-import { playerNames } from "@/utils/profiles";
-import { isNotNull } from "@/utils/types";
 import {
 	applyMatchSetAction,
 	updateScoreMutationOptions,
 } from "@/data/tournaments/matches";
+import { DefaultLayout } from "@/layouts/default";
 import { dbg } from "@/utils/dbg";
+import { playerNames } from "@/utils/profiles";
+import { isNotNull } from "@/utils/types";
 
 export const Route = createFileRoute("/matches/pool/$matchId/")({
 	loader: async ({ params: { matchId }, context: { queryClient } }) => {
@@ -69,6 +71,7 @@ const scoreStyles = tv({
 //
 // - Start match
 // - Undo complete match (subtrack 1 from winning score and change status)
+// - N to switch
 // - Side switch modal
 // - Serve order tracker
 //
@@ -123,15 +126,37 @@ function RouteComponent() {
 
 	const { data, isLoading } = useSuspenseQuery(poolMatchQuery);
 
+	const [activeTabKey, setActiveTabKey] = useState<number | undefined>(
+		data?.sets[0]?.id,
+	);
+
+	console.log(activeTabKey);
+
 	const isDone = data?.status === "completed";
 
 	const isActionDisabled = isLoading || isPending;
 
 	return (
 		<DefaultLayout>
-			<div>
-				{data?.court && <h1 className={title()}>Court {data.court}</h1>}
+			{data && (
+				<TournamentDirectorMatchControls
+					matchId={data.id}
+					setId={activeTabKey}
+				/>
+			)}
 
+			<Link
+				className="absolute top-6 left-6 flex flex-row space-x-2 items-center"
+				to="/tournaments/$tournamentId/$divisionId"
+				params={{
+					tournamentId: data?.pool.tournamentDivision.tournamentId.toString(),
+					divisionId: data?.pool.tournamentDivisionId.toString(),
+				}}
+			>
+				<ChevronLeftIcon size={16} /> <span>Back to tournament</span>
+			</Link>
+
+			<div className="w-full max-w-3xl mx-auto flex flex-col space-y-8">
 				<div className="flex flex-row items-center">
 					<div className="flex-1 flex items-center justify-center">
 						<span
@@ -175,9 +200,17 @@ function RouteComponent() {
 						</span>
 					</div>
 				</div>
+				{data?.court && (
+					<h2 className={title({ size: "xs", class: "text-center" })}>
+						Court {data.court}
+					</h2>
+				)}
 			</div>
 
-			<Tabs defaultSelectedKey={data?.sets.at(1)?.id}>
+			<Tabs
+				defaultSelectedKey={data?.sets.at(1)?.id}
+				onSelectionChange={(key) => setActiveTabKey(key)}
+			>
 				<div
 					className={clsx("overflow-x-auto", data?.sets.length === 1 && "h-0")}
 				>
@@ -198,14 +231,16 @@ function RouteComponent() {
 					.sort((a, b) => a.setNumber - b.setNumber)
 					.map((s) => (
 						<TabPanel key={s.id} id={s.id}>
-							<div className="flex flex-row justify-around py-18">
+							<div className="flex flex-row justify-around py-18 w-full max-w-3xl mx-auto">
 								{[
 									[data?.teamAId, s.teamAScore],
 									[data?.teamBId, s.teamBScore],
 								].map(([key, score], i) => (
 									<div key={key} className="flex flex-row gap-3">
 										<div
-											className={scoreStyles({ variant: i === 0 ? "a" : "b" })}
+											className={scoreStyles({
+												variant: i === 0 ? "a" : "b",
+											})}
 										>
 											{score ?? "-"}
 										</div>
@@ -228,6 +263,12 @@ function RouteComponent() {
 									</div>
 								))}
 							</div>
+
+							<RefereeControls
+								match={data}
+								set={s}
+								queryKey={poolMatchQuery.queryKey}
+							/>
 						</TabPanel>
 					))}
 			</Tabs>

@@ -40,6 +40,11 @@ export const getPoolMatch = createServerFn({
 						},
 					},
 				},
+				pool: {
+					with: {
+						tournamentDivision: true,
+					},
+				},
 			},
 		});
 	});

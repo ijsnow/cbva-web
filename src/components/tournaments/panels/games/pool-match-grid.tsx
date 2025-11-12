@@ -141,12 +141,17 @@ export function PoolMatchGrid({
 								key={s.id}
 								className={scoreTextStyles({
 									winner:
-										s.winnerId === null ? undefined : s.winnerId === team.id,
+										s.status === "completed"
+											? (s.teamAScore > s.teamBScore &&
+													teamA?.id === team.id) ||
+												(s.teamAScore < s.teamBScore && teamA?.id !== team.id)
+											: undefined,
+									// s.winnerId === null ? undefined : s.winnerId === team.id,
 									inProgress: Boolean(s.startedAt) && !s.endedAt,
 									last: i === sets.length - 1,
 								})}
 							>
-								{s.startedAt
+								{s.status !== "not_started"
 									? teamA?.id === team.id
 										? s.teamAScore
 										: s.teamBScore

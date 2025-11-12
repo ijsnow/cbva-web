@@ -1,11 +1,12 @@
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import z from "zod";
 
-import { requireAuthenticated } from "@/auth/shared";
+import { requireAuthenticated, requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import { type MatchSet, matchSets, selectMatchSetSchema } from "@/db/schema";
+import { isSetDone } from "@/lib/matches";
 import { notFound } from "@/lib/responses";
 
 const findMatchSetSchema = selectMatchSetSchema.pick({
@@ -36,11 +37,7 @@ export function applyMatchSetAction(
 	}
 
 	// Calculate if the set is done: a team must reach winScore AND be ahead by at least 2 points
-	const isDone =
-		(next.teamAScore >= current.winScore &&
-			next.teamAScore - next.teamBScore >= 2) ||
-		(next.teamBScore >= current.winScore &&
-			next.teamBScore - next.teamAScore >= 2);
+	const isDone = isSetDone(next.teamAScore, next.teamBScore, current.winScore);
 
 	if (isDone) {
 		next.status = "completed";
@@ -95,14 +92,16 @@ const startMatchFn = createServerFn()
 			.where(eq(matchSets.id, id));
 	});
 
-export const startMatchMutationOptions = () =>
+export const startMatchMutationOptions = (
+	data: z.infer<typeof findMatchSetSchema>,
+) =>
 	mutationOptions({
-		mutationFn: async (data: z.infer<typeof findMatchSetSchema>) => {
+		mutationFn: async () => {
 			return await startMatchFn({ data });
 		},
 	});
 
-const restartMatchFn = createServerFn()
+const undoSetCompletedMatchFn = createServerFn()
 	.middleware([requireAuthenticated])
 	.inputValidator(
 		selectMatchSetSchema.pick({
@@ -132,9 +131,53 @@ const restartMatchFn = createServerFn()
 			.where(eq(matchSets.id, id));
 	});
 
-export const restartMatchMutationOptions = () =>
+export const undoSetCompletedMutationOptions = (
+	data: z.infer<typeof findMatchSetSchema>,
+) =>
 	mutationOptions({
-		mutationFn: async (data: z.infer<typeof findMatchSetSchema>) => {
-			return await restartMatchFn({ data });
+		mutationFn: async () => {
+			return await undoSetCompletedMatchFn({ data });
+		},
+	});
+
+const overrideScoreSchema = selectMatchSetSchema.pick({
+	id: true,
+	teamAScore: true,
+	teamBScore: true,
+});
+
+const overrideScoreFn = createServerFn()
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
+	.inputValidator(overrideScoreSchema)
+	.handler(async ({ data: { id, teamAScore, teamBScore } }) => {
+		const matchSet = await db.query.matchSets.findFirst({
+			where: (t, { eq }) => eq(t.id, id),
+		});
+
+		if (!matchSet) {
+			throw notFound();
+		}
+
+		const isDone = isSetDone(teamAScore, teamBScore, matchSet.winScore);
+
+		await db
+			.update(matchSets)
+			.set({
+				status: isDone ? "completed" : "in_progress",
+				endedAt: isDone ? new Date() : sql`null`,
+				teamAScore,
+				teamBScore,
+			})
+			.where(eq(matchSets.id, id));
+	});
+
+export const overrideScoreMutationOptions = () =>
+	mutationOptions({
+		mutationFn: async (data: z.infer<typeof overrideScoreSchema>) => {
+			return await overrideScoreFn({ data });
 		},
 	});
