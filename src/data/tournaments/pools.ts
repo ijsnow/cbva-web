@@ -15,9 +15,10 @@ import {
 	poolMatches,
 	pools,
 	poolTeams,
+	selectPoolSchema,
 	selectTournamentDivisionSchema,
 } from "@/db/schema";
-import { badRequest, notFound } from "@/lib/responses";
+import { badRequest } from "@/lib/responses";
 import { snake } from "@/lib/snake-draft";
 
 export const createPoolsSchema = selectTournamentDivisionSchema
@@ -161,8 +162,6 @@ export const createPoolMatchesFn = createServerFn()
 	])
 	.inputValidator(createPoolMatchesSchema)
 	.handler(async ({ data: { tournamentId, overwrite } }) => {
-		console.log(tournamentId);
-
 		const divisions = await db.query.tournamentDivisions.findMany({
 			with: {
 				tournament: {
@@ -257,4 +256,38 @@ export const createPoolMatchesMutationOptions = () =>
 	mutationOptions({
 		mutationFn: (data: z.infer<typeof createPoolMatchesSchema>) =>
 			createPoolMatchesFn({ data }),
+	});
+
+export const setPoolCourtSchema = selectPoolSchema
+	.pick({
+		id: true,
+	})
+	.extend({
+		court: z.string(),
+	});
+
+export const setPoolCourtFn = createServerFn()
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
+	.inputValidator(setPoolCourtSchema)
+	.handler(async ({ data: { id, court } }) => {
+		await db
+			.update(pools)
+			.set({
+				court,
+			})
+			.where(eq(pools.id, id));
+
+		return {
+			success: true as true,
+		};
+	});
+
+export const setPoolCourtMutationOptions = () =>
+	mutationOptions({
+		mutationFn: (data: z.infer<typeof setPoolCourtSchema>) =>
+			setPoolCourtFn({ data }),
 	});

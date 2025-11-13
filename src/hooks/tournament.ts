@@ -1,3 +1,5 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { tournamentQueryOptions } from "@/data/tournaments";
 import type { Division, Level, TournamentDivision } from "@/db/schema";
 
 export function getLevelDisplay(level: Level | null) {
@@ -28,4 +30,33 @@ export function getTournamentDivisionDisplay({
 	}
 
 	return display;
+}
+
+export function useTournamentDivision(
+	tournamentId: number,
+	tournamentDivisionId: number,
+) {
+	return useSuspenseQuery({
+		...tournamentQueryOptions(tournamentId),
+		select: (data) =>
+			data?.tournamentDivisions.find(({ id }) => id === tournamentDivisionId),
+	});
+}
+
+export function useTournamentDivisionName(
+	tournamentId: number,
+	tournamentDivisionId: number,
+) {
+	const { data: division } = useTournamentDivision(
+		tournamentId,
+		tournamentDivisionId,
+	);
+
+	console.log(division);
+
+	if (!division) {
+		return null;
+	}
+
+	return getTournamentDivisionDisplay(division);
 }

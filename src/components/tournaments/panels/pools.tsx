@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { title } from "@/components/base/primitives";
+import { subtitle, title } from "@/components/base/primitives";
 import {
 	Table,
 	TableBody,
@@ -14,8 +14,10 @@ import { ProfileName } from "@/components/profiles/name";
 import { poolsQueryOptions } from "@/data/pools";
 import type { Tournament, TournamentDivision } from "@/db/schema";
 import { getPoolStats, usePoolMatchResults } from "@/hooks/matches";
+import { SetCourtForm } from "../controls/set-court";
 
 export function PoolsPanel({
+	id,
 	tournamentDivisionId,
 }: Pick<Tournament, "id"> & {
 	tournamentDivisionId: TournamentDivision["id"];
@@ -46,9 +48,26 @@ export function PoolsPanel({
 
 					return (
 						<div key={pool.id} className="flex flex-col gap-6">
-							<h2 className={title({ size: "sm", className: "uppercase" })}>
-								Pool {pool.name}
-							</h2>
+							<div>
+								<h2
+									className={title({
+										size: "sm",
+										className: "uppercase flex flex-row items-center space-x-3",
+									})}
+								>
+									<span>Pool {pool.name}</span>
+								</h2>
+
+								<h3 className={subtitle()}>
+									<SetCourtForm
+										tournamentId={id}
+										tournamentDivisionId={tournamentDivisionId}
+										poolId={pool.id}
+										poolName={pool.name}
+										court={pool.court}
+									/>
+								</h3>
+							</div>
 
 							<Table aria-label={`Pool ${pool.name.toUpperCase()}`}>
 								<TableHeader className="bg-navbar-background">

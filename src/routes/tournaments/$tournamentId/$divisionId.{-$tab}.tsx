@@ -32,7 +32,9 @@ const dateFormatter = new DateFormatter("EN-US", {
 	dateStyle: "short",
 });
 
-export const Route = createFileRoute("/tournaments/$tournamentId/$divisionId")({
+export const Route = createFileRoute(
+	"/tournaments/$tournamentId/$divisionId/{-$tab}",
+)({
 	component: RouteComponent,
 	validateSearch: (
 		search: Record<string, unknown>,
@@ -74,7 +76,7 @@ export const Route = createFileRoute("/tournaments/$tournamentId/$divisionId")({
 });
 
 function RouteComponent() {
-	const { tournamentId, divisionId } = Route.useParams();
+	const { tournamentId, divisionId, tab: tabParam } = Route.useParams();
 
 	const { data } = useSuspenseQuery(
 		tournamentQueryOptions(Number.parseInt(tournamentId, 10)),
@@ -202,7 +204,7 @@ function RouteComponent() {
 					</DropdownMenu>
 				</div>
 
-				<Tabs defaultSelectedKey="info">
+				<Tabs defaultSelectedKey={tabParam || "info"}>
 					<div className="overflow-x-auto">
 						<TabList
 							aria-label="Tournament Overview"

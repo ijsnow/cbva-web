@@ -48,8 +48,6 @@ export const addTeamFn = createServerFn({ method: "POST" })
 
 		let teamId = existingTeam.at(0)?.teamId;
 
-		console.log({ teamId });
-
 		if (!teamId) {
 			const [newTeam] = await db
 				.insert(teams)

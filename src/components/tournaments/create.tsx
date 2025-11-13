@@ -81,8 +81,6 @@ export function CreateTournamentForm({
 			onChange: schema,
 		},
 		onSubmit: ({ value: { date, start_time, division_ids, ...value } }) => {
-			console.log("here");
-
 			// mutate(
 			//   {
 			//     ...(value as Omit<

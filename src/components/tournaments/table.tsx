@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { type SortDescriptor } from "react-aria-components";
+import type { SortDescriptor } from "react-aria-components";
 
 import {
 	Table,
@@ -17,7 +17,7 @@ export function TournamentsTable({
 }: {
 	tournaments: TournamentSummary[];
 }) {
-	let [sortDescriptor, setSortDescriptor] = useState<
+	const [sortDescriptor, setSortDescriptor] = useState<
 		Omit<SortDescriptor, "column"> & { column: TournamentsSortColumns }
 	>({
 		column: "date",
@@ -34,8 +34,6 @@ export function TournamentsTable({
 			aria-label="Tournaments"
 			sortDescriptor={sortDescriptor}
 			onSortChange={({ column, direction }) => {
-				console.log(column, direction);
-
 				setSortDescriptor({
 					column: column as TournamentsSortColumns,
 					direction,

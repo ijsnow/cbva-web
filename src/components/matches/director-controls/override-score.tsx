@@ -54,8 +54,6 @@ export function OverrideScoreForm({
 
 	const set = match?.sets.find((s) => s.id === setId);
 
-	console.log(set);
-
 	const schema = z
 		.object({
 			teamAScore: z.number(),
@@ -92,11 +90,6 @@ export function OverrideScoreForm({
 		},
 		onSubmit: ({ value: { teamAScore, teamBScore } }) => {
 			if (set) {
-				console.log({
-					id: set.id,
-					teamAScore,
-					teamBScore,
-				});
 				mutate({
 					id: set.id,
 					teamAScore,

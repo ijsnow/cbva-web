@@ -81,8 +81,6 @@ export async function importDirectorsForYear(
 	).flatMap(({ beachId, startAt, tournamentDirectors }) =>
 		tournamentDirectors.map(
 			({ rank, directorPreferences: { email, phone, userId } }) => {
-				console.log(userId, directors.get(userId));
-
 				if (!directors.get(userId)) {
 					throw new Error("hahsdf");
 				}
