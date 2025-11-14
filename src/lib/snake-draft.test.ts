@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { snake, snake2 } from "./snake-draft";
+import { snake, snake2, snakePlayoffs } from "./snake-draft";
 
 describe("getSnakeDraft", () => {
 	test("works for different pool sizes", () => {
@@ -279,21 +279,96 @@ describe("snake2", () => {
 		}
 	});
 
-	test("snake playoffs", () => {
-		// const input = [
-		//   {
-		// 		id: 'a',
-		// 		teams: [
-		// 		  {
-		// 				id: 1,
-		// 				finish: 1,
-		// 			},
-		// 			{
-		// 			}
-		// 		]
-		// 	},
-		// 	{
-		// 	}
-		// ]
+	test("snakePlayoffs", () => {
+		const pools = "abcde";
+
+		const cases = [
+			{
+				pools: Array.from({ length: 5 }).map((_, i) => ({
+					id: i + 1,
+					name: pools[i],
+					teams: Array.from({ length: 4 }).map((_, j) => ({
+						id: i * 4 + j + 1,
+						finish: j + 1,
+					})),
+				})),
+				count: 12,
+
+				// - Pool 0 (a): IDs 1, 2, 3, 4
+				// - Pool 1 (b): IDs 5, 6, 7, 8
+				// - Pool 2 (c): IDs 9, 10, 11, 12
+				// - Pool 3 (d): IDs 13, 14, 15, 16
+				// - Pool 4 (e): IDs 17, 18, 19, 20
+				want: [
+					{
+						id: 0,
+						participants: [
+							{
+								id: 1,
+								finish: 1,
+								pool: "a",
+							},
+							{
+								id: 13,
+								finish: 1,
+								pool: "d",
+							},
+							{
+								id: 17,
+								finish: 1,
+								pool: "e",
+							},
+							{
+								id: 10,
+								finish: 2,
+								pool: "c",
+							},
+							{
+								id: 14,
+								finish: 2,
+								pool: "d",
+							},
+						],
+					},
+					{
+						id: 1,
+						participants: [
+							{
+								id: 5,
+								finish: 1,
+								pool: "b",
+							},
+							{
+								id: 9,
+								finish: 1,
+								pool: "c",
+							},
+							{
+								id: 2,
+								finish: 2,
+								pool: "a",
+							},
+							{
+								id: 6,
+								finish: 2,
+								pool: "b",
+							},
+							{
+								id: 18,
+								finish: 2,
+								pool: "e",
+							},
+						],
+					},
+				],
+			},
+		];
+
+		for (const { pools, count, want } of cases) {
+			expect(
+				snakePlayoffs(pools, count),
+				`pools.length=${pools.length}; count=${count} totalTeams=${pools.flatMap(({ teams }) => teams).length}`,
+			).toStrictEqual(want);
+		}
 	});
 });

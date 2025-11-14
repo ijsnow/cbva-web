@@ -1,3 +1,6 @@
+import orderBy from "lodash/orderBy";
+import type { Pool, PoolTeam } from "@/db/schema";
+
 export function snake(spots: number, buckets: number): number[][] {
 	const result: number[][] = Array.from({ length: buckets }, () => []);
 	const rounds = Math.ceil(spots / buckets);
@@ -59,48 +62,34 @@ export function snake2<P extends { id: number }, B extends { id: number }>(
 }
 
 export function snakePlayoffs(
-	size: number,
-	pools: string[],
-): [string, number][] {
-	const pc = pools.length;
+	pools: (Pick<Pool, "id" | "name"> & {
+		teams: Pick<PoolTeam, "id" | "finish">[];
+	})[],
+	count: number,
+) {
+	const teams = orderBy(
+		pools.flatMap(({ name, teams }) =>
+			teams.map((team) => ({
+				id: team.id,
+				finish: team.finish,
+				pool: name,
+			})),
+		),
+		["finish", "pool"],
+		["asc", "asc"],
+	);
 
-	return Array.from({ length: size / pc }, (_, i) => {
-		const currentPools = [...pools];
+	const trimmedCount = count - (count % pools.length);
+	const roundedCount = trimmedCount - (trimmedCount % 2);
 
-		if (i % 2 === 1) {
-			currentPools.reverse();
-		}
+	const draft = snake2(teams.slice(0, roundedCount), [
+		{
+			id: 0,
+		},
+		{
+			id: 1,
+		},
+	]);
 
-		if (pc % 2 === 0 && i > 0) {
-			if (i % 2 === 1) {
-				// Reverse pairs
-				for (let j = 0; j < currentPools.length; j += 2) {
-					if (j + 1 < currentPools.length) {
-						[currentPools[j], currentPools[j + 1]] = [
-							currentPools[j + 1],
-							currentPools[j],
-						];
-					}
-				}
-			}
-
-			if ((i === 3 || i % 2 === 0) && pc % 4 === 0) {
-				// Reverse quads
-				for (let j = 0; j < currentPools.length; j += 4) {
-					if (j + 3 < currentPools.length) {
-						[currentPools[j], currentPools[j + 3]] = [
-							currentPools[j + 3],
-							currentPools[j],
-						];
-						[currentPools[j + 1], currentPools[j + 2]] = [
-							currentPools[j + 2],
-							currentPools[j + 1],
-						];
-					}
-				}
-			}
-		}
-
-		return currentPools.map((pool) => [pool, i + 1] as [string, number]);
-	}).flat();
+	return draft;
 }
