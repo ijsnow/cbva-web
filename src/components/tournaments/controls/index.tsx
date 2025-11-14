@@ -10,6 +10,7 @@ import type { Division, TournamentDivision } from "@/db/schema";
 
 import { AddTeamForm } from "./add-team";
 import { CalculateSeedsForm } from "./calculate-seeds";
+import { CreatePlayoffsForm } from "./create-playoffs";
 import { CreatePoolMatchesForm } from "./create-pool-matches";
 import { CreatePoolsForm } from "./create-pools";
 import { DuplicateForm } from "./duplicate";
@@ -27,6 +28,7 @@ enum ModalKind {
 	CreatePools = 3,
 	CreatePoolMatches = 4,
 	SimulateMatches = 5,
+	CreatePlayoffs = 6,
 }
 
 export function TournamentControls({
@@ -93,6 +95,11 @@ export function TournamentControls({
 						>
 							Simulate Matches
 						</DropdownMenuItem>
+						<DropdownMenuItem
+							onPress={() => setActiveModal(ModalKind.CreatePlayoffs)}
+						>
+							Create Playoffs
+						</DropdownMenuItem>
 					</>
 				)}
 			</DropdownMenu>
@@ -130,6 +137,12 @@ export function TournamentControls({
 				tournamentId={tournamentId}
 				division={division}
 				{...makeModalOpenProps(ModalKind.SimulateMatches)}
+			/>
+
+			<CreatePlayoffsForm
+				tournamentId={tournamentId}
+				division={division}
+				{...makeModalOpenProps(ModalKind.CreatePlayoffs)}
 			/>
 		</>
 	);
