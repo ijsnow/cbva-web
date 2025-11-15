@@ -77,7 +77,7 @@ export function snakePlayoffs(
 		),
 		["finish", "pool"],
 		["asc", "asc"],
-	);
+	).map((t, i) => ({ ...t, seed: i + 1 }));
 
 	const trimmedCount = count - (count % pools.length);
 	const roundedCount = trimmedCount - (trimmedCount % 2);

@@ -299,6 +299,7 @@ describe("snake2", () => {
 				// - Pool 2 (c): IDs 9, 10, 11, 12
 				// - Pool 3 (d): IDs 13, 14, 15, 16
 				// - Pool 4 (e): IDs 17, 18, 19, 20
+
 				want: [
 					{
 						id: 0,
@@ -307,26 +308,31 @@ describe("snake2", () => {
 								id: 1,
 								finish: 1,
 								pool: "a",
+								seed: 1,
 							},
 							{
 								id: 13,
 								finish: 1,
 								pool: "d",
+								seed: 4,
 							},
 							{
 								id: 17,
 								finish: 1,
 								pool: "e",
+								seed: 5,
 							},
 							{
 								id: 10,
 								finish: 2,
 								pool: "c",
+								seed: 8,
 							},
 							{
 								id: 14,
 								finish: 2,
 								pool: "d",
+								seed: 9,
 							},
 						],
 					},
@@ -337,26 +343,31 @@ describe("snake2", () => {
 								id: 5,
 								finish: 1,
 								pool: "b",
+								seed: 2,
 							},
 							{
 								id: 9,
 								finish: 1,
 								pool: "c",
+								seed: 3,
 							},
 							{
 								id: 2,
 								finish: 2,
 								pool: "a",
+								seed: 6,
 							},
 							{
 								id: 6,
 								finish: 2,
 								pool: "b",
+								seed: 7,
 							},
 							{
 								id: 18,
 								finish: 2,
 								pool: "e",
+								seed: 10,
 							},
 						],
 					},
