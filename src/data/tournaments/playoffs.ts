@@ -1,6 +1,5 @@
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { setResponseStatus } from "@tanstack/react-start/server";
 import { eq } from "drizzle-orm";
 import orderBy from "lodash/orderBy";
 import z from "zod";
@@ -8,16 +7,14 @@ import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
 	type CreateMatchSet,
-	type CreatePlayoffMatch,
 	matchSets,
+	type PoolTeam,
 	playoffMatches,
-	pools,
 	selectTournamentDivisionSchema,
 } from "@/db/schema";
-import type { PlayoffNode } from "@/lib/playoffs";
-import { draftPlayoffs } from "@/lib/playoffs";
-import { badRequest } from "@/lib/responses";
-import { snake, snake2 } from "@/lib/snake-draft";
+import { draftPlayoffs, snakePlayoffs } from "@/lib/playoffs";
+import { dbg } from "@/utils/dbg";
+import { isNotNull } from "@/utils/types";
 
 export type MatchKind = "set-to-21" | "set-to-28" | "best-of-3";
 
@@ -26,7 +23,8 @@ export const createPlayoffsSchema = selectTournamentDivisionSchema
 		id: true,
 	})
 	.extend({
-		count: z.number(),
+		teamCount: z.number(),
+		wildcardCount: z.number(),
 		matchKind: z.enum<MatchKind[]>(["set-to-21", "set-to-28", "best-of-3"]),
 		overwrite: z.boolean(),
 	});
@@ -40,7 +38,13 @@ const createPlayoffsFn = createServerFn()
 	.inputValidator(createPlayoffsSchema)
 	.handler(
 		async ({
-			data: { id: tournamentDivisionId, count, matchKind, overwrite },
+			data: {
+				id: tournamentDivisionId,
+				teamCount,
+				wildcardCount,
+				matchKind,
+				overwrite,
+			},
 		}) => {
 			const pools = await db.query.pools.findMany({
 				with: {
@@ -63,21 +67,15 @@ const createPlayoffsFn = createServerFn()
 				["asc", "asc"],
 			);
 
-			// const trimmedCount = count - (count % pools.length);
-			// const roundedCount = trimmedCount - (trimmedCount % 2);
-
-			const bracket = draftPlayoffs(pools, count);
-
-			console.log(JSON.stringify(bracket, null, 2));
-
-			// Generate playoffMatches from the bracket
-			const matches = generatePlayoffMatchesFromBracket(
-				bracket,
-				tournamentDivisionId,
+			const seededTeams = snakePlayoffs(
+				teams.length,
+				pools.map(({ id }) => id),
+			).map(({ poolId, seed }) =>
+				pools
+					.find(({ id }) => id === poolId)
+					?.teams.find(({ finish }) => finish === seed),
 			);
 
-			// Insert playoff matches into the database
-			const matchInserts: CreatePlayoffMatch[] = [];
 			if (overwrite) {
 				// Delete existing playoff matches if overwrite is true
 				await db
@@ -85,74 +83,95 @@ const createPlayoffsFn = createServerFn()
 					.where(eq(playoffMatches.tournamentDivisionId, tournamentDivisionId));
 			}
 
-			// console.log(matches);
+			const bracket = draftPlayoffs(teamCount + wildcardCount);
 
-			// if (matches.length > 0) {
-			// 	matchInserts = await db
-			// 		.insert(playoffMatches)
-			// 		.values(matches)
-			// 		.returning();
-			// }
+			await db.transaction(async (txn) => {
+				const roundIds: (number | null)[][] = [];
 
-			return { success: true, matchesCreated: matchInserts.length };
+				let matchNumber = 1;
+
+				for (const [i, round] of bracket.entries()) {
+					roundIds[i] = [];
+
+					for (const match of round) {
+						if (match) {
+							const teamA: PoolTeam | null | undefined = match.aSeed
+								? seededTeams[match.aSeed - 1]
+								: null;
+
+							const teamB: PoolTeam | null | undefined = match.bSeed
+								? seededTeams[match.bSeed - 1]
+								: null;
+
+							const [{ id }] = await txn
+								.insert(playoffMatches)
+								.values({
+									tournamentDivisionId,
+									// round: text().notNull().default("-"),
+									// court: text(),
+									matchNumber,
+									teamAId: teamA?.teamId,
+									teamAPoolId: teamA?.poolId,
+									teamAPreviousMatchId:
+										match.aFrom && i > 0 ? roundIds[i - 1][match.aFrom] : null,
+
+									teamBId: teamB?.teamId,
+									teamBPoolId: teamB?.poolId,
+									teamBPreviousMatchId:
+										match.bFrom && i > 0 ? roundIds[i - 1][match.bFrom] : null,
+								})
+								.returning({
+									id: playoffMatches.id,
+								});
+
+							roundIds[i].push(id);
+
+							matchNumber += 1;
+						} else {
+							roundIds[i].push(null);
+						}
+					}
+				}
+
+				// TODO: set all the newly created playoffMatches.nextMatchId either using sql or one of the existing values saved from creating
+
+				const matchSetValues: CreateMatchSet[] = roundIds
+					.flatMap((ids) => dbg(ids).filter(isNotNull))
+					.map((id) => dbg(id))
+					.flatMap((playoffMatchId) =>
+						matchKind === "best-of-3"
+							? [
+									{
+										playoffMatchId,
+										setNumber: 1,
+										winScore: 21,
+									},
+									{
+										playoffMatchId,
+										setNumber: 2,
+										winScore: 21,
+									},
+									{
+										playoffMatchId,
+										setNumber: 3,
+										winScore: 15,
+									},
+								]
+							: [
+									{
+										playoffMatchId,
+										setNumber: 1,
+										winScore: matchKind === "set-to-28" ? 28 : 21,
+									},
+								],
+					);
+
+				await txn.insert(matchSets).values(matchSetValues);
+			});
+
+			return { success: true };
 		},
 	);
-
-function generatePlayoffMatchesFromBracket(
-	bracket: PlayoffNode,
-	tournamentDivisionId: number,
-): CreatePlayoffMatch[] {
-	const matches: CreatePlayoffMatch[] = [];
-
-	let matchNumber = 1;
-
-	function traverseNode(node: PlayoffNode, round: string): number | null {
-		if (node.type === "team") {
-			// Return the seed for team nodes
-			return node.seed;
-		}
-
-		// For game nodes, recursively process both sides
-		const aSeed = traverseNode(node.a, getNextRound(round));
-		const bSeed = traverseNode(node.b, getNextRound(round));
-
-		// Create a match for this game node
-		const match: CreatePlayoffMatch = {
-			tournamentDivisionId,
-			round,
-			matchNumber: matchNumber++,
-			teamAPreviousMatchId: null,
-			teamBPreviousMatchId: null,
-			status: "scheduled",
-		};
-
-		matches.push(match);
-
-		// Return the match number for parent nodes to reference
-		return matchNumber - 1;
-	}
-
-	// Start traversal from the root node
-	traverseNode(bracket, "Finals");
-
-	return matches;
-}
-
-function getNextRound(round: string): string {
-	const roundOrder = [
-		"Finals",
-		"Semifinals",
-		"Quarterfinals",
-		"Round of 16",
-		"Round of 32",
-	];
-
-	const currentIndex = roundOrder.indexOf(round);
-
-	return currentIndex >= 0 && currentIndex < roundOrder.length - 1
-		? roundOrder[currentIndex + 1]
-		: `Round ${roundOrder.length - currentIndex}`;
-}
 
 export const createPlayoffsMutationOptions = () =>
 	mutationOptions({

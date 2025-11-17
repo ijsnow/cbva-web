@@ -85,91 +85,103 @@ export function MatchNode({
 					</div>
 				))}
 			</div>
-			{[teamA, teamB].filter(isNotNull).map((team, i) => (
-				<div
-					key={team.id}
-					className={clsx(
-						"grid grid-cols-6 items-stretch border-b border-gray-300 last-of-type:border-b-0",
-						team.id === activeTeam ? "bg-gray-200" : "bg-white",
-					)}
-					role="none"
-					tabIndex={-1}
-					onMouseEnter={() => {
-						setActiveTeam(team.id);
-					}}
-					onMouseLeave={() => {
-						setActiveTeam(null);
-					}}
-				>
-					<Handle
-						type="target"
-						position={Position.Left}
-						id={team.id.toString()}
-						style={{
-							opacity: 0,
-							position: "absolute",
-							top: i === 0 ? "45%" : "78%",
-							right: 0,
-						}}
-					/>
+			{[teamA, teamB]
+				.map((team, i) =>
+					team
+						? team
+						: {
+								id: `${data.id}-wildcard-${i}`,
+								wildcard: true,
+							},
+				)
+				.filter(isNotNull)
+				.map((team, i) => (
 					<div
+						key={team.id}
 						className={clsx(
-							"p-4 flex flex-row space-x-2 items-center",
-							sets.length > 1 ? "col-span-3" : "col-span-5",
+							"grid grid-cols-6 items-stretch border-b border-gray-300 last-of-type:border-b-0",
+							team.id === activeTeam ? "bg-gray-200" : "bg-white",
 						)}
+						role="none"
+						tabIndex={-1}
+						onMouseEnter={() => {
+							setActiveTeam(team.id);
+						}}
+						onMouseLeave={() => {
+							setActiveTeam(null);
+						}}
 					>
-						<span
-							className="p-2 bg-gray-200 rounded-xs"
-							title={`Seed ${team.poolTeam?.seed ?? "?"}`}
-						>
-							#{team.poolTeam?.seed ?? "?"}
-						</span>
+						<Handle
+							type="target"
+							position={Position.Left}
+							id={team.id.toString()}
+							style={{
+								opacity: 0,
+								position: "absolute",
+								top: i === 0 ? "45%" : "78%",
+								right: 0,
+							}}
+						/>
 						<div
 							className={clsx(
-								"flex flex-col",
-								winnerId && winnerId === team.id && "font-bold",
-								winnerId && winnerId !== team.id && "text-gray-600",
+								"p-4 flex flex-row space-x-2 items-center",
+								sets.length > 1 ? "col-span-3" : "col-span-5",
 							)}
 						>
-							{team?.team.players.map(({ profile }) => (
-								<span key={profile.id}>
-									{profile.preferredName} {profile.lastName}
+							{team.poolTeam && (
+								<span
+									className="p-2 bg-gray-200 rounded-xs"
+									title={`Seed ${team.poolTeam?.seed ?? "?"}`}
+								>
+									#{team.poolTeam?.seed ?? "?"}
 								</span>
-							))}
-						</div>
-					</div>
-					{sets
-						.sort((a, b) => a.setNumber - b.setNumber)
-						.map((s, i) => (
+							)}
 							<div
-								key={s.id}
-								className={scoreTextStyles({
-									winner:
-										s.winnerId === null ? undefined : s.winnerId === team.id,
-									inProgress: Boolean(s.startedAt) && !s.endedAt,
-									last: i === sets.length - 1,
-								})}
+								className={clsx(
+									"flex flex-col",
+									winnerId && winnerId === team.id && "font-bold",
+									winnerId && winnerId !== team.id && "text-gray-600",
+								)}
 							>
-								{s.startedAt
-									? teamA?.id === team.id
-										? s.teamAScore
-										: s.teamBScore
-									: "-"}
+								{team?.team.players.map(({ profile }) => (
+									<span key={profile.id}>
+										{profile.preferredName} {profile.lastName}
+									</span>
+								)) ?? "Wildcard"}
 							</div>
-						))}
-					<Handle
-						type="source"
-						position={Position.Right}
-						id={team.id.toString()}
-						style={{
-							opacity: 0,
-							position: "absolute",
-							top: i === 0 ? "45%" : "78%",
-							right: 0,
-						}}
-					/>
-				</div>
-			))}
+						</div>
+						{sets
+							.sort((a, b) => a.setNumber - b.setNumber)
+							.map((s, i) => (
+								<div
+									key={s.id}
+									className={scoreTextStyles({
+										winner:
+											s.winnerId === null ? undefined : s.winnerId === team.id,
+										inProgress: Boolean(s.startedAt) && !s.endedAt,
+										last: i === sets.length - 1,
+									})}
+								>
+									{s.startedAt
+										? teamA?.id === team.id
+											? s.teamAScore
+											: s.teamBScore
+										: "-"}
+								</div>
+							))}
+						<Handle
+							type="source"
+							position={Position.Right}
+							id={team.id.toString()}
+							style={{
+								opacity: 0,
+								position: "absolute",
+								top: i === 0 ? "45%" : "78%",
+								right: 0,
+							}}
+						/>
+					</div>
+				))}
 		</div>
 	);
 }

@@ -222,8 +222,8 @@ function BracketFlow({ matches }: BracketProps) {
 						id: [match.teamAPreviousMatchId, match.id].join(),
 						target: match.id.toString(),
 						source: match.teamAPreviousMatchId.toString(),
-						sourceHandle: match.teamA.id.toString(),
-						targetHandle: match.teamA.id.toString(),
+						sourceHandle: match.teamA?.id.toString(),
+						targetHandle: match.teamA?.id.toString(),
 						type: "step",
 					}
 				: null,
@@ -232,8 +232,8 @@ function BracketFlow({ matches }: BracketProps) {
 						id: [match.teamBPreviousMatchId, match.id].join(),
 						target: match.id.toString(),
 						source: match.teamBPreviousMatchId.toString(),
-						sourceHandle: match.teamB.id.toString(),
-						targetHandle: match.teamB.id.toString(),
+						sourceHandle: match.teamB?.id.toString(),
+						targetHandle: match.teamB?.id.toString(),
 						type: "step",
 					}
 				: null,
@@ -261,8 +261,8 @@ function BracketFlow({ matches }: BracketProps) {
 							id: [match.teamAPreviousMatchId, match.id].join(),
 							target: match.id.toString(),
 							source: match.teamAPreviousMatchId.toString(),
-							sourceHandle: match.teamA.id.toString(),
-							targetHandle: match.teamA.id.toString(),
+							sourceHandle: match.teamA?.id.toString(),
+							targetHandle: match.teamA?.id.toString(),
 							type: "match",
 						}
 					: null,
@@ -271,8 +271,8 @@ function BracketFlow({ matches }: BracketProps) {
 							id: [match.teamBPreviousMatchId, match.id].join(),
 							target: match.id.toString(),
 							source: match.teamBPreviousMatchId.toString(),
-							sourceHandle: match.teamB.id.toString(),
-							targetHandle: match.teamB.id.toString(),
+							sourceHandle: match.teamB?.id.toString(),
+							targetHandle: match.teamB?.id.toString(),
 							type: "match",
 						}
 					: null,
@@ -351,10 +351,10 @@ function BracketFlow({ matches }: BracketProps) {
 					draggable={false}
 					// panOnDrag={false}
 					panOnScroll={true}
-					translateExtent={[
-						[bounds.minX, bounds.minY],
-						[bounds.maxX, bounds.maxY],
-					]}
+					// translateExtent={[
+					// 	[bounds.minX, bounds.minY],
+					// 	[bounds.maxX, bounds.maxY],
+					// ]}
 					fitView={true}
 					preventScrolling={false}
 					proOptions={{ hideAttribution: true }}

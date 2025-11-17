@@ -41,14 +41,16 @@ export function CreatePlayoffsForm({
 	});
 
 	const schema = createPlayoffsSchema.pick({
-		count: true,
+		teamCount: true,
+		wildcardCount: true,
 		matchKind: true,
 		overwrite: true,
 	});
 
 	const form = useAppForm({
 		defaultValues: {
-			count: 12,
+			teamCount: 12,
+			wildcardCount: 3,
 			matchKind: "set-to-28" as MatchKind,
 			overwrite: false,
 		},
@@ -56,10 +58,13 @@ export function CreatePlayoffsForm({
 			onMount: schema,
 			onChange: schema,
 		},
-		onSubmit: ({ value: { count, matchKind, overwrite } }) => {
+		onSubmit: ({
+			value: { teamCount, wildcardCount, matchKind, overwrite },
+		}) => {
 			mutate({
 				id: division.id,
-				count,
+				teamCount,
+				wildcardCount,
 				matchKind,
 				overwrite,
 			});
@@ -110,9 +115,16 @@ export function CreatePlayoffsForm({
 					)}
 
 					<form.AppField
-						name="count"
+						name="teamCount"
 						children={(field) => (
 							<field.Number label="Team Count" field={field} minValue={1} />
+						)}
+					/>
+
+					<form.AppField
+						name="wildcardCount"
+						children={(field) => (
+							<field.Number label="Wildcard Count" field={field} minValue={0} />
 						)}
 					/>
 

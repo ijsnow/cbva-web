@@ -247,7 +247,7 @@ function RouteComponent() {
 							</TabLink>
 							<TabLink
 								id="playoffs"
-								{...tabLinkProps("teams")}
+								{...tabLinkProps("playoffs")}
 								isDisabled={!hasPlayoffs}
 							>
 								Playoffs

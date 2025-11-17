@@ -1,6 +1,6 @@
 import { range } from "lodash";
 import { describe, expect, test } from "vitest";
-import { draftPlayoffs, iterativeSnakeDraft, seedPlayoffs } from "./playoffs";
+import { draftPlayoffs, recursiveSnakeDraft, seedPlayoffs } from "./playoffs";
 
 // describe("seedPlayoffs", () => {
 // 	test("can seed varying pool sizes and team counts", () => {
@@ -244,7 +244,7 @@ import { draftPlayoffs, iterativeSnakeDraft, seedPlayoffs } from "./playoffs";
 // 	});
 // });
 
-describe("iterativeSnakeDraft", () => {
+describe("recursiveSnakeDraft", () => {
 	const cases = [
 		{
 			size: 4,
@@ -263,29 +263,148 @@ describe("iterativeSnakeDraft", () => {
 				[7, 2],
 			],
 		},
-		// {
-		// 	size: 16,
-		// 	want: [
-		// 		// -- //
-		// 		[1, 16],
-		// 		[9, 8],
-		// 		[5, 12],
-		// 		[13, 4],
-		// 		// -- //
-		// 		[3, 14],
-		// 		[11, 6],
-		// 		[7, 10],
-		// 		[15, 2],
-		// 		// -- //
-		// 	],
-		// },
+		{
+			size: 16,
+			want: [
+				// -- //
+				[1, 16],
+				[9, 8],
+				[5, 12],
+				[13, 4],
+				// -- //
+				[3, 14],
+				[11, 6],
+				[7, 10],
+				[15, 2],
+				// -- //
+			],
+		},
+		{
+			size: 32,
+			want: [
+				// -- //
+				[1, 32],
+				[17, 16],
+				[9, 24],
+				[25, 8],
+				// -- //
+				[5, 28],
+				[21, 12],
+				[13, 20],
+				[29, 4],
+				// -- //
+				// -- //
+				[3, 30],
+				[19, 14],
+				[11, 22],
+				[27, 6],
+				// -- //
+				[7, 26],
+				[23, 10],
+				[15, 18],
+				[31, 2],
+				// -- //
+			],
+		},
 	];
 
 	for (const { size, want } of cases) {
 		test(`round of ${size}`, () => {
-			const got = iterativeSnakeDraft(range(1, size + 1));
+			const got = recursiveSnakeDraft(range(1, size + 1));
 
 			console.log("got", got);
+
+			expect(got).toStrictEqual(want);
+		});
+	}
+});
+
+describe("draftPlayoffs", () => {
+	const cases = [
+		{
+			size: 4,
+			want: [
+				[
+					{ aSeed: 1, bSeed: 4 },
+					{ aSeed: 3, bSeed: 2 },
+				],
+				[{ aFrom: 0, bFrom: 1 }],
+			],
+		},
+		{
+			size: 8,
+			want: [
+				[
+					{ aSeed: 1, bSeed: 8 },
+					{ aSeed: 5, bSeed: 4 },
+					{ aSeed: 3, bSeed: 6 },
+					{ aSeed: 7, bSeed: 2 },
+				],
+				[
+					{ aFrom: 0, bFrom: 1 },
+					{ aFrom: 2, bFrom: 3 },
+				],
+				[{ aFrom: 0, bFrom: 1 }],
+			],
+		},
+		{
+			size: 16,
+			want: [
+				[
+					{ aSeed: 1, bSeed: 16 },
+					{ aSeed: 9, bSeed: 8 },
+					{ aSeed: 5, bSeed: 12 },
+					{ aSeed: 13, bSeed: 4 },
+					{ aSeed: 3, bSeed: 14 },
+					{ aSeed: 11, bSeed: 6 },
+					{ aSeed: 7, bSeed: 10 },
+					{ aSeed: 15, bSeed: 2 },
+				],
+				[
+					{ aFrom: 0, bFrom: 1 },
+					{ aFrom: 2, bFrom: 3 },
+					{ aFrom: 4, bFrom: 5 },
+					{ aFrom: 6, bFrom: 7 },
+				],
+				[
+					{ aFrom: 0, bFrom: 1 },
+					{ aFrom: 2, bFrom: 3 },
+				],
+				[{ aFrom: 0, bFrom: 1 }],
+			],
+		},
+		{
+			size: 7,
+			want: [
+				[
+					null,
+					{ aSeed: 5, bSeed: 4 },
+					{ aSeed: 3, bSeed: 6 },
+					{ aSeed: 7, bSeed: 2 },
+				],
+				[
+					{ aSeed: 1, bFrom: 1 },
+					{ aFrom: 2, bFrom: 3 },
+				],
+				[{ aFrom: 0, bFrom: 1 }],
+			],
+		},
+		{
+			size: 5,
+			want: [
+				[null, { aSeed: 5, bSeed: 4 }, null, null],
+				[
+					{ aSeed: 1, bFrom: 1 },
+					{ aSeed: 3, bSeed: 2 },
+				],
+				[{ aFrom: 0, bFrom: 1 }],
+			],
+		},
+	];
+
+	for (const { size, want } of cases) {
+		test(`size=${size}`, () => {
+			const got = draftPlayoffs(size);
 
 			expect(got).toStrictEqual(want);
 		});

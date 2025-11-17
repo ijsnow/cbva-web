@@ -1,400 +1,227 @@
 import chunk from "lodash/chunk";
-import orderBy from "lodash/orderBy";
+import range from "lodash/range";
 
-import type { PlayoffMatch, Pool, PoolTeam } from "@/db/schema";
-import { snake, snakeDraft } from "./snake-draft";
+import { snakeDraft } from "./snake-draft";
 
-const shapes = [
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 15   |
-	// | 2      | 2       |                  | 2    |                   | 13   |
-	// | 3      | 3       |                  | 3    |                   | 12   |
-	// | 4      | 4       |                  | 4    |                   | 11   |
-	// | 5      | 5       |                  | 5    |                   | 10   |
-	// | 6      | 6       |                  | 6    |                   | 16   |
-	// | 7      | 7       |                  | 7    |                   | 9    |
-	// | 8      | 8       |                  | 8    |                   | 14   |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 15],
-			},
-			{
-				id: 2,
-				seeds: [2, 13],
-			},
-			{
-				id: 3,
-				seeds: [3, 12],
-			},
-			{
-				id: 4,
-				seeds: [4, 11],
-			},
-			{
-				id: 5,
-				seeds: [5, 10],
-			},
-			{
-				id: 6,
-				seeds: [6, 16],
-			},
-			{
-				id: 7,
-				seeds: [7, 9],
-			},
-			{
-				id: 8,
-				seeds: [8, 14],
-			},
-		],
-	},
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 10   |
-	// | 2      | 2       |                  | 2    |                   | 13   |
-	// | 3      | 3       |                  | 3    |                   | 12   |
-	// | 4      | 4       |                  | 4    |                   | 14   |
-	// | 5      | 5       |                  | 5    |                   | 11   |
-	// | 6      | 6       |                  | 6    |                   | 8    |
-	// | 7      | 7       |                  | 7    |                   | 9    |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 10],
-			},
-			{
-				id: 2,
-				seeds: [2, 13],
-			},
-			{
-				id: 3,
-				seeds: [3, 12],
-			},
-			{
-				id: 4,
-				seeds: [4, 14],
-			},
-			{
-				id: 5,
-				seeds: [5, 11],
-			},
-			{
-				id: 6,
-				seeds: [6, 8],
-			},
-			{
-				id: 7,
-				seeds: [7, 9],
-			},
-		],
-	},
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 11   |
-	// | 2      | 2       |                  | 2    |                   | 12   |
-	// | 3      | 3       |                  | 3    |                   | 9    |
-	// | 4      | 4       |                  | 4    |                   | 10   |
-	// | 5      | 5       |                  | 5    |                   | 7    |
-	// | 6      | 6       |                  | 6    |                   | 8    |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 11],
-			},
-			{
-				id: 2,
-				seeds: [2, 12],
-			},
-			{
-				id: 3,
-				seeds: [3, 9],
-			},
-			{
-				id: 4,
-				seeds: [4, 10],
-			},
-			{
-				id: 5,
-				seeds: [5, 7],
-			},
-			{
-				id: 6,
-				seeds: [6, 8],
-			},
-		],
-	},
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 10   |
-	// | 2      | 2       |                  | 2    |                   | 9    |
-	// | 3      | 3       |                  | 3    |                   | 8    |
-	// | 4      | 4       |                  | 4    |                   | 7    |
-	// | 5      | 5       |                  | 5    |                   | 6    |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 10],
-			},
-			{
-				id: 2,
-				seeds: [2, 9],
-			},
-			{
-				id: 3,
-				seeds: [3, 8],
-			},
-			{
-				id: 4,
-				seeds: [4, 7],
-			},
-			{
-				id: 5,
-				seeds: [5, 6],
-			},
-		],
-	},
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed | Third Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 6    |                  | 12   |
-	// | 2      | 2       |                  | 2    |                   | 5    |                  | 11   |
-	// | 3      | 3       |                  | 3    |                   | 8    |                  | 10   |
-	// | 4      | 4       |                  | 4    |                   | 7    |                  | 9    |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 6, 12],
-			},
-			{
-				id: 2,
-				seeds: [2, 5, 11],
-			},
-			{
-				id: 3,
-				seeds: [3, 8, 10],
-			},
-			{
-				id: 4,
-				seeds: [4, 7, 9],
-			},
-		],
-	},
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 6    |
-	// | 2      | 2       |                  | 2    |                   | 5    |
-	// | 3      | 3       |                  | 3    |                   | 4    |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 6],
-			},
-			{
-				id: 2,
-				seeds: [2, 5],
-			},
-			{
-				id: 3,
-				seeds: [3, 4],
-			},
-		],
-	},
-	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed | Third Place Team | Seed |
-	// |--------|---------|------------------|------|-------------------|------|------------------|------|
-	// | 1      | 1       |                  | 1    |                   | 3    |                  | 5    |
-	// | 2      | 2       |                  | 2    |                   | 4    |                  | 6    |
-	{
-		pools: [
-			{
-				id: 1,
-				seeds: [1, 3, 5],
-			},
-			{
-				id: 2,
-				seeds: [2, 4, 6],
-			},
-		],
-	},
-];
-
-// export function draftPlayoffs(
-// 	pools: (Pick<Pool, "id" | "name"> & {
-// 		teams: Pick<PoolTeam, "id" | "finish">[];
-// 	})[],
-// 	count: number,
-// ) {
-// 	const teams = orderBy(
-// 		pools.flatMap(({ name, teams }) =>
-// 			teams.map((team) => ({
-// 				id: team.id,
-// 				finish: team.finish,
-// 				pool: name,
-// 			})),
-// 		),
-// 		["finish", "pool"],
-// 		["asc", "asc"],
-// 	).map((t, i) => ({ ...t, seed: i + 1 }));
-
-// 	const trimmedCount = count - (count % pools.length);
-// 	const roundedCount = trimmedCount - (trimmedCount % 2);
-
-// 	const sidesOfBracket: {
-// 		seeds: (Omit<PoolTeam, "poolId" | "teamId"> & { pool: string })[];
-// 	}[] = [
-// 		{
-// 			seeds: [],
-// 		},
-// 		{
-// 			seeds: [],
-// 		},
-// 	];
-
-// 	// Find the appropriate shape based on the number of pools and teams
-// 	const eligibleTeams = teams.slice(0, roundedCount);
-
-// 	const shape = shapes.find((s) => {
-// 		// Check if this shape matches the number of pools and total teams
-// 		const totalSeeds = s.pools.reduce(
-// 			(sum, pool) => sum + pool.seeds.length,
-// 			0,
-// 		);
-
-// 		return (
-// 			s.pools.length === pools.length && totalSeeds === eligibleTeams.length
-// 		);
-// 	});
-
-// 	if (!shape) {
-// 		throw new Error(
-// 			`No bracket shape found for ${pools.length} pools with ${eligibleTeams.length} teams`,
-// 		);
-// 	}
-
-// 	// The top qualifiers out of each pool advance to the playoffs.
-// 	//
-// 	// First and Second place teams should always be cross bracketed
-// 	//
-// 	// ● Example: 1st place team in pool #1 would go in the top bracket and 2nd  place team in pool #1 would go in the bottom bracket.
-// 	//
-// 	// 1
-// 	// 16
-// 	//
-// 	// 9
-// 	// 8
-// 	//
-// 	// 5
-// 	// 12
-// 	//
-// 	// 13
-// 	// 4
-// 	//
-// 	// ---
-// 	//
-// 	// 3
-// 	// 14
-// 	//
-// 	// 11
-// 	// 6
-// 	//
-// 	// 7
-// 	// 10
-// 	//
-// 	// 15
-// 	// 2
-
-// 	// Assign teams to brackets based on the shape
-// 	shape.pools.forEach((poolShape, poolIndex) => {
-// 		poolShape.seeds.forEach((seed, positionIndex) => {
-// 			const team = eligibleTeams.find((t) => t.seed === seed);
-
-// 			if (team) {
-// 				// Alternate bracket assignment based on position
-// 				// First place teams go to top bracket, second place to bottom bracket, etc.
-// 				const bracketIndex = positionIndex % 2;
-// 				sidesOfBracket[bracketIndex].seeds.push(team);
-// 			}
-// 		});
-// 	});
-
-// 	return sidesOfBracket;
-// }
-
-export function draftPlayoffs(
-	pools: (Pick<Pool, "id" | "name"> & {
-		teams: Pick<PoolTeam, "id" | "finish">[];
-	})[],
-	count: number,
-) {
-	// const teams = orderBy(
-	// 	pools.flatMap(({ name, teams }) =>
-	// 		teams.map((team) => ({
-	// 			id: team.id,
-	// 			finish: team.finish,
-	// 			pool: name,
-	// 		})),
-	// 	),
-	// 	["finish", "pool"],
-	// 	["asc", "asc"],
-	// ).map((t, i) => ({ ...t, seed: i + 1 }));
-
-	// const poolCount = pools.length;
-
-	const trimmedCount = count - (count % pools.length);
-	const roundedCount = trimmedCount - (trimmedCount % 2);
-
-	// const seeds = seedPlayoffs(roundedCount, pools.length);
-
-	// const matches: {
-	// 	matchNumber: number;
-	// 	aSeed: { poolId: number; seed: number };
-	// 	bSeed: { poolId: number; seed: number };
-	// }[] = [];
-
-	// const bracketShape = shapes.find(({ pools }) => pools.length === poolCount);
-
-	// console.log(bracketShape);
-
-	// const matches: PlayoffMatch[] = [];
-
-	return makeNode(roundedCount, 1);
-
-	// while (node) {
-	// 	node = node;
-
-	// 	if (node.type === "game") {
-	// 		console.log(node);
-	// 		break;
-	// 	}
-	// }
-
-	// console.log(JSON.stringify(node, null, 2));
-
-	// for (const sideOfBracket of bracket) {
-	// for (const match of bracket) {
-	// 	console.log(match);
-	// }
-	// }
-
-	// const sidesOfBracket: {
-	// 	seeds: (Omit<PoolTeam, "poolId" | "teamId"> & { pool: string })[];
-	// }[] = [
-	// 	{
-	// 		seeds: [],
-	// 	},
-	// 	{
-	// 		seeds: [],
-	// 	},
-	// ];
-
-	// return [];
-}
+// const shapes = [
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 15   |
+// 	// | 2      | 2       |                  | 2    |                   | 13   |
+// 	// | 3      | 3       |                  | 3    |                   | 12   |
+// 	// | 4      | 4       |                  | 4    |                   | 11   |
+// 	// | 5      | 5       |                  | 5    |                   | 10   |
+// 	// | 6      | 6       |                  | 6    |                   | 16   |
+// 	// | 7      | 7       |                  | 7    |                   | 9    |
+// 	// | 8      | 8       |                  | 8    |                   | 14   |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 15],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 13],
+// 			},
+// 			{
+// 				id: 3,
+// 				seeds: [3, 12],
+// 			},
+// 			{
+// 				id: 4,
+// 				seeds: [4, 11],
+// 			},
+// 			{
+// 				id: 5,
+// 				seeds: [5, 10],
+// 			},
+// 			{
+// 				id: 6,
+// 				seeds: [6, 16],
+// 			},
+// 			{
+// 				id: 7,
+// 				seeds: [7, 9],
+// 			},
+// 			{
+// 				id: 8,
+// 				seeds: [8, 14],
+// 			},
+// 		],
+// 	},
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 10   |
+// 	// | 2      | 2       |                  | 2    |                   | 13   |
+// 	// | 3      | 3       |                  | 3    |                   | 12   |
+// 	// | 4      | 4       |                  | 4    |                   | 14   |
+// 	// | 5      | 5       |                  | 5    |                   | 11   |
+// 	// | 6      | 6       |                  | 6    |                   | 8    |
+// 	// | 7      | 7       |                  | 7    |                   | 9    |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 10],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 13],
+// 			},
+// 			{
+// 				id: 3,
+// 				seeds: [3, 12],
+// 			},
+// 			{
+// 				id: 4,
+// 				seeds: [4, 14],
+// 			},
+// 			{
+// 				id: 5,
+// 				seeds: [5, 11],
+// 			},
+// 			{
+// 				id: 6,
+// 				seeds: [6, 8],
+// 			},
+// 			{
+// 				id: 7,
+// 				seeds: [7, 9],
+// 			},
+// 		],
+// 	},
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 11   |
+// 	// | 2      | 2       |                  | 2    |                   | 12   |
+// 	// | 3      | 3       |                  | 3    |                   | 9    |
+// 	// | 4      | 4       |                  | 4    |                   | 10   |
+// 	// | 5      | 5       |                  | 5    |                   | 7    |
+// 	// | 6      | 6       |                  | 6    |                   | 8    |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 11],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 12],
+// 			},
+// 			{
+// 				id: 3,
+// 				seeds: [3, 9],
+// 			},
+// 			{
+// 				id: 4,
+// 				seeds: [4, 10],
+// 			},
+// 			{
+// 				id: 5,
+// 				seeds: [5, 7],
+// 			},
+// 			{
+// 				id: 6,
+// 				seeds: [6, 8],
+// 			},
+// 		],
+// 	},
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 10   |
+// 	// | 2      | 2       |                  | 2    |                   | 9    |
+// 	// | 3      | 3       |                  | 3    |                   | 8    |
+// 	// | 4      | 4       |                  | 4    |                   | 7    |
+// 	// | 5      | 5       |                  | 5    |                   | 6    |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 10],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 9],
+// 			},
+// 			{
+// 				id: 3,
+// 				seeds: [3, 8],
+// 			},
+// 			{
+// 				id: 4,
+// 				seeds: [4, 7],
+// 			},
+// 			{
+// 				id: 5,
+// 				seeds: [5, 6],
+// 			},
+// 		],
+// 	},
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed | Third Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 6    |                  | 12   |
+// 	// | 2      | 2       |                  | 2    |                   | 5    |                  | 11   |
+// 	// | 3      | 3       |                  | 3    |                   | 8    |                  | 10   |
+// 	// | 4      | 4       |                  | 4    |                   | 7    |                  | 9    |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 6, 12],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 5, 11],
+// 			},
+// 			{
+// 				id: 3,
+// 				seeds: [3, 8, 10],
+// 			},
+// 			{
+// 				id: 4,
+// 				seeds: [4, 7, 9],
+// 			},
+// 		],
+// 	},
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 6    |
+// 	// | 2      | 2       |                  | 2    |                   | 5    |
+// 	// | 3      | 3       |                  | 3    |                   | 4    |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 6],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 5],
+// 			},
+// 			{
+// 				id: 3,
+// 				seeds: [3, 4],
+// 			},
+// 		],
+// 	},
+// 	// | Pool # | Court # | First Place Team | Seed | Second Place Team | Seed | Third Place Team | Seed |
+// 	// |--------|---------|------------------|------|-------------------|------|------------------|------|
+// 	// | 1      | 1       |                  | 1    |                   | 3    |                  | 5    |
+// 	// | 2      | 2       |                  | 2    |                   | 4    |                  | 6    |
+// 	{
+// 		pools: [
+// 			{
+// 				id: 1,
+// 				seeds: [1, 3, 5],
+// 			},
+// 			{
+// 				id: 2,
+// 				seeds: [2, 4, 6],
+// 			},
+// 		],
+// 	},
+// ];
 
 export function seedPlayoffs(
 	size: number,
@@ -422,32 +249,6 @@ export function seedPlayoffs(
 
 		return pools.map((p) => ({ pool: p, seed: i + 1 }));
 	});
-}
-
-export type PlayoffNode =
-	| { type: "team"; seed: number }
-	| { type: "game"; n: number; a: PlayoffNode; b: PlayoffNode };
-
-function makeNode(size: number, n: number): PlayoffNode {
-	const depth = Math.floor(Math.log2(n)) + 1;
-	const dist = 2 ** depth - n;
-
-	if (n + 1 > size) {
-		return { type: "team", seed: dist };
-	}
-
-	const smaller = n + dist * 2 - 1;
-
-	const bigger = 2 ** (depth + 1) - dist;
-
-	const [even, odd] = smaller % 2 === 0 ? [smaller, bigger] : [bigger, smaller];
-
-	return {
-		type: "game",
-		n,
-		a: makeNode(size, odd),
-		b: makeNode(size, even),
-	};
 }
 
 export function snakePlayoffs(
@@ -506,65 +307,85 @@ export function snakePlayoffs(
 	return result;
 }
 
-export function createPlayoffBracket(
-	pools: Pool[],
-	teamCount: number,
-	wildcardCount: number,
-) {
-	// - Seed teams
-	const seeds = seedPlayoffs(teamCount, pools.length);
+export function recursiveSnakeDraft(seeds: number[]): number[][] {
+	if (seeds.length === 2) {
+		// Base case: just return the pair with even seed in second slot
+		const [a, b] = seeds;
 
-	// - Find number that would make it two full rounds [1, 2, 4, 8, 16, 32, 64, ...]: 12 teams -> 16, 17 -> 32
-	const roundSeeds = 2 ** Math.ceil(Math.log2(teamCount + wildcardCount));
+		return [a % 2 === 0 ? [b, a] : [a, b]];
+	}
 
-	// - Create list of matches
+	// Perform snake draft to split into two chunks
+	const [chunk1, chunk2] = snakeDraft(seeds, 2);
 
-	// - Create the following rounds until the finals
-	// - Advance teams in matches with no opponent
-	//
-	// 1
-	// 16
-	//
-	// 9
-	// 8
-	//
-	// 5
-	// 12
-	//
-	// 13
-	// 4
-	//
-	// ---
-	//
-	// 3
-	// 14
-	//
-	// 11
-	// 6
-	//
-	// 7
-	// 10
-	//
-	// 15
-	// 2
-	// __
-	//
-	// 3.
+	// Recursively process each chunk
+	const result1 = recursiveSnakeDraft(chunk1);
+	const result2 = recursiveSnakeDraft(chunk2);
+
+	result2.reverse();
+
+	// Combine results
+	return [...result1, ...result2];
 }
 
-export function iterativeSnakeDraft(seeds: number[]): number[][] {
-	console.log("seeds", seeds);
+export type PlayoffMatchNode = {
+	aSeed?: number | null;
+	bSeed?: number | null;
+	aFrom?: number | null;
+	bFrom?: number | null;
+};
 
-	const chunks = snakeDraft(seeds, 2);
+export function draftPlayoffs(size: number) {
+	const seedCount = 2 ** Math.ceil(Math.log2(size));
 
-	console.log("chunks", chunks);
-
-	// while (chunks.length > 2) {
-	//   chunks = chunk()
-	// }
-
-	return chunks.map(([a, b]) => (a % 2 === 0 ? [b, a] : [a, b])) as [
+	const firstRound = recursiveSnakeDraft(range(1, seedCount + 1)) as [
 		number,
 		number,
 	][];
+
+	const rounds: (PlayoffMatchNode | null)[][] = [
+		firstRound.map(([aSeed, bSeed]) => ({ aSeed, bSeed })),
+	];
+
+	for (let i = 1; i < Math.log2(seedCount); i++) {
+		rounds[i] = [];
+
+		const prev = rounds[i - 1];
+
+		for (let j = 0; j < prev.length; j += 2) {
+			const next: PlayoffMatchNode = {};
+
+			const aMatch = rounds[i - 1][j];
+
+			if (
+				aMatch?.aSeed &&
+				aMatch.bSeed &&
+				(aMatch.aSeed > size || aMatch.bSeed > size)
+			) {
+				next.aSeed = aMatch.aSeed < size ? aMatch.aSeed : aMatch.bSeed;
+
+				rounds[i - 1][j] = null;
+			} else {
+				next.aFrom = j;
+			}
+
+			const bMatch = rounds[i - 1][j + 1];
+
+			if (
+				bMatch?.aSeed &&
+				bMatch.bSeed &&
+				(bMatch.aSeed > size || bMatch.bSeed > size)
+			) {
+				next.bSeed = bMatch.aSeed < size ? bMatch.aSeed : bMatch.bSeed;
+
+				rounds[i - 1][j + 1] = null;
+			} else {
+				next.bFrom = j + 1;
+			}
+
+			rounds[i].push(next);
+		}
+	}
+
+	return rounds;
 }
