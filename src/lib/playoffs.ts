@@ -504,3 +504,44 @@ export function snakePlayoffs(
 
 	return result;
 }
+
+export function createPlayoffBracket(
+	pools: Pool[],
+	teams: number,
+	wildcards: number,
+) {
+	// - Seed teams
+	// - Calculate number that would make it two full rounds: 12 teams -> 16, 17 -> 32
+	// - Create list of matches, placing teams via snake draft filling teamA slots first then teamB, but flip a and b spots in second half of bracket
+	// - Create the following rounds until the finals
+	// - Advance teams in matches with no opponent
+	//
+	// 1
+	// 16
+	//
+	// 9
+	// 8
+	//
+	// 5
+	// 12
+	//
+	// 13
+	// 4
+	//
+	// ---
+	//
+	// 3
+	// 14
+	//
+	// 11
+	// 6
+	//
+	// 7
+	// 10
+	//
+	// 15
+	// 2
+	// __
+	//
+	// 3.
+}
