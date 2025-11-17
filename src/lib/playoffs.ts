@@ -552,32 +552,19 @@ export function createPlayoffBracket(
 	// 3.
 }
 
-export function iterativeSnakeDraft(seeds: number[]): [number, number][] {
-	console.log("iterativeSnakeDraft -> ", seeds);
+export function iterativeSnakeDraft(seeds: number[]): number[][] {
+	console.log("seeds", seeds);
 
-	let [top, bottom] = snakeDraft(seeds, 2);
+	const chunks = snakeDraft(seeds, 2);
 
-	console.log("chunks.length", bottom.length);
+	console.log("chunks", chunks);
 
-	bottom = chunk(bottom, 2).flatMap((c) => c.reverse());
+	// while (chunks.length > 2) {
+	//   chunks = chunk()
+	// }
 
-	if (seeds.length === 4) {
-		console.log("top.concat(bottom)", top, bottom);
-
-		const got = chunk(top.concat(bottom), 2);
-
-		console.log("!>", got);
-
-		return got as [number, number][];
-	}
-
-	console.log("?>", [top, bottom]);
-
-	return [top, bottom].flatMap((side) => {
-		side.sort();
-
-		console.log("->", side);
-
-		return iterativeSnakeDraft(side);
-	});
+	return chunks.map(([a, b]) => (a % 2 === 0 ? [b, a] : [a, b])) as [
+		number,
+		number,
+	][];
 }
