@@ -1,7 +1,6 @@
-import { db } from "../connection";
-import { divisions, levels } from "../schema";
+import { type Database, divisions, levels } from "../schema";
 
-export async function seedDivisions() {
+export async function seedDivisions(db: Database) {
 	await db
 		.insert(divisions)
 		.values(
@@ -38,7 +37,7 @@ export async function seedDivisions() {
 	}, new Map<string, number>());
 }
 
-export async function seedLevels() {
+export async function seedLevels(db: Database) {
 	await db
 		.insert(levels)
 		.values(

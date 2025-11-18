@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requirePermissions } from "@/auth/shared";
 import { eq } from "drizzle-orm";
+import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import { createFileSchema, files, selectFileSchema } from "@/db/schema/files";
 

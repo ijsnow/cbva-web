@@ -1,7 +1,8 @@
+import { db } from "../connection";
 import { legacy } from "../legacy";
+import { seedDivisions, seedLevels } from "../seed/divisions";
 import { importDirectors } from "./directors";
 import { importPlayers } from "./players";
-import { seedDivisions, seedLevels } from "./seeds";
 import { importTournamentsForYear } from "./tournaments";
 import { getVenuesCache } from "./venues";
 
@@ -20,8 +21,8 @@ async function main() {
 
 	const tournamentKeyCache = new Map<string, number>();
 
-	const divisionsCache = await seedDivisions();
-	const levelsCache = await seedLevels();
+	const divisionsCache = await seedDivisions(db);
+	const levelsCache = await seedLevels(db);
 
 	await importPlayers(levelsCache);
 	await importDirectors();
@@ -40,6 +41,7 @@ async function main() {
 			divisionsCache,
 			levelsCache,
 		);
+
 		// await importTeamsForYear(year, venuesCache, divisionsCache, levelsCache);
 		// await importGames(year);
 	}

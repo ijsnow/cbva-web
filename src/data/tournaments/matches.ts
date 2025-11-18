@@ -194,7 +194,7 @@ export const simulateMatchesSchema = selectTournamentDivisionSchema.pick({
 	tournamentId: true,
 });
 
-const simulateMatchesFn = createServerFn()
+export const simulateMatchesFn = createServerFn()
 	.middleware([
 		requirePermissions({
 			tournament: ["update"],

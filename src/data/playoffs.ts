@@ -51,8 +51,7 @@ async function readPlayoffs({
 				},
 			},
 		},
-		where: (t, { eq, and }) =>
-			and(eq(t.tournamentDivisionId, tournamentDivisionId)),
+		where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),
 		orderBy: (t, { asc }) => asc(t.matchNumber),
 	});
 }

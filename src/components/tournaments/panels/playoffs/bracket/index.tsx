@@ -1,4 +1,5 @@
 import {
+	Controls,
 	type Node,
 	ReactFlow,
 	ReactFlowProvider,
@@ -35,6 +36,8 @@ function getBracketRounds(
 	map: MatchesMap,
 	match: BracketMatch,
 ): (BracketMatch & { midx: number })[][] {
+	console.log(map, match);
+
 	const rounds: (BracketMatch & { midx: number })[][] = [];
 
 	// Start with the finals match in round 0
@@ -48,7 +51,7 @@ function getBracketRounds(
 
 		for (const currentMatch of rounds[currentRoundIndex]) {
 			// Add team A's previous match if it exists
-			if (currentMatch.teamAPreviousMatchId) {
+			if (currentMatch.teamAPreviousMatchId !== null) {
 				const prevMatch = map[currentMatch.teamAPreviousMatchId];
 				if (prevMatch) {
 					if (!prevMatch.nextMatchId) {
@@ -63,7 +66,7 @@ function getBracketRounds(
 			}
 
 			// Add team B's previous match if it exists
-			if (currentMatch.teamBPreviousMatchId) {
+			if (currentMatch.teamBPreviousMatchId !== null) {
 				const prevMatch = map[currentMatch.teamBPreviousMatchId];
 				if (prevMatch) {
 					if (!prevMatch.nextMatchId) {
@@ -84,6 +87,8 @@ function getBracketRounds(
 
 		currentRoundIndex++;
 	}
+
+	console.log("!", rounds);
 
 	return rounds;
 }
@@ -150,7 +155,9 @@ function buildNodeTree(map: MatchesMap): {
 		return { nodes: [], rounds: [] };
 	}
 
-	const finals = Object.values(map).find((match) => match.matchNumber === 1);
+	const finals = Object.values(map).find((match) => match.nextMatchId === null);
+
+	console.log("finals", finals);
 
 	if (!finals) {
 		throw new Error("Could not find finals match");
@@ -158,7 +165,11 @@ function buildNodeTree(map: MatchesMap): {
 
 	const rounds = getBracketRounds(map, finals);
 
+	console.log("rounds", rounds);
+
 	const nodes = getNodesFromRounds(rounds);
+
+	console.log("nodes", nodes);
 
 	return { nodes, rounds };
 }
@@ -205,6 +216,8 @@ export function useSetActiveTeam() {
 }
 
 function BracketFlow({ matches }: BracketProps) {
+	console.log("matches", matches);
+
 	const matchesMap = matches.reduce<{
 		[key: number]: BracketMatch;
 	}>((memo, match) => {
@@ -360,7 +373,7 @@ function BracketFlow({ matches }: BracketProps) {
 					proOptions={{ hideAttribution: true }}
 					onNodeMouseEnter={() => {}}
 				>
-					{/*<Controls position={"top-right"} />*/}
+					<Controls position={"top-right"} />
 				</ReactFlow>
 			</Toolbar>
 		</div>

@@ -102,7 +102,7 @@ export const calculateSeedsSchema = selectTournamentSchema
 		overwrite: z.boolean(),
 	});
 
-const calculateSeedsFn = createServerFn()
+export const calculateSeedsFn = createServerFn()
 	.middleware([
 		requirePermissions({
 			tournament: ["update"],

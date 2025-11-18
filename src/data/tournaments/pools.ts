@@ -21,7 +21,7 @@ import {
 } from "@/db/schema";
 import { getPoolStats } from "@/hooks/matches";
 import { badRequest } from "@/lib/responses";
-import { snake, snake2 } from "@/lib/snake-draft";
+import { snake } from "@/lib/snake-draft";
 
 export const createPoolsSchema = selectTournamentDivisionSchema
 	.pick({
@@ -32,7 +32,7 @@ export const createPoolsSchema = selectTournamentDivisionSchema
 		overwrite: z.boolean(),
 	});
 
-const createPoolsFn = createServerFn()
+export const createPoolsFn = createServerFn()
 	.middleware([
 		requirePermissions({
 			tournament: ["update"],

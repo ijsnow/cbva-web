@@ -51,6 +51,8 @@ export function DuplicateForm({
 	const { mutate } = useMutation({
 		...duplicateTournamentOptions(),
 		onSuccess: ({ data }) => {
+			onOpenChange(false);
+
 			navigate({
 				to: "/tournaments/$tournamentId",
 				params: {

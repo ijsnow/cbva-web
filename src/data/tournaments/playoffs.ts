@@ -12,9 +12,8 @@ import {
 	playoffMatches,
 	selectTournamentDivisionSchema,
 } from "@/db/schema";
-import { draftPlayoffs, snakePlayoffs } from "@/lib/playoffs";
-import { dbg } from "@/utils/dbg";
-import { isNotNull } from "@/utils/types";
+import { draftPlayoffs, seedPlayoffs } from "@/lib/playoffs";
+import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
 
 export type MatchKind = "set-to-21" | "set-to-28" | "best-of-3";
 
@@ -29,7 +28,7 @@ export const createPlayoffsSchema = selectTournamentDivisionSchema
 		overwrite: z.boolean(),
 	});
 
-const createPlayoffsFn = createServerFn()
+export const createPlayoffsFn = createServerFn()
 	.middleware([
 		requirePermissions({
 			tournament: ["update"],
@@ -67,13 +66,9 @@ const createPlayoffsFn = createServerFn()
 				["asc", "asc"],
 			);
 
-			const seededTeams = snakePlayoffs(
-				teams.length,
-				pools.map(({ id }) => id),
-			).map(({ poolId, seed }) =>
-				pools
-					.find(({ id }) => id === poolId)
-					?.teams.find(({ finish }) => finish === seed),
+			const seededTeams = seedPlayoffs(teams.length, pools.length).map(
+				({ pool, seed }) =>
+					pools[pool].teams.find(({ finish }) => finish === seed),
 			);
 
 			if (overwrite) {
@@ -95,11 +90,15 @@ const createPlayoffsFn = createServerFn()
 
 					for (const match of round) {
 						if (match) {
-							const teamA: PoolTeam | null | undefined = match.aSeed
+							const teamA: PoolTeam | null | undefined = isNotNullOrUndefined(
+								match.aSeed,
+							)
 								? seededTeams[match.aSeed - 1]
 								: null;
 
-							const teamB: PoolTeam | null | undefined = match.bSeed
+							const teamB: PoolTeam | null | undefined = isNotNullOrUndefined(
+								match.bSeed,
+							)
 								? seededTeams[match.bSeed - 1]
 								: null;
 
@@ -107,18 +106,21 @@ const createPlayoffsFn = createServerFn()
 								.insert(playoffMatches)
 								.values({
 									tournamentDivisionId,
-									// round: text().notNull().default("-"),
-									// court: text(),
+									round: `Round ${i}`,
 									matchNumber,
 									teamAId: teamA?.teamId,
 									teamAPoolId: teamA?.poolId,
 									teamAPreviousMatchId:
-										match.aFrom && i > 0 ? roundIds[i - 1][match.aFrom] : null,
+										isNotNullOrUndefined(match.aFrom) && i > 0
+											? roundIds[i - 1][match.aFrom]
+											: null,
 
 									teamBId: teamB?.teamId,
 									teamBPoolId: teamB?.poolId,
 									teamBPreviousMatchId:
-										match.bFrom && i > 0 ? roundIds[i - 1][match.bFrom] : null,
+										isNotNullOrUndefined(match.bFrom) && i > 0
+											? roundIds[i - 1][match.bFrom]
+											: null,
 								})
 								.returning({
 									id: playoffMatches.id,
@@ -133,11 +135,39 @@ const createPlayoffsFn = createServerFn()
 					}
 				}
 
-				// TODO: set all the newly created playoffMatches.nextMatchId either using sql or one of the existing values saved from creating
+				// Set nextMatchId for all playoff matches
+				for (let i = 0; i < bracket.length - 1; i++) {
+					const currentRound = bracket[i];
+					const nextRound = bracket[i + 1];
+
+					for (let j = 0; j < currentRound.length; j++) {
+						const currentMatch = currentRound[j];
+						const currentMatchId = roundIds[i][j];
+
+						if (currentMatch && currentMatchId) {
+							// Find which match in the next round this match feeds into
+							const nextMatchIndex = nextRound.findIndex(
+								(nextMatch) =>
+									nextMatch && (nextMatch.aFrom === j || nextMatch.bFrom === j),
+							);
+
+							if (nextMatchIndex !== -1) {
+								const nextMatchId = roundIds[i + 1][nextMatchIndex];
+
+								if (nextMatchId) {
+									await txn
+										.update(playoffMatches)
+										.set({ nextMatchId })
+										.where(eq(playoffMatches.id, currentMatchId));
+								}
+							}
+						}
+					}
+				}
 
 				const matchSetValues: CreateMatchSet[] = roundIds
-					.flatMap((ids) => dbg(ids).filter(isNotNull))
-					.map((id) => dbg(id))
+					.flatMap((ids) => ids.filter(isNotNull))
+					.map((id) => id)
 					.flatMap((playoffMatchId) =>
 						matchKind === "best-of-3"
 							? [

@@ -143,7 +143,7 @@ export function MatchNode({
 									winnerId && winnerId !== team.id && "text-gray-600",
 								)}
 							>
-								{team?.team.players.map(({ profile }) => (
+								{team?.team?.players.map(({ profile }) => (
 									<span key={profile.id}>
 										{profile.preferredName} {profile.lastName}
 									</span>

@@ -1,3 +1,4 @@
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { users } from "./auth";
 import { blocks, pages } from "./blocks";
 import { directorRelations, directors } from "./directors";
@@ -90,3 +91,10 @@ export const relationships = {
 	tournamentDivisionTeamsRelations,
 	tournamentRelations,
 };
+
+const schema = {
+	...tables,
+	...relationships,
+};
+
+export type Database = PostgresJsDatabase<typeof schema>;

@@ -5,11 +5,13 @@ import { relationships, tables } from "./schema";
 
 const client = postgres(process.env.DATABASE_URL!);
 
+export const schema = {
+	...tables,
+	...relationships,
+};
+
 export const db = drizzle({
 	client,
 	casing: "snake_case",
-	schema: {
-		...tables,
-		...relationships,
-	},
+	schema,
 });
