@@ -1,3 +1,10 @@
+# Up next
+
+- Bracket for in progress tournament
+  - Display for when teams aren't set
+  - Ability to create bracket when pools aren't done
+- Select wildcards
+
 # TODOs
 
 - Migrate to Uppy for photo uploads

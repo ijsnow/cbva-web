@@ -16,7 +16,11 @@ async function readPlayoffs({
 			sets: true,
 			teamA: {
 				with: {
-					poolTeam: true,
+					poolTeam: {
+						with: {
+							pool: true,
+						},
+					},
 					team: {
 						with: {
 							players: {
@@ -34,7 +38,11 @@ async function readPlayoffs({
 			},
 			teamB: {
 				with: {
-					poolTeam: true,
+					poolTeam: {
+						with: {
+							pool: true,
+						},
+					},
 					team: {
 						with: {
 							players: {

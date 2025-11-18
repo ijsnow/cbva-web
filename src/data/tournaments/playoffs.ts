@@ -11,6 +11,7 @@ import {
 	type PoolTeam,
 	playoffMatches,
 	selectTournamentDivisionSchema,
+	tournamentDivisionTeams,
 } from "@/db/schema";
 import { draftPlayoffs, seedPlayoffs } from "@/lib/playoffs";
 import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
@@ -84,6 +85,21 @@ export const createPlayoffsFn = createServerFn()
 				const roundIds: (number | null)[][] = [];
 
 				let matchNumber = 1;
+
+				await Promise.all(
+					seededTeams
+						.map((team, i) =>
+							team
+								? txn
+										.update(tournamentDivisionTeams)
+										.set({
+											playoffsSeed: i + 1,
+										})
+										.where(eq(tournamentDivisionTeams.id, team.teamId))
+								: null,
+						)
+						.filter(isNotNull),
+				);
 
 				for (const [i, round] of bracket.entries()) {
 					roundIds[i] = [];

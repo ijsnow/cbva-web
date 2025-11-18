@@ -28,6 +28,7 @@ export const tournamentDivisionTeams = pgTable("tournament_division_teams", {
 		.references(() => teams.id),
 	seed: integer(),
 	finish: integer(),
+	playoffsSeed: integer(),
 	pointsEarned: doublePrecision(),
 	ratingEarned: text(),
 	status: teamStatusEnum().notNull().default("registered"),

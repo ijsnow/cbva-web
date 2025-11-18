@@ -95,8 +95,8 @@ function getBracketRounds(
 
 function getNodesFromRounds(
 	rounds: (BracketMatch & { midx: number })[][],
-): Node[] {
-	const nodes: Node[] = [];
+): Node<BracketMatch & { midx: number; roundIdx: number }>[] {
+	const nodes: Node<BracketMatch & { midx: number; roundIdx: number }>[] = [];
 
 	const roundSizes = rounds.map((_, i) =>
 		i === 0 ? 1 : rounds[i - 1]?.length * 2,
@@ -137,7 +137,10 @@ function getNodesFromRounds(
 					x: ridx * 800,
 					y: spacing * (match.midx + 1),
 				},
-				data: match,
+				data: {
+					...match,
+					roundIdx: ridx,
+				},
 				draggable: false,
 				selectable: false,
 			});
@@ -235,8 +238,8 @@ function BracketFlow({ matches }: BracketProps) {
 						id: [match.teamAPreviousMatchId, match.id].join(),
 						target: match.id.toString(),
 						source: match.teamAPreviousMatchId.toString(),
-						sourceHandle: match.teamA?.id.toString(),
-						targetHandle: match.teamA?.id.toString(),
+						sourceHandle: "a",
+						targetHandle: "a",
 						type: "step",
 					}
 				: null,
@@ -245,8 +248,8 @@ function BracketFlow({ matches }: BracketProps) {
 						id: [match.teamBPreviousMatchId, match.id].join(),
 						target: match.id.toString(),
 						source: match.teamBPreviousMatchId.toString(),
-						sourceHandle: match.teamB?.id.toString(),
-						targetHandle: match.teamB?.id.toString(),
+						sourceHandle: "b",
+						targetHandle: "b",
 						type: "step",
 					}
 				: null,

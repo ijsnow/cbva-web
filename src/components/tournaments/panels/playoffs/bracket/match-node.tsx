@@ -4,8 +4,10 @@ import { CircleDot } from "lucide-react";
 import { tv } from "tailwind-variants";
 
 import { Button } from "@/components/base/button";
+import { TeamNames } from "@/components/teams/names";
 import type { MatchSet, PlayoffMatch } from "@/db/schema";
-import { isNotNull } from "@/utils/types";
+import { formatOrdinals } from "@/lib/numbers";
+import { isNotNullOrUndefined } from "@/utils/types";
 import type { MatchTeam } from "../../games/pool-match-grid";
 import { useActiveTeam, useSetActiveTeam } from ".";
 
@@ -37,14 +39,24 @@ export function MatchNode({
 	data,
 }: {
 	data: PlayoffMatch & {
+		roundIdx: number;
 		sets: MatchSet[];
-		teamA: MatchTeam;
-		teamB: MatchTeam;
+		teamA?: MatchTeam;
+		teamB?: MatchTeam;
 		refetch: () => void;
 	};
 	type: string;
 }) {
-	const { teamA, teamB, court, sets, winnerId, matchNumber, refetch } = data;
+	const {
+		teamA,
+		teamB,
+		court,
+		sets,
+		winnerId,
+		roundIdx,
+		matchNumber,
+		refetch,
+	} = data;
 
 	const activeTeam = useActiveTeam();
 	const setActiveTeam = useSetActiveTeam();
@@ -65,7 +77,8 @@ export function MatchNode({
 							{sets.length > 1 ? "Match" : "Game"} {matchNumber}
 						</span>
 					)}
-					{winnerId === null ? (
+
+					{sets.some(({ status }) => status === "in_progress") ? (
 						<Button
 							size="sm"
 							className="rounded-sm px-2"
@@ -77,111 +90,140 @@ export function MatchNode({
 							Live
 						</Button>
 					) : null}
+
 					<span>{data.id}</span>
 				</div>
+
 				{sets.map((s) => (
 					<div key={s.id} className="p-3 text-center col-span-1">
 						{sets.length > 1 ? <>Set {s.setNumber}</> : "Score"}
 					</div>
 				))}
 			</div>
-			{[teamA, teamB]
-				.map((team, i) =>
-					team
-						? team
-						: {
-								id: `${data.id}-wildcard-${i}`,
-								wildcard: true,
-							},
-				)
-				.filter(isNotNull)
-				.map((team, i) => (
+			{[
+				isNotNullOrUndefined(teamA)
+					? {
+							...teamA,
+							previousMatchId: data.teamAPreviousMatchId,
+							type: "MatchTeam" as const,
+						}
+					: {
+							id: (data.teamAPreviousMatchId ?? data.teamAPoolId) as number,
+							type: "TBD" as const,
+						},
+				isNotNullOrUndefined(teamB)
+					? {
+							...teamB,
+							previousMatchId: data.teamBPreviousMatchId,
+							type: "MatchTeam" as const,
+						}
+					: {
+							id: (data.teamBPreviousMatchId ?? data.teamAPoolId) as number,
+							type: "TBD" as const,
+						},
+			].map((team, i) => (
+				<div
+					key={team.id}
+					className={clsx(
+						"grid grid-cols-6 items-stretch border-b border-gray-300 last-of-type:border-b-0",
+						team.id === activeTeam ? "bg-gray-200" : "bg-white",
+					)}
+					role="none"
+					tabIndex={-1}
+					onMouseEnter={() => {
+						setActiveTeam(team.id);
+					}}
+					onMouseLeave={() => {
+						setActiveTeam(null);
+					}}
+				>
+					<Handle
+						type="target"
+						position={Position.Left}
+						id={team.id.toString()}
+						style={{
+							opacity: 0,
+							position: "absolute",
+							top: i === 0 ? "45%" : "78%",
+							right: 0,
+						}}
+					/>
 					<div
-						key={team.id}
 						className={clsx(
-							"grid grid-cols-6 items-stretch border-b border-gray-300 last-of-type:border-b-0",
-							team.id === activeTeam ? "bg-gray-200" : "bg-white",
+							"p-4 flex flex-row space-x-2 items-center",
+							sets.length > 1 ? "col-span-3" : "col-span-5",
 						)}
-						role="none"
-						tabIndex={-1}
-						onMouseEnter={() => {
-							setActiveTeam(team.id);
-						}}
-						onMouseLeave={() => {
-							setActiveTeam(null);
-						}}
 					>
-						<Handle
-							type="target"
-							position={Position.Left}
-							id={team.id.toString()}
-							style={{
-								opacity: 0,
-								position: "absolute",
-								top: i === 0 ? "45%" : "78%",
-								right: 0,
-							}}
-						/>
+						{team.type === "MatchTeam" && (
+							<span
+								className="mr-4"
+								title={`Seed ${team.playoffsSeed ?? "?"} in playoffs`}
+							>
+								{team.playoffsSeed}
+							</span>
+						)}
+
 						<div
 							className={clsx(
-								"p-4 flex flex-row space-x-2 items-center",
-								sets.length > 1 ? "col-span-3" : "col-span-5",
+								"flex flex-col",
+								winnerId && winnerId === team.id && "font-bold",
+								winnerId && winnerId !== team.id && "text-gray-600",
 							)}
 						>
-							{team.poolTeam && (
-								<span
-									className="p-2 bg-gray-200 rounded-xs"
-									title={`Seed ${team.poolTeam?.seed ?? "?"}`}
-								>
-									#{team.poolTeam?.seed ?? "?"}
-								</span>
+							{team.type === "MatchTeam" ? (
+								<TeamNames
+									players={team?.team.players}
+									showFirst={false}
+									orientation="row"
+									separator="/"
+								/>
+							) : roundIdx === 0 ? (
+								"Wildcard"
+							) : (
+								"TBD"
 							)}
-							<div
-								className={clsx(
-									"flex flex-col",
-									winnerId && winnerId === team.id && "font-bold",
-									winnerId && winnerId !== team.id && "text-gray-600",
-								)}
-							>
-								{team?.team?.players.map(({ profile }) => (
-									<span key={profile.id}>
-										{profile.preferredName} {profile.lastName}
+							<div>
+								{team.type === "MatchTeam" && team.poolTeam?.finish && (
+									<span className="text-xs text-gray-500">
+										{formatOrdinals(team.poolTeam.finish)} in Pool{" "}
+										<span className="uppercase">{team.poolTeam.pool.name}</span>
 									</span>
-								)) ?? "Wildcard"}
+								)}
 							</div>
 						</div>
-						{sets
-							.sort((a, b) => a.setNumber - b.setNumber)
-							.map((s, i) => (
-								<div
-									key={s.id}
-									className={scoreTextStyles({
-										winner:
-											s.winnerId === null ? undefined : s.winnerId === team.id,
-										inProgress: Boolean(s.startedAt) && !s.endedAt,
-										last: i === sets.length - 1,
-									})}
-								>
-									{s.startedAt
-										? teamA?.id === team.id
-											? s.teamAScore
-											: s.teamBScore
-										: "-"}
-								</div>
-							))}
-						<Handle
-							type="source"
-							position={Position.Right}
-							id={team.id.toString()}
-							style={{
-								opacity: 0,
-								position: "absolute",
-								top: i === 0 ? "45%" : "78%",
-								right: 0,
-							}}
-						/>
 					</div>
-				))}
+					{sets
+						.sort((a, b) => a.setNumber - b.setNumber)
+						.map((s, i) => (
+							<div
+								key={s.id}
+								className={scoreTextStyles({
+									winner:
+										s.winnerId === null ? undefined : s.winnerId === team.id,
+									inProgress: Boolean(s.startedAt) && !s.endedAt,
+									last: i === sets.length - 1,
+								})}
+							>
+								{s.startedAt
+									? teamA?.id === team.id
+										? s.teamAScore
+										: s.teamBScore
+									: "-"}
+							</div>
+						))}
+					<Handle
+						type="source"
+						position={Position.Right}
+						id={team.id.toString()}
+						style={{
+							opacity: 0,
+							position: "absolute",
+							top: i === 0 ? "45%" : "78%",
+							right: 0,
+						}}
+					/>
+				</div>
+			))}
 		</div>
 	);
 }

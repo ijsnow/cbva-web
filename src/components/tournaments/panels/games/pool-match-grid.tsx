@@ -7,6 +7,7 @@ import { ProfileName } from "@/components/profiles/name";
 import type {
 	MatchSet,
 	PlayerProfile,
+	Pool,
 	PoolMatch,
 	PoolTeam,
 	Team,
@@ -38,7 +39,7 @@ export const scoreTextStyles = tv({
 	],
 });
 
-export type MatchTeam = Pick<TournamentDivisionTeam, "id"> & {
+export type MatchTeam = Pick<TournamentDivisionTeam, "id" | "playoffsSeed"> & {
 	team: Pick<Team, "id"> & {
 		players: {
 			profile: Pick<
@@ -47,7 +48,7 @@ export type MatchTeam = Pick<TournamentDivisionTeam, "id"> & {
 			>;
 		}[];
 	};
-	poolTeam: Pick<PoolTeam, "seed">;
+	poolTeam: Pick<PoolTeam, "finish"> & { pool: Pick<Pool, "name"> };
 };
 
 export function PoolMatchGrid({
