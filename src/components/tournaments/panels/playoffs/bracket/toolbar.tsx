@@ -230,9 +230,11 @@ export function Toolbar({
 									closestNodeToCenter?.data.teamAPreviousMatchId;
 
 								if (upLeftNode) {
-									const coords = getNodeCoords(upLeftNode);
+									const [round, match] = getNodeCoords(upLeftNode);
 
-									centerViewportAtNode(coords[0], coords[1]);
+									if (round !== null && match !== null) {
+										centerViewportAtNode(round, match);
+									}
 								}
 							}}
 						>
@@ -252,9 +254,11 @@ export function Toolbar({
 									closestNodeToCenter?.data.teamBPreviousMatchId;
 
 								if (downLeftNode) {
-									const coords = getNodeCoords(downLeftNode);
+									const [round, match] = getNodeCoords(downLeftNode);
 
-									centerViewportAtNode(coords[0], coords[1]);
+									if (round !== null && match !== null) {
+										centerViewportAtNode(round, match);
+									}
 								}
 							}}
 						>
@@ -325,9 +329,11 @@ export function Toolbar({
 								const rightNode = closestNodeToCenter?.data.nextMatchId;
 
 								if (rightNode) {
-									const coords = getNodeCoords(rightNode);
+									const [round, match] = getNodeCoords(rightNode);
 
-									centerViewportAtNode(coords[0], coords[1]);
+									if (round !== null && match !== null) {
+										centerViewportAtNode(round, match);
+									}
 								}
 							}}
 						>
