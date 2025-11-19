@@ -38,7 +38,7 @@ export function Toolbar({
 	const nodes = useNodes<Node<BracketMatch>>();
 	const size = useResponsive();
 
-	const topPadding = size.medium ? 100 : 25;
+	const topPadding = size?.medium ? 100 : 25;
 
 	const closestNodeToCenter = useMemo(() => {
 		const bounds = container.current?.getBoundingClientRect();
@@ -93,7 +93,7 @@ export function Toolbar({
 				}
 			}
 
-			throw new Error("node not in list");
+			return [null, null];
 		},
 		[rounds],
 	);

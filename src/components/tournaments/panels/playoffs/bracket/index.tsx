@@ -369,11 +369,19 @@ function BracketFlow({ matches }: BracketProps) {
 					// 	[bounds.maxX, bounds.maxY],
 					// ]}
 					fitView={true}
+					fitViewOptions={{
+						padding: 1000,
+					}}
 					preventScrolling={false}
 					proOptions={{ hideAttribution: true }}
 					onNodeMouseEnter={() => {}}
 				>
-					<Controls position={"top-right"} />
+					<Controls
+						position={"top-right"}
+						fitViewOptions={{
+							padding: 1200,
+						}}
+					/>
 				</ReactFlow>
 			</Toolbar>
 		</div>

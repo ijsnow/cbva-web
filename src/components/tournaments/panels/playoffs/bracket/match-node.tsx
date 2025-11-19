@@ -73,7 +73,7 @@ export function MatchNode({
 
 	const teamAPreviousMatchName = teamAPreviousMatch ? (
 		<>
-			{teamAPreviousMatch.sets.length === 1 ? "Game" : "Set"}{" "}
+			{teamAPreviousMatch.sets.length > 1 ? "Match" : "Game"}{" "}
 			{teamAPreviousMatch.matchNumber}
 		</>
 	) : null;
@@ -190,7 +190,7 @@ export function MatchNode({
 					/>
 					<div
 						className={clsx(
-							"p-2 grid grid-cols-10 space-x-2 items-center",
+							"p-3 grid grid-cols-10 space-x-2 items-center",
 							sets.length > 1 ? "col-span-3" : "col-span-5",
 						)}
 					>
@@ -225,7 +225,7 @@ export function MatchNode({
 								/>
 							) : (
 								<Button
-									className="px-4 self-start hover:underline"
+									className="px-0 self-start hover:underline"
 									variant="text"
 									onPress={() => {
 										console.log(team.id);

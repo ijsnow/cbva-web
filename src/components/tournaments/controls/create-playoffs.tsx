@@ -49,8 +49,8 @@ export function CreatePlayoffsForm({
 
 	const form = useAppForm({
 		defaultValues: {
-			teamCount: 12,
-			wildcardCount: 3,
+			teamCount: 10,
+			wildcardCount: 2,
 			matchKind: "set-to-28" as MatchKind,
 			overwrite: false,
 		},
