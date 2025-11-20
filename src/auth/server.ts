@@ -10,7 +10,10 @@ export async function getViewer(): Promise<Viewer | null | undefined> {
 		headers,
 	});
 
-	return session?.user as Viewer;
+	return {
+		...session?.user,
+		impersonatedBy: session?.session.impersonatedBy,
+	} as Viewer;
 }
 
 export type { Session, Viewer };

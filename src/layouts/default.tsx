@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-
+import { ImpersonatorControls } from "@/components/impersonator/controls";
 import { Navbar } from "@/components/navbar";
 
 export function DefaultLayout({
@@ -16,6 +16,8 @@ export function DefaultLayout({
 			</header>
 
 			<div className={classNames.content}>{children}</div>
+
+			<ImpersonatorControls />
 		</div>
 	);
 }

@@ -5,13 +5,14 @@ import { reactStartCookies } from "better-auth/react-start";
 
 import { db } from "@/db/connection";
 import * as schema from "@/db/schema/auth";
-import { ac, admin, type Role, td, user } from "./permissions";
+import { ac, admin, type Role, superadmin, td, user } from "./permissions";
 
 export const auth = betterAuth({
 	plugins: [
 		adminPlugin({
 			ac,
 			roles: {
+				superadmin,
 				admin,
 				td,
 				user,
@@ -68,4 +69,5 @@ export const auth = betterAuth({
 export type Session = typeof auth.$Infer.Session;
 export type Viewer = Omit<Session["user"], "role"> & {
 	role: Role;
+	impersonatedBy: Session["session"]["impersonatedBy"];
 };

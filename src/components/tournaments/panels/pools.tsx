@@ -13,7 +13,7 @@ import { TabPanel } from "@/components/base/tabs";
 import { ProfileName } from "@/components/profiles/name";
 import { poolsQueryOptions } from "@/data/pools";
 import type { Tournament, TournamentDivision } from "@/db/schema";
-import { getPoolStats, usePoolMatchResults } from "@/hooks/matches";
+import { getPoolStats } from "@/hooks/matches";
 import { SetCourtForm } from "../controls/set-court";
 
 export function PoolsPanel({
@@ -25,8 +25,6 @@ export function PoolsPanel({
 	const { data } = useSuspenseQuery(
 		poolsQueryOptions({ tournamentDivisionId }),
 	);
-
-	const poolMatchResults = usePoolMatchResults(data);
 
 	const pools = useMemo(() => {
 		return data?.map((pool) => ({
@@ -103,9 +101,10 @@ export function PoolsPanel({
 										},
 										finish,
 									}) => {
-										const { wins, losses } = poolMatchResults
-											? poolMatchResults[teamId]
-											: { wins: null, losses: null };
+										const teamStats = stats?.[teamId];
+
+										const wins = teamStats?.wins.size();
+										const losses = teamStats?.losses.size();
 
 										return (
 											<TableRow key={id}>

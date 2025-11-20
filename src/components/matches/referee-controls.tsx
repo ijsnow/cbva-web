@@ -3,12 +3,20 @@ import {
 	useMutation,
 	useQueryClient,
 } from "@tanstack/react-query";
-
+import { useViewer } from "@/auth/shared";
 import {
 	startMatchMutationOptions,
 	undoSetCompletedMutationOptions,
 } from "@/data/tournaments/matches";
-import type { MatchSet, PoolMatch } from "@/db/schema";
+import type {
+	MatchRefTeam,
+	MatchSet,
+	PlayerProfile,
+	PoolMatch,
+	Team,
+	TeamPlayer,
+	TournamentDivisionTeam,
+} from "@/db/schema";
 import { Button } from "../base/button";
 import { title } from "../base/primitives";
 import type { MatchTeam } from "../tournaments/panels/games/pool-match-grid";
@@ -23,11 +31,25 @@ export function RefereeControls({
 	match: PoolMatch & {
 		teamA?: Omit<MatchTeam, "poolTeam"> | null;
 		teamB?: Omit<MatchTeam, "poolTeam"> | null;
+		refTeams: (MatchRefTeam & {
+			team: TournamentDivisionTeam & {
+				team: Team & { players: (TeamPlayer & { profile: PlayerProfile })[] };
+			};
+		})[];
 	};
 	set: MatchSet;
 	queryKey: QueryKey;
 }) {
-	// TODO: isOnReffingTeam
+	const viewer = useViewer();
+
+	const isOnReffingTeam = match.refTeams.some(
+		({
+			team: {
+				team: { players },
+			},
+		}) => players.some(({ profile: { userId } }) => userId === viewer?.id),
+	);
+
 	// TODO: isScoreKeeper
 
 	const queryClient = useQueryClient();
@@ -49,6 +71,10 @@ export function RefereeControls({
 			});
 		},
 	});
+
+	if (!isOnReffingTeam) {
+		return null;
+	}
 
 	return (
 		<div className="w-full max-w-xl mx-auto rounded-lg bg-white border border-gray-700 p-3 flex flex-col items-start space-y-3">

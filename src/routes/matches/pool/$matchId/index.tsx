@@ -13,6 +13,7 @@ import { subtitle, title } from "@/components/base/primitives";
 import { Tab, TabList, TabPanel, Tabs } from "@/components/base/tabs";
 import { TournamentDirectorMatchControls } from "@/components/matches/director-controls";
 import { RefereeControls } from "@/components/matches/referee-controls";
+import { TeamNames } from "@/components/teams/names";
 import { poolMatchQueryOptions } from "@/data/matches";
 import {
 	applyMatchSetAction,
@@ -203,6 +204,12 @@ function RouteComponent() {
 						Court {data.court}
 					</h2>
 				)}
+				<div>
+					Refs:{" "}
+					{data?.refTeams.map(({ team }) => (
+						<TeamNames key={team.id} players={team.team.players} />
+					))}
+				</div>
 			</div>
 
 			<Tabs

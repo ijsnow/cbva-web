@@ -2,57 +2,6 @@ import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import type { MatchSet, PoolMatch, PoolTeam } from "@/db/schema";
 
-export function usePoolMatchResults(
-	data:
-		| {
-				id: number;
-				teams: PoolTeam[];
-				matches: (PoolMatch & { sets: MatchSet[] })[];
-		  }[]
-		| undefined,
-) {
-	if (!data) {
-		return {};
-	}
-
-	const memo = data
-		.flatMap(({ teams }) => teams)
-		.reduce<{
-			[key: number]: { wins: number; losses: number };
-		}>((memo, { teamId }) => {
-			memo[teamId] = { wins: 0, losses: 0 };
-			return memo;
-		}, {});
-
-	return data
-		.flatMap(({ matches }) => matches)
-		.reduce<{
-			[key: number]: { wins: number; losses: number };
-		}>((memo, mat) => {
-			if (!mat.teamAId || !mat.teamBId) {
-				return memo;
-			}
-
-			if (mat.teamAId && !memo[mat.teamAId]) {
-				memo[mat.teamAId] = { wins: 0, losses: 0 };
-			}
-
-			if (mat.teamBId && !memo[mat.teamBId]) {
-				memo[mat.teamBId] = { wins: 0, losses: 0 };
-			}
-
-			if (mat.winnerId && mat.winnerId === mat.teamAId) {
-				memo[mat.teamAId].wins += 1;
-				memo[mat.teamBId].losses += 1;
-			} else {
-				memo[mat.teamAId].losses += 1;
-				memo[mat.teamBId].wins += 1;
-			}
-
-			return memo;
-		}, memo);
-}
-
 export type PoolTeamStats = {
 	rank: number;
 	wins: Set<number>;

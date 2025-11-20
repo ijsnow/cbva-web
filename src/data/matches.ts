@@ -40,6 +40,23 @@ export const getPoolMatch = createServerFn({
 						},
 					},
 				},
+				refTeams: {
+					with: {
+						team: {
+							with: {
+								team: {
+									with: {
+										players: {
+											with: {
+												profile: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 				pool: {
 					with: {
 						tournamentDivision: true,

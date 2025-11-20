@@ -19,9 +19,11 @@ export const matchRefTeams = pgTable(
 		playoffMatchId: integer().references(() => playoffMatches.id, {
 			onDelete: "cascade",
 		}),
-		teamId: integer().references(() => tournamentDivisionTeams.id, {
-			onDelete: "cascade",
-		}),
+		teamId: integer()
+			.notNull()
+			.references(() => tournamentDivisionTeams.id, {
+				onDelete: "cascade",
+			}),
 	},
 	(table) => [
 		check(

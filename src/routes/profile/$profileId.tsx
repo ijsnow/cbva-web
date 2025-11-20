@@ -1,15 +1,11 @@
-import { parseDate } from "@internationalized/date";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { authClient } from "@/auth/client";
-import { useViewerHasPermission } from "@/auth/shared";
-import { Button } from "@/components/base/button";
 import { title } from "@/components/base/primitives";
+import { ImpersonateButton } from "@/components/impersonator/impersonate-button";
 import { ProfileName } from "@/components/profiles/name";
 import { ProfilePhoto } from "@/components/profiles/photo";
 import { profileOverviewQueryOptions } from "@/data/profiles";
-import { useViewer } from "@/hooks/auth";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/profile/$profileId")({
@@ -34,53 +30,21 @@ function RouteComponent() {
 		...profileOverviewQueryOptions(Number.parseInt(profileId, 10)),
 	});
 
-	const viewer = useViewer();
-
-	console.log("viewer", viewer);
-
-	const canImpersonate = useViewerHasPermission({
-		user: ["impersonate"],
-	});
-
-	const { mutate: impersonate } = useMutation({
-		mutationFn: async () => {
-			console.log(profile.userId);
-
-			const { data, error } = await authClient.admin.impersonateUser({
-				userId: profile.userId,
-			});
-
-			if (error) {
-				throw error;
-			}
-
-			return data;
-		},
-	});
-
 	return (
 		<DefaultLayout
 			classNames={{
 				content: "py-12 w-full relative",
 			}}
 		>
-			{canImpersonate && (
-				<Button
-					className="absolute top-6 right-6"
-					color="secondary"
-					onPress={() => impersonate()}
-				>
-					Impersonate
-				</Button>
-			)}
+			<ImpersonateButton userId={profile?.userId} />
 
 			<Suspense fallback={<>Nope</>}>
 				<div className="px-4 max-w-2xl mx-auto flex flex-row space-x-4">
-					<ProfilePhoto {...profile} className="w-24 h-24" />
+					<ProfilePhoto {...profile} className="w-28 h-28" />
 
-					<div>
+					<div className="py-2">
 						<h1 className={title({ size: "sm" })}>
-							<ProfileName {...profile} />
+							<ProfileName {...profile} link={false} />
 						</h1>
 					</div>
 				</div>

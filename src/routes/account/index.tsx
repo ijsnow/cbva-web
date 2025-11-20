@@ -1,5 +1,7 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useViewer } from "@/auth/shared";
+import { profileOverviewQueryOptions } from "@/data/profiles";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/account/")({

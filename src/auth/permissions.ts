@@ -11,11 +11,15 @@ export const statement = {
 
 export const ac = createAccessControl(statement);
 
-export type Role = "admin" | "td" | "user";
+export type Role = "superadmin" | "admin" | "td" | "user";
 
 export type Permissions = {
 	[K in keyof typeof statement]?: Array<(typeof statement)[K][number]>;
 };
+
+export const superadmin = ac.newRole({
+	...adminAc.statements,
+});
 
 export const admin = ac.newRole({
 	tournament: ["create", "update", "delete"],

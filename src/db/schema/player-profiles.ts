@@ -22,7 +22,9 @@ export const playerProfiles = pgTable(
 	"player_profiles",
 	{
 		id: serial().primaryKey(),
-		userId: text().references(() => users.id),
+		userId: text().references(() => users.id, {
+			onDelete: "set null",
+		}),
 		firstName: text().notNull(),
 		preferredName: text(),
 		lastName: text().notNull(),

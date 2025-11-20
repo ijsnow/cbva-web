@@ -1,7 +1,7 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { setResponseStatus } from "@tanstack/react-start/server";
-
+import { db } from "@/db/connection";
 import { authClient } from "./client";
 import type { Permissions, Role } from "./permissions";
 import { getViewer } from "./server";
@@ -9,14 +9,18 @@ import { getViewer } from "./server";
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
 	const viewer = await getViewer();
 
+	console.log(viewer);
+
 	return await next({
 		context: {
 			viewer: viewer
 				? {
 						id: viewer.id,
+						name: viewer.name,
 						role: viewer.role,
 					}
 				: undefined,
+			impersonatorId: viewer?.impersonatedBy,
 		},
 	});
 });
@@ -92,6 +96,56 @@ export function useViewerHasPermission<P extends Permissions>(permissions: P) {
 	}
 
 	return roleHasPermission(viewer.role, permissions);
+}
+
+export const getImpersonatorFn = createServerFn({ method: "GET" })
+	.middleware([authMiddleware])
+	.handler(async ({ context: { impersonatorId } }) => {
+		console.log(impersonatorId);
+
+		if (!impersonatorId) {
+			return null;
+		}
+
+		return await db.query.users.findFirst({
+			where: (t, { eq }) => eq(t.id, impersonatorId),
+		});
+	});
+
+export const impersonatorQueryOptions = () =>
+	queryOptions({
+		queryKey: ["impersonator"],
+		queryFn: () => getImpersonatorFn(),
+	});
+
+export function useImpersonator() {
+	const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions());
+
+	return impersonator;
+}
+
+export function useImpersonatorRole() {
+	const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions());
+
+	return impersonator?.role;
+}
+
+export function useImpersonatorIsAdmin() {
+	const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions());
+
+	return impersonator?.role === "admin";
+}
+
+export function useImpersonatorHasPermission<P extends Permissions>(
+	permissions: P,
+) {
+	const impersonator = useImpersonator();
+
+	if (!impersonator?.role) {
+		return false;
+	}
+
+	return roleHasPermission(impersonator.role, permissions);
 }
 
 export function roleHasPermission<P extends Permissions>(
