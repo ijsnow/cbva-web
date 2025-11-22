@@ -1,3 +1,5 @@
+import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import {
 	TextField as AriaTextField,
 	Input,
@@ -5,27 +7,25 @@ import {
 	ToggleButton,
 } from "react-aria-components";
 
-import { EyeIcon, EyeOffIcon } from "lucide-react";
-import { useState } from "react";
-
 import {
+	baseInputStyles,
 	Description,
 	Errors,
 	type FieldProps,
 	Group,
 	Label,
-	baseInputStyles,
 } from "./shared";
 
 export type PasswordFieldProps = FieldProps & RACTextFieldProps;
 
 export function PasswordField({
 	label,
+	labelRight,
 	description,
 	field,
 	placeholder,
 	...props
-}: Omit<PasswordFieldProps, "type">) {
+}: Omit<PasswordFieldProps, "type"> & { labelRight?: ReactNode }) {
 	const [isVisible, setVisible] = useState(false);
 
 	return (
@@ -37,7 +37,13 @@ export function PasswordField({
 			onBlur={field.handleBlur}
 			isInvalid={field.state.meta.isBlurred && !field.state.meta.isValid}
 		>
-			{label && <Label isRequired={props.isRequired}>{label}</Label>}
+			{label && (
+				<div className="flex flex-row justify-between">
+					<Label isRequired={props.isRequired}>{label}</Label>
+
+					{labelRight && <Label>{labelRight}</Label>}
+				</div>
+			)}
 
 			<Group>
 				<Input

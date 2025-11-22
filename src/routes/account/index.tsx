@@ -1,7 +1,6 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useViewer } from "@/auth/shared";
-import { profileOverviewQueryOptions } from "@/data/profiles";
+import { useNotLoggedInRedirect } from "@/hooks/auth";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/account/")({
@@ -10,6 +9,8 @@ export const Route = createFileRoute("/account/")({
 
 function RouteComponent() {
 	const viewer = useViewer();
+
+	useNotLoggedInRedirect("/log-in");
 
 	return (
 		<DefaultLayout

@@ -1,41 +1,40 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import z from "zod/v4";
 import { authClient } from "@/auth/client";
 import { useAppForm } from "@/components/base/form";
 import { useLoggedInRedirect } from "@/hooks/auth";
 import { Link } from "../base/link";
 
-export type LoginFormProps = {
+export type ForgotPasswordFormProps = {
 	className?: string;
-	next?: string;
 };
 
 const schema = z.object({
 	email: z.email(),
-	password: z.string().nonempty({
-		message: "This field is required",
-	}),
-	next: z.string().optional().nullable(),
 });
 
-export function LoginForm({ className, next }: LoginFormProps) {
-	const navigate = useNavigate();
+export function ForgotPasswordForm({ className }: ForgotPasswordFormProps) {
+	const [sentTo, setSentTo] = useState<string | undefined>();
 
-	const { mutate: login, failureReason } = useMutation({
-		mutationFn: async ({ email, password, next }: z.infer<typeof schema>) => {
-			const { error } = await authClient.signIn.email({
+	const { mutate: sendReset, failureReason } = useMutation({
+		mutationFn: async ({ email }: z.infer<typeof schema>) => {
+			if (sentTo === email) {
+				return;
+			}
+
+			const { error } = await authClient.requestPasswordReset({
 				email,
-				password,
+				redirectTo: "/account/reset-password",
 			});
 
 			if (error) {
 				throw error;
 			}
-
-			navigate({
-				to: next ?? "/account",
-			});
+		},
+		onSuccess: (_, { email }) => {
+			setSentTo(email);
 		},
 	});
 
@@ -44,14 +43,13 @@ export function LoginForm({ className, next }: LoginFormProps) {
 	const form = useAppForm({
 		defaultValues: {
 			email: "",
-			password: "",
 		},
 		validators: {
 			onMount: schema,
 			onChange: schema,
 		},
 		onSubmit: ({ value }) => {
-			login({ ...value, next });
+			sendReset(value);
 		},
 	});
 
@@ -64,7 +62,7 @@ export function LoginForm({ className, next }: LoginFormProps) {
 				form.handleSubmit();
 			}}
 		>
-			<div className="flex flex-col gap-4 max-w-md">
+			<div className="flex flex-col gap-4 max-w-lg">
 				{failureReason && (
 					<form.Alert
 						color="error"
@@ -86,34 +84,36 @@ export function LoginForm({ className, next }: LoginFormProps) {
 					)}
 				/>
 
-				<form.AppField
-					name="password"
-					children={(field) => (
-						<field.Password
-							isRequired
-							label="Password"
-							labelRight={
-								<Link to="/account/forgot-password" className="hover:underline">
-									Forgot your password?
-								</Link>
-							}
-							placeholder="Enter your password"
-							field={field}
-						/>
-					)}
-				/>
-
 				<form.AppForm>
 					<form.Subscribe
-						selector={(state) => [state.canSubmit, state.isSubmitting]}
-						children={([canSubmit, isSubmitting]) => {
+						selector={(state) => [
+							state.canSubmit,
+							state.isSubmitting,
+							state.values.email,
+						]}
+						children={([canSubmit, isSubmitting, email]) => {
+							if (email === sentTo) {
+								return (
+									<div className="space-y-3">
+										<p>A confirmation email has been sent to:</p>
+										<p className="border border-gray-500 rounded-md p-2 bg-gray-200 font-semibold">
+											{form.state.values.email}
+										</p>
+										<p>
+											Check your inbox for an email with a link to reset your
+											password.
+										</p>
+									</div>
+								);
+							}
+
 							return (
 								<form.Footer>
 									<form.SubmitButton
 										className="w-full"
 										isDisabled={Boolean(!canSubmit || isSubmitting)}
 									>
-										Log in
+										Send
 									</form.SubmitButton>
 								</form.Footer>
 							);

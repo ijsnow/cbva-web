@@ -32,6 +32,17 @@ export const auth = betterAuth({
 		disableSignUp: process.env.NODE_ENV === "production",
 		minPasswordLength: process.env.NODE_ENV === "production" ? 8 : 1,
 		requireEmailVerification: true,
+		sendResetPassword: async ({ user, url, token }, request) => {
+			console.log({
+				to: user.email,
+				subject: "Reset your password",
+				text: `Click the link to reset your password: ${url}`,
+			});
+		},
+		onPasswordReset: async ({ user }, request) => {
+			// your logic here
+			console.log(`Password for user ${user.email} has been reset.`);
+		},
 	},
 	user: {
 		additionalFields: {

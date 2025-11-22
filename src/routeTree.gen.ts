@@ -26,7 +26,10 @@ import { Route as TournamentsCreateRouteImport } from './routes/tournaments/crea
 import { Route as ProfileProfileIdRouteImport } from './routes/profile/$profileId'
 import { Route as JuniorsLeaderboardRouteImport } from './routes/juniors/leaderboard'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AccountSetupRouteImport } from './routes/account/setup'
+import { Route as AccountResetPasswordRouteImport } from './routes/account/reset-password'
+import { Route as AccountForgotPasswordRouteImport } from './routes/account/forgot-password'
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
 import { Route as AccountVerifyIndexRouteImport } from './routes/account/verify/index'
 import { Route as ProfileProfileIdEditRouteImport } from './routes/profile/$profileId.edit'
@@ -120,9 +123,24 @@ const ApiFilesRoute = ApiFilesRouteImport.update({
   path: '/api/files',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountSetupRoute = AccountSetupRouteImport.update({
   id: '/account/setup',
   path: '/account/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountResetPasswordRoute = AccountResetPasswordRouteImport.update({
+  id: '/account/reset-password',
+  path: '/account/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountForgotPasswordRoute = AccountForgotPasswordRouteImport.update({
+  id: '/account/forgot-password',
+  path: '/account/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TournamentsTournamentIdIndexRoute =
@@ -173,7 +191,10 @@ export interface FileRoutesByFullPath {
   '/sanctioning': typeof SanctioningRoute
   '/search': typeof SearchRoute
   '/sign-up': typeof SignUpRoute
+  '/account/forgot-password': typeof AccountForgotPasswordRoute
+  '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/files': typeof ApiFilesRoute
   '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
   '/profile/$profileId': typeof ProfileProfileIdRouteWithChildren
@@ -200,7 +221,10 @@ export interface FileRoutesByTo {
   '/sanctioning': typeof SanctioningRoute
   '/search': typeof SearchRoute
   '/sign-up': typeof SignUpRoute
+  '/account/forgot-password': typeof AccountForgotPasswordRoute
+  '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/files': typeof ApiFilesRoute
   '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
   '/profile/$profileId': typeof ProfileProfileIdRouteWithChildren
@@ -228,7 +252,10 @@ export interface FileRoutesById {
   '/sanctioning': typeof SanctioningRoute
   '/search': typeof SearchRoute
   '/sign-up': typeof SignUpRoute
+  '/account/forgot-password': typeof AccountForgotPasswordRoute
+  '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/files': typeof ApiFilesRoute
   '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
   '/profile/$profileId': typeof ProfileProfileIdRouteWithChildren
@@ -257,7 +284,10 @@ export interface FileRouteTypes {
     | '/sanctioning'
     | '/search'
     | '/sign-up'
+    | '/account/forgot-password'
+    | '/account/reset-password'
     | '/account/setup'
+    | '/admin/users'
     | '/api/files'
     | '/juniors/leaderboard'
     | '/profile/$profileId'
@@ -284,7 +314,10 @@ export interface FileRouteTypes {
     | '/sanctioning'
     | '/search'
     | '/sign-up'
+    | '/account/forgot-password'
+    | '/account/reset-password'
     | '/account/setup'
+    | '/admin/users'
     | '/api/files'
     | '/juniors/leaderboard'
     | '/profile/$profileId'
@@ -311,7 +344,10 @@ export interface FileRouteTypes {
     | '/sanctioning'
     | '/search'
     | '/sign-up'
+    | '/account/forgot-password'
+    | '/account/reset-password'
     | '/account/setup'
+    | '/admin/users'
     | '/api/files'
     | '/juniors/leaderboard'
     | '/profile/$profileId'
@@ -339,7 +375,10 @@ export interface RootRouteChildren {
   SanctioningRoute: typeof SanctioningRoute
   SearchRoute: typeof SearchRoute
   SignUpRoute: typeof SignUpRoute
+  AccountForgotPasswordRoute: typeof AccountForgotPasswordRoute
+  AccountResetPasswordRoute: typeof AccountResetPasswordRoute
   AccountSetupRoute: typeof AccountSetupRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   ApiFilesRoute: typeof ApiFilesRoute
   JuniorsLeaderboardRoute: typeof JuniorsLeaderboardRoute
   ProfileProfileIdRoute: typeof ProfileProfileIdRouteWithChildren
@@ -477,11 +516,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFilesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/setup': {
       id: '/account/setup'
       path: '/account/setup'
       fullPath: '/account/setup'
       preLoaderRoute: typeof AccountSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/reset-password': {
+      id: '/account/reset-password'
+      path: '/account/reset-password'
+      fullPath: '/account/reset-password'
+      preLoaderRoute: typeof AccountResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account/forgot-password': {
+      id: '/account/forgot-password'
+      path: '/account/forgot-password'
+      fullPath: '/account/forgot-password'
+      preLoaderRoute: typeof AccountForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tournaments/$tournamentId/': {
@@ -557,7 +617,10 @@ const rootRouteChildren: RootRouteChildren = {
   SanctioningRoute: SanctioningRoute,
   SearchRoute: SearchRoute,
   SignUpRoute: SignUpRoute,
+  AccountForgotPasswordRoute: AccountForgotPasswordRoute,
+  AccountResetPasswordRoute: AccountResetPasswordRoute,
   AccountSetupRoute: AccountSetupRoute,
+  AdminUsersRoute: AdminUsersRoute,
   ApiFilesRoute: ApiFilesRoute,
   JuniorsLeaderboardRoute: JuniorsLeaderboardRoute,
   ProfileProfileIdRoute: ProfileProfileIdRouteWithChildren,

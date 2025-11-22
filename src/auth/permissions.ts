@@ -1,6 +1,8 @@
 import { createAccessControl } from "better-auth/plugins/access";
 import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
 
+export type { Role } from "@/db/schema";
+
 export const statement = {
 	tournament: ["create", "update", "delete", "teehee"],
 	venues: ["create", "update", "delete"],
@@ -10,8 +12,6 @@ export const statement = {
 } as const;
 
 export const ac = createAccessControl(statement);
-
-export type Role = "superadmin" | "admin" | "td" | "user";
 
 export type Permissions = {
 	[K in keyof typeof statement]?: Array<(typeof statement)[K][number]>;

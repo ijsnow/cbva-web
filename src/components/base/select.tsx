@@ -104,9 +104,9 @@ export function Select<Value extends Key>({
 								inputStyles(render),
 							)
 						}
-						onBlur={() => {
+						onBlur={(e) => {
 							if (!isOpen && onBlur) {
-								onBlur();
+								onBlur(e);
 							}
 						}}
 					>

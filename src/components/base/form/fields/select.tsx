@@ -77,8 +77,8 @@ export function SelectField<Value extends Key>({
 		<Select
 			{...props}
 			name={field.name}
-			selectedKey={field.state.value}
-			onSelectionChange={field.handleChange}
+			value={field.state.value}
+			onChange={field.handleChange}
 			onOpenChange={(open) => {
 				if (!open) {
 					field.handleBlur();
@@ -105,9 +105,10 @@ export function SelectField<Value extends Key>({
 						}}
 					>
 						<SelectValue className="flex-1 text-sm placeholder-shown:italic placeholder-shown:text-placeholder" />
+
 						<ChevronDown
 							aria-hidden
-							className="mx-2 w-4 h-4 text-gray-600 forced-colors:text-[ButtonText] group-disabled:text-gray-200 forced-colors:group-disabled:text-[GrayText]"
+							className="mx-2 w-4 h-4 text-gray-600 self-center forced-colors:text-[ButtonText] group-disabled:text-gray-200 forced-colors:group-disabled:text-[GrayText]"
 						/>
 					</Button>
 					{description && <Description>{description}</Description>}

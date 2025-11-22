@@ -50,6 +50,10 @@ export type User = z.infer<typeof selectUserSchema>;
 export type CreateUser = z.infer<typeof createUserSchema>;
 export type UpdateUser = z.infer<typeof updateUserSchema>;
 
+export const roleSchema = createSelectSchema(roleEnum);
+
+export type Role = z.infer<typeof roleSchema>;
+
 export const userRelations = relations(users, ({ many }) => ({
 	profiles: many(playerProfiles),
 }));
