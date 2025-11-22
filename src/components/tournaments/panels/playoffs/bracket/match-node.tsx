@@ -196,10 +196,13 @@ export function MatchNode({
 					>
 						{team.type === "MatchTeam" && (
 							<span
-								className={clsx("col-span-1 text-center")}
+								className={clsx(
+									"text-center",
+									team.playoffsSeed || team.wildcard ? "col-span-1" : "hidden",
+								)}
 								title={`Seed ${team.playoffsSeed ?? "?"} in playoffs`}
 							>
-								{team.playoffsSeed ?? "WC"}
+								{team.playoffsSeed ?? (team.wildcard ? "WC" : null)}
 							</span>
 						)}
 

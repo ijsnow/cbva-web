@@ -17,7 +17,7 @@ import {
 	useState,
 } from "react";
 import type { PlayoffMatch } from "@/db/schema";
-import { isNotNull } from "@/utils/types";
+import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
 import type { MatchTeam } from "../../games/pool-match-grid";
 import { MatchEdge } from "./match-edge";
 import { MatchNode } from "./match-node";
@@ -154,7 +154,12 @@ function buildNodeTree(map: MatchesMap): {
 		return { nodes: [], rounds: [] };
 	}
 
-	const finals = Object.values(map).find((match) => match.nextMatchId === null);
+	const finals = Object.values(map).find(
+		(match) =>
+			match.nextMatchId === null &&
+			isNotNullOrUndefined(match.teamAPreviousMatchId) &&
+			isNotNullOrUndefined(match.teamBPreviousMatchId),
+	);
 
 	if (!finals) {
 		throw new Error("Could not find finals match");

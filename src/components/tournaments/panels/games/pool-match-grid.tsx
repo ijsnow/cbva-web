@@ -42,7 +42,10 @@ export const scoreTextStyles = tv({
 	],
 });
 
-export type MatchTeam = Pick<TournamentDivisionTeam, "id" | "playoffsSeed"> & {
+export type MatchTeam = Pick<
+	TournamentDivisionTeam,
+	"id" | "playoffsSeed" | "wildcard"
+> & {
 	team: Pick<Team, "id"> & {
 		players: {
 			profile: Pick<

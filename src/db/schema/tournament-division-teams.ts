@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+	boolean,
 	doublePrecision,
 	integer,
 	pgTable,
@@ -29,6 +30,7 @@ export const tournamentDivisionTeams = pgTable("tournament_division_teams", {
 	seed: integer(),
 	finish: integer(),
 	playoffsSeed: integer(),
+	wildcard: boolean(),
 	pointsEarned: doublePrecision(),
 	ratingEarned: text(),
 	status: teamStatusEnum().notNull().default("registered"),
