@@ -12,18 +12,23 @@ import {
 	playerProfiles,
 	teamPlayers,
 	teams,
+	tournamentDirectors,
 	tournamentDivisions,
 	tournamentDivisionTeams,
 	tournaments,
 } from "@/db/schema";
 import type { Gender } from "@/db/schema/shared";
+import { getQualifiedLevels } from "./divisions";
+import { createDirectors, createTeams } from "./users";
+import { getDefaultVenue } from "./venues";
 
 export async function bootstrapTournament(
 	db: Database,
 	config: {
-		venue: number;
+		venue?: number;
 		date: string;
 		startTime: string;
+		directors?: { id: number; order?: number }[];
 		divisions: {
 			division: string;
 			gender: Gender;
@@ -35,16 +40,30 @@ export async function bootstrapTournament(
 		| { poolMatches: true; simulatePoolMatches: true }
 	),
 ) {
+	const venueId = config.venue ?? (await getDefaultVenue(db)).id;
+
 	const [{ tournamentId }] = await db
 		.insert(tournaments)
 		.values({
 			date: "2025-01-01",
 			startTime: "09:00:00",
-			venueId: config.venue,
+			venueId,
 		})
 		.returning({
 			tournamentId: tournaments.id,
 		});
+
+	const directors =
+		config.directors ??
+		(await createDirectors(db, 1)).map(({ id }, i) => ({ id, order: i }));
+
+	await db.insert(tournamentDirectors).values(
+		directors.map(({ id, order }) => ({
+			tournamentId,
+			directorId: id,
+			order,
+		})),
+	);
 
 	const configDivisions = config.divisions.map(({ division }) => division);
 
@@ -81,52 +100,13 @@ export async function bootstrapTournament(
 
 		divisionIds.push(tournamentDivisionId);
 
-		const teamIds = await db
-			.insert(teams)
-			.values(
-				Array.from({
-					length: teamCount,
-				}).map((_, i) => ({
-					name: `team ${i}`,
-				})),
-			)
-			.returning({
-				id: teams.id,
-			});
+		const levels = await getQualifiedLevels(db, division);
 
-		for (const { id: teamId } of teamIds) {
-			const profiles = await db
-				.insert(playerProfiles)
-				.values([
-					{
-						firstName: ["first", teamId, 1].join(":"),
-						lastName: ["last", teamId, 1].join(":"),
-						birthdate: "1999-01-01",
-						gender,
-					},
-					{
-						firstName: ["first", teamId, 2].join(":"),
-						lastName: ["last", teamId, 2].join(":"),
-						birthdate: "1999-01-01",
-						gender,
-					},
-				])
-				.returning({
-					id: playerProfiles.id,
-				});
-
-			await db
-				.insert(teamPlayers)
-				.values(
-					profiles.map(({ id: playerProfileId }) => ({
-						teamId,
-						playerProfileId,
-					})),
-				)
-				.returning({
-					id: playerProfiles.id,
-				});
-		}
+		const teamIds = await createTeams(db, {
+			count: teamCount,
+			levels: levels.map(({ name }) => name),
+			gender,
+		});
 
 		await db.insert(tournamentDivisionTeams).values(
 			teamIds.map(({ id: teamId }) => ({

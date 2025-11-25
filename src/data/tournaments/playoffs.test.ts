@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { db } from "@/db/connection";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
+import { isNotNull } from "@/utils/types";
 import { createPlayoffsFn } from "./playoffs";
 
 describe("Generating playoffs", () => {
@@ -8,7 +9,6 @@ describe("Generating playoffs", () => {
 		const tournamentInfo = await bootstrapTournament(db, {
 			date: "2025-01-01",
 			startTime: "09:00:00",
-			venue: 1,
 			divisions: [
 				{
 					division: "b",
@@ -48,7 +48,9 @@ describe("Generating playoffs", () => {
 		expect(
 			matches.filter((mat) => mat.teamBPreviousMatchId !== null),
 		).toHaveLength(4 + 2 + 1);
-		expect(matches.filter((mat) => mat.teamAId && mat.teamBId)).toHaveLength(8);
+		expect(
+			matches.filter((mat) => isNotNull(mat.teamAId) && isNotNull(mat.teamBId)),
+		).toHaveLength(8);
 		expect(matches.filter((mat) => mat.nextMatchId === null)).toHaveLength(1);
 	});
 
@@ -56,7 +58,6 @@ describe("Generating playoffs", () => {
 		const tournamentInfo = await bootstrapTournament(db, {
 			date: "2025-01-01",
 			startTime: "09:00:00",
-			venue: 1,
 			divisions: [
 				{
 					division: "b",
@@ -125,7 +126,6 @@ describe("Generating playoffs", () => {
 		const tournamentInfo = await bootstrapTournament(db, {
 			date: "2025-01-01",
 			startTime: "09:00:00",
-			venue: 1,
 			divisions: [
 				{
 					division: "b",

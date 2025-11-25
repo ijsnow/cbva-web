@@ -16,7 +16,7 @@ export const directors = pgTable("directors", {
 		.references(() => playerProfiles.id, { onDelete: "cascade" }),
 	email: text(),
 	phone: text(),
-	externalRef: uuid().notNull(),
+	externalRef: uuid(),
 });
 
 export const selectDirectorSchema = createSelectSchema(directors);

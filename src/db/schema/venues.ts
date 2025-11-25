@@ -25,7 +25,7 @@ export const venues = pgTable(
 		mapUrl: text().notNull(),
 		status: venueStatusEnum().notNull(),
 		imageSource: text(),
-		externalRef: uuid().unique().notNull(),
+		externalRef: uuid().unique(),
 	},
 	(table) => [
 		unique("name_city_unique").on(table.name, table.city),

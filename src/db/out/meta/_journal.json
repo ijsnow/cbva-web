@@ -29,6 +29,20 @@
       "when": 1763931760396,
       "tag": "0003_new_sharon_ventura",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1764033958462,
+      "tag": "0004_curly_timeslip",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1764051000955,
+      "tag": "0005_bright_blacklash",
+      "breakpoints": true
     }
   ]
 }

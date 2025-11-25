@@ -1,0 +1,1 @@
+ALTER TABLE "venues" ALTER COLUMN "external_ref" DROP NOT NULL;

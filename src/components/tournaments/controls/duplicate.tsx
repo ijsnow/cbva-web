@@ -12,7 +12,7 @@ import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
-import { duplicateTournamentOptions } from "@/data/tournaments/schedule";
+import { duplicateTournamentOptions } from "@/data/schedule";
 
 export type DuplicateFormProps = {
 	tournamentId: number;
