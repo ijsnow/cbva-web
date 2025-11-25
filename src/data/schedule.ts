@@ -123,48 +123,6 @@ export const duplicateTournamentFn = createServerFn({ method: "POST" })
 
 		const [tournament] = await duplicateTournaments([template], () => date);
 
-		// const values = createTournamentSchema
-		// 	.pick({
-		// 		name: true,
-		// 		startTime: true,
-		// 		venueId: true,
-		// 	})
-		// 	.parse(template);
-
-		// const [tournament] = await db
-		// 	.insert(tournaments)
-		// 	.values({
-		// 		...values,
-		// 		date,
-		// 	})
-		// 	.returning({
-		// 		id: tournaments.id,
-		// 	});
-
-		// const divisionValues: CreateTournamentDivision[] =
-		// 	template.tournamentDivisions.map(
-		// 		({ divisionId, gender, name, teamSize }) => ({
-		// 			tournamentId: tournament.id,
-		// 			divisionId,
-		// 			gender,
-		// 			name,
-		// 			teamSize,
-		// 		}),
-		// 	);
-
-		// const directorValues: CreateTournamentDirector[] = template.directors.map(
-		// 	({ directorId, order }) => ({
-		// 		tournamentId: tournament.id,
-		// 		directorId,
-		// 		order,
-		// 	}),
-		// );
-
-		// await Promise.all([
-		// 	db.insert(tournamentDivisions).values(divisionValues),
-		// 	db.insert(tournamentDirectors).values(directorValues),
-		// ]);
-
 		return { data: tournament };
 	});
 

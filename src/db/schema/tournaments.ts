@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+	boolean,
 	date,
 	integer,
 	pgTable,
@@ -21,6 +22,7 @@ export const tournaments = pgTable("tournaments", {
 	name: text(),
 	date: date().notNull(),
 	startTime: time().notNull(),
+	visible: boolean().notNull().default(false),
 	venueId: integer()
 		.notNull()
 		.references(() => venues.id),

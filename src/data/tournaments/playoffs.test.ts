@@ -50,7 +50,10 @@ describe("Generating playoffs", () => {
 		).toHaveLength(4 + 2 + 1);
 		expect(
 			matches.filter((mat) => isNotNull(mat.teamAId) && isNotNull(mat.teamBId)),
-		).toHaveLength(8);
+		)
+			// This is 4, only because the hardcoded seed order for playoffs calls for
+			// 4 wildcards in the round of 16 for 6 pool tournaments
+			.toHaveLength(4);
 		expect(matches.filter((mat) => mat.nextMatchId === null)).toHaveLength(1);
 	});
 

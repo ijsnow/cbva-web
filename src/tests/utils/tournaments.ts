@@ -115,13 +115,15 @@ export async function bootstrapTournament(
 				status: "confirmed" as const,
 			})),
 		);
+	}
 
-		await calculateSeedsFn({
-			data: { id: tournamentDivisionId, overwrite: false },
-		});
+	await calculateSeedsFn({
+		data: { id: tournamentId, overwrite: false },
+	});
 
+	for (const [i, { pools: poolCount }] of config.divisions.entries()) {
 		await createPoolsFn({
-			data: { id: tournamentDivisionId, count: poolCount, overwrite: false },
+			data: { id: divisionIds[i], count: poolCount, overwrite: false },
 		});
 	}
 
