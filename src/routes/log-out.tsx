@@ -1,25 +1,24 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useAsyncEffect } from "ahooks";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { authClient } from "@/auth/client";
+import { useNotLoggedInRedirect } from "@/hooks/auth";
+import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/log-out")({
+	preload: false,
 	beforeLoad: async () => {},
+	loader: async () => {
+		await authClient.signOut();
+	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const navigate = useNavigate();
+	useNotLoggedInRedirect("/log-in");
 
-	useAsyncEffect(async () => {
-		await authClient.signOut({
-			fetchOptions: {
-				onSuccess: () => {
-					navigate({ to: "/log-in" });
-				},
-			},
-		});
-	}, [navigate]);
-
-	return null;
+	return (
+		<DefaultLayout classNames={{ content: "min-h-screen" }}>
+			{null}
+		</DefaultLayout>
+	);
 }

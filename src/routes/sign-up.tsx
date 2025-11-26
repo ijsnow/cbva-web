@@ -20,7 +20,7 @@ function RouteComponent() {
 		<DefaultLayout>
 			<div className="text-center flex flex-col space-y-6 max-w-xl mx-auto">
 				<h1 className={title({ size: "lg" })}>
-					SIGN UP TO BECOME A CBVA MEMBER
+					Sign Up to Become a CBVA Member
 				</h1>
 
 				<p>

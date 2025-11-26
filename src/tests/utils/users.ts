@@ -30,7 +30,7 @@ function createUserValues(
 		id,
 		name: faker.person.fullName(),
 		email: `user-${id}@test.com`,
-		phone: `+1${Math.floor(Math.random() * 1000000000)}`,
+		phoneNumber: `+1${Math.floor(Math.random() * 1000000000)}`,
 		...overrides,
 	};
 }

@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/base/checkbox";
 import { Pagination } from "@/components/base/pagination";
 import { FilterDivisions } from "@/components/tournaments/filters/divisions";
 import { FilterGender } from "@/components/tournaments/filters/gender";
+import { FilterVenues } from "@/components/tournaments/filters/venues";
 import { tournamentsQueryOptions } from "@/data/tournaments";
 import type {
 	Division,
@@ -88,7 +89,7 @@ function RouteComponent() {
 		<DefaultLayout classNames={{ content: "pb-12 space-y-12 w-full" }}>
 			<div className="py-8 w-full bg-slate-300">
 				<div className="max-w-xl mx-auto flex flex-col space-y-2 px-2">
-					{/*<FilterVenues values={new Set(venues)} />*/}
+					<FilterVenues values={new Set(venues)} />
 					<FilterDivisions values={new Set(divisions)} />
 					<FilterGender values={new Set(genders)} />
 					<Checkbox
@@ -108,7 +109,11 @@ function RouteComponent() {
 						}}
 						label={<>Past Tournaments Only</>}
 					/>
-					<Link className={button()} to="/tournaments" search={{}}>
+					<Link
+						className={button({ class: "mt-2" })}
+						to="/tournaments"
+						search={{}}
+					>
 						Clear Filters
 					</Link>
 				</div>

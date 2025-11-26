@@ -13,12 +13,12 @@ export async function importUsers(levels: Map<string, number>) {
 	const existingUsers = await db.query.users.findMany({
 		columns: {
 			id: true,
-			phone: true,
+			phoneNumber: true,
 		},
 	});
 
 	const existing = existingUsers.map(({ id }) => id);
-	const existingPhones = new Set(existingUsers.map(({ phone }) => phone));
+	const existingPhones = new Set(existingUsers.map(({ phoneNumber }) => phone));
 
 	// while (hasMore) {
 	const legacyUsers = await legacy.query.users.findMany({
@@ -52,9 +52,9 @@ export async function importUsers(levels: Map<string, number>) {
 				email:
 					accountUser.email === "" ? `empty:${uuidv4()}` : accountUser.email,
 				emailVerified: true,
-				phone:
+				phoneNumber:
 					accountUser.phone === "" ? `empty:${uuidv4()}` : accountUser.phone,
-				phoneVerified: accountUser.phoneVerifications.some(
+				phoneNumberVerified: accountUser.phoneVerifications.some(
 					({ phone }) => phone === accountUser.phone,
 				),
 				role: "user",
@@ -89,7 +89,7 @@ export async function importUsers(levels: Map<string, number>) {
 		({ user }) => user,
 	);
 
-	const duplicatePhones = groupBy(usersToCreate, "phone");
+	const duplicatePhones = groupBy(usersToCreate, "phoneNumber");
 
 	const accountsToCreate: (typeof schema.accounts.$inferInsert)[] = info.map(
 		({ account }) => account,
@@ -124,16 +124,16 @@ export async function importUsers(levels: Map<string, number>) {
 		await db.insert(schema.users).values(
 			batch.map((user) => ({
 				...user,
-				phone:
-					duplicatePhones[user.phone]?.length > 1 ||
-					existingPhones.has(user.phone)
+				phoneNumber:
+					duplicatePhones[user.phoneNumber]?.length > 1 ||
+					existingPhones.has(user.phoneNumber)
 						? uuidv4()
-						: user.phone,
-				phoneVerified:
-					duplicatePhones[user.phone]?.length > 1 ||
-					existingPhones.has(user.phone)
+						: user.phoneNumber,
+				phoneNumberVerified:
+					duplicatePhones[user.phoneNumber]?.length > 1 ||
+					existingPhones.has(user.phoneNumber)
 						? false
-						: user.phoneVerified,
+						: user.phoneNumberVerified,
 			})),
 		);
 	}

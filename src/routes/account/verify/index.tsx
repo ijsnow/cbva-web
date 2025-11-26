@@ -1,14 +1,18 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import { useState } from "react";
 import z from "zod";
-
+import { authClient } from "@/auth/client";
+import { useViewer } from "@/auth/shared";
 import { Button } from "@/components/base/button";
+import { VerifyPhoneForm } from "@/components/users/verify-phone-form";
+import { useRedirect } from "@/hooks/auth";
 import { DefaultLayout } from "@/layouts/default";
 
 const verifyUrlSchema = z.object({
 	email: z.string().default(""),
-	phone: z.string().default(""),
+	phoneNumber: z.string().default(""),
 });
 
 export const Route = createFileRoute("/account/verify/")({
@@ -24,9 +28,30 @@ export const Route = createFileRoute("/account/verify/")({
 });
 
 function RouteComponent() {
-	const { email, phone } = Route.useSearch();
+	const { email, phoneNumber } = Route.useSearch();
+
+	const viewer = useViewer();
+
+	const phoneNumberVerified =
+		viewer?.phoneNumberVerified && phoneNumber === viewer?.phoneNumber;
+
+	useRedirect(
+		"/account/verify/success",
+		Boolean(viewer?.emailVerified && phoneNumberVerified),
+	);
 
 	const [verifyPhoneSent, setVerifyPhoneSent] = useState(false);
+
+	const { mutate: sendOtp } = useMutation({
+		mutationFn: async () => {
+			await authClient.phoneNumber.sendOtp({
+				phoneNumber,
+			});
+		},
+		onSuccess: () => {
+			setVerifyPhoneSent(true);
+		},
+	});
 
 	/// 1. If not authenticated/email verified
 	///  a. Show thing about looking for email
@@ -77,43 +102,41 @@ function RouteComponent() {
 
 					<div className="space-y-3">
 						<h3 className="text-lg font-semibold">Verify your phone number</h3>
-						{!verifyPhoneSent && (
+
+						{phoneNumberVerified && (
+							<div>Phone number successfully verified.</div>
+						)}
+
+						{!phoneNumberVerified && !verifyPhoneSent && (
 							<>
 								<p>
 									Click the button below to get a verification code sent to:
 								</p>
 								<p className="border border-gray-500 rounded-md p-2 bg-gray-200 font-semibold mb-5">
-									{phone}
+									{phoneNumber}
 								</p>
 								<Button
 									color="primary"
-									onClick={() => setVerifyPhoneSent(true)}
+									onClick={() => {
+										console.log("hello");
+
+										sendOtp();
+									}}
 								>
 									Send Code
 								</Button>
 							</>
 						)}
-						{verifyPhoneSent && (
+
+						{!phoneNumberVerified && verifyPhoneSent && (
 							<>
 								<p>Use the form below to enter the code sent to:</p>
+
 								<p className="border border-gray-500 rounded-md p-2 bg-gray-200 font-semibold">
-									{phone}
+									{phoneNumber}
 								</p>
-								{/* <Form
-                  action="/api/auth/verify-phone"
-                  onSuccess={() => {
-                    // TODO
-                  }}
-                  fields={[
-                    {
-                      kind: "text",
-                      label: <>Code</>,
-                      required: true,
-                      placeholder: "123456",
-                      name: "code",
-                    },
-                  ]}
-                /> */}
+
+								<VerifyPhoneForm phoneNumber={phoneNumber} />
 							</>
 						)}
 					</div>

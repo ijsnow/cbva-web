@@ -54,9 +54,9 @@ const schema = z.object({
 	bio: z.string().optional().nullable(),
 	heightFeet: z.number().optional().nullable(),
 	heightInches: z.number().optional().nullable(),
-	dominantArm: z.enum(["Right", "Left"]).optional().nullable(),
-	preferredRole: z.enum(["Blocker", "Defender", "Split"]).optional().nullable(),
-	preferredSide: z.enum(["Right", "Left"]).optional().nullable(),
+	dominantArm: z.enum(["right", "left"]).optional().nullable(),
+	preferredRole: z.enum(["blocker", "defender", "split"]).optional().nullable(),
+	preferredSide: z.enum(["right", "left"]).optional().nullable(),
 	club: z.string().optional().nullable(),
 	highSchoolGraduationYear: z.number().optional().nullable(),
 	college_team: z.string().optional().nullable(),
@@ -258,11 +258,11 @@ export function ProfileForm({
 							options={[
 								{
 									display: "Right",
-									value: "Right",
+									value: "right",
 								},
 								{
 									display: "Left",
-									value: "Left",
+									value: "left",
 								},
 							]}
 						/>
@@ -279,15 +279,15 @@ export function ProfileForm({
 							options={[
 								{
 									display: "Blocker",
-									value: "Blocker",
+									value: "blocker",
 								},
 								{
 									display: "Defender",
-									value: "Defender",
+									value: "defender",
 								},
 								{
 									display: "Split",
-									value: "Split",
+									value: "split",
 								},
 							]}
 						/>
@@ -304,11 +304,11 @@ export function ProfileForm({
 							options={[
 								{
 									display: "Right",
-									value: "Right",
+									value: "right",
 								},
 								{
 									display: "Left",
-									value: "Left",
+									value: "left",
 								},
 							]}
 						/>

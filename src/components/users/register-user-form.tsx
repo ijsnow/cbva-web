@@ -13,7 +13,7 @@ const schema = z
 	.object({
 		name: z.string(),
 		email: z.email(),
-		phone: z.e164(),
+		phoneNumber: z.e164(),
 		password: z.string().min(8, { message: "Must be at least 8 characters" }),
 		// .refine((password) => /[A-Z]/.test(password), {
 		//   message: "Must contain at least 1 upper case letter",
@@ -58,7 +58,7 @@ export function RegisterUserForm({ className }: UserRegistrationFormProps) {
 				to: "/account/verify",
 				search: {
 					email: user.email,
-					phone: user.phone,
+					phoneNumber: user.phoneNumber,
 				},
 			});
 		},
@@ -70,7 +70,7 @@ export function RegisterUserForm({ className }: UserRegistrationFormProps) {
 		defaultValues: {
 			name: "",
 			email: "",
-			phone: "",
+			phoneNumber: "",
 			password: "",
 			confirmPassword: "",
 		},
@@ -150,12 +150,12 @@ export function RegisterUserForm({ className }: UserRegistrationFormProps) {
 				/>
 
 				<form.AppField
-					name="phone"
+					name="phoneNumber"
 					children={(field) => (
 						<field.Text
 							isRequired
 							className="col-span-full"
-							name="phone"
+							name="phoneNumber"
 							label="Phone"
 							type="tel"
 							placeholder="+1(555)555-5555"

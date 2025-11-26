@@ -26,6 +26,7 @@
     "@lexical/tailwind": "^0.38.2",
     "@lexical/utils": "^0.38.2",
     "@react-aria/i18n": "^3.12.13",
+    "@sendgrid/mail": "^8.1.6",
     "@tailwindcss/vite": "^4.1.16",
     "@tanstack/query-core": "^5.90.8",
     "@tanstack/react-form": "^1.23.8",
@@ -66,6 +67,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-react-aria-components": "^2.0.1",
     "ts-pattern": "^5.9.0",
+    "twilio": "^5.10.6",
     "uuid": "^13.0.0",
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^4.1.12"

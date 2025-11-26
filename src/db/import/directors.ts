@@ -37,7 +37,7 @@ export async function importDirectors() {
 	const values = legacyDirectors.map((d) => ({
 		profileId: profiles[d.userId] as number,
 		email: d.email,
-		phone: d.phone,
+		phoneNumber: d.phoneNumber,
 		externalRef: d.userId,
 	}));
 
@@ -80,7 +80,7 @@ export async function importDirectorsForYear(
 		(t) => toKey(t.beachId, t.startAt),
 	).flatMap(({ beachId, startAt, tournamentDirectors }) =>
 		tournamentDirectors.map(
-			({ rank, directorPreferences: { email, phone, userId } }) => {
+			({ rank, directorPreferences: { email, phoneNumber, userId } }) => {
 				if (!directors.get(userId)) {
 					throw new Error("hahsdf");
 				}
@@ -90,7 +90,7 @@ export async function importDirectorsForYear(
 					directorId: directors.get(userId) as number,
 					order: rank || 0,
 					email,
-					phone,
+					phoneNumber,
 				};
 			},
 		),

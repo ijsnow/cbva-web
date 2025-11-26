@@ -249,6 +249,7 @@ export const createPlayoffsFn = createServerFn()
 			});
 
 			// TODO: assign refs
+			//
 			// const availableRefs = round index 1, only one team assigned, open slot is not wildcard
 			// const matchesThatNeedRefs = round index 0, next match has a team assigned already
 

@@ -91,7 +91,9 @@ export function InformationPanel({
 											)}
 										</li>
 										{td.director.email && <li>{td.director.email}</li>}
-										{td.director.phone && <li>{td.director.phone}</li>}
+										{td.director.phoneNumber && (
+											<li>{td.director.phoneNumber}</li>
+										)}
 									</ul>
 								);
 							})}

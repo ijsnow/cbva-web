@@ -1,14 +1,23 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin as adminPlugin } from "better-auth/plugins/admin";
+import { phoneNumber } from "better-auth/plugins/phone-number";
 import { reactStartCookies } from "better-auth/react-start";
-
 import { db } from "@/db/connection";
 import * as schema from "@/db/schema/auth";
+import { sendEmail } from "@/services/email";
+import { sendSms } from "@/services/sms";
 import { ac, admin, type Role, superadmin, td, user } from "./permissions";
+
+const AUTH_EMAIL_SENDER = process.env.AUTH_EMAIL_SENDER;
 
 export const auth = betterAuth({
 	plugins: [
+		phoneNumber({
+			sendOTP: async ({ phoneNumber, code }) => {
+				await sendSms(phoneNumber, `CBVA verification code: ${code}`);
+			},
+		}),
 		adminPlugin({
 			ac,
 			roles: {
@@ -32,46 +41,35 @@ export const auth = betterAuth({
 		disableSignUp: process.env.NODE_ENV === "production",
 		minPasswordLength: process.env.NODE_ENV === "production" ? 8 : 1,
 		requireEmailVerification: true,
-		sendResetPassword: async ({ user, url, token }, request) => {
-			console.log({
+		sendResetPassword: async ({ user, url }) => {
+			if (!AUTH_EMAIL_SENDER) {
+				throw new Error("AUTH_EMAIL_SENDER not set");
+			}
+
+			await sendEmail({
 				to: user.email,
+				from: AUTH_EMAIL_SENDER,
 				subject: "Reset your password",
-				text: `Click the link to reset your password: ${url}`,
+				text: `Copy and paste the link into your browser to reset your password: ${url}`,
+				html: `Click the link to reset your password: <a href="${url}">${url}</a>`,
 			});
-		},
-		onPasswordReset: async ({ user }, request) => {
-			// your logic here
-			console.log(`Password for user ${user.email} has been reset.`);
-		},
-	},
-	user: {
-		additionalFields: {
-			phone: {
-				type: "string",
-				required: true,
-			},
-			phoneVerified: {
-				type: "boolean",
-				required: false,
-				defaultValue: false,
-			},
 		},
 	},
 	emailVerification: {
 		sendOnSignUp: true,
 		autoSignInAfterVerification: true,
-		sendVerificationEmail: async ({ user, url, token }, request) => {
-			console.log({
-				to: user.email,
-				subject: "Verify your email address",
-				text: `Click the link to verify your email: ${url}`,
-			});
+		sendVerificationEmail: async ({ user, url }) => {
+			if (!AUTH_EMAIL_SENDER) {
+				throw new Error("AUTH_EMAIL_SENDER not set");
+			}
 
-			// await sendEmail({
-			//   to: user.email,
-			//   subject: "Verify your email address",
-			//   text: `Click the link to verify your email: ${url}`,
-			// });
+			await sendEmail({
+				to: user.email,
+				from: AUTH_EMAIL_SENDER,
+				subject: "Verify your email address",
+				text: `Copy and paste the link into your browser to verify your email: ${url}`,
+				html: `Click the link to verify your email: <a href="${url}">${url}</a>`,
+			});
 		},
 	},
 	trustedOrigins: ["http://localhost:5173"],

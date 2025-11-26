@@ -23,8 +23,8 @@ export const users = pgTable("users", {
 	emailVerified: boolean()
 		.$defaultFn(() => false)
 		.notNull(),
-	phone: text().notNull().unique(),
-	phoneVerified: boolean()
+	phoneNumber: text().notNull().unique(),
+	phoneNumberVerified: boolean()
 		.$defaultFn(() => false)
 		.notNull(),
 	image: text(),

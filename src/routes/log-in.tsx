@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-
+import { createFileRoute } from "@tanstack/react-router";
+import { Link } from "@/components/base/link";
 import { title } from "@/components/base/primitives";
 import { LoginForm } from "@/components/users/login-form";
 import { DefaultLayout } from "@/layouts/default";
@@ -23,13 +23,10 @@ function RouteComponent() {
 	return (
 		<DefaultLayout>
 			<div className="text-center flex flex-col space-y-6 max-w-xl mx-auto">
-				<h1 className={title({ size: "lg" })}>SIGN IN TO CBVA</h1>
+				<h1 className={title({ size: "lg" })}>Sign In To CBVA</h1>
 
 				<p>
-					Don’t have an account?{" "}
-					<Link to="/sign-up" className="underline hover:no-underline">
-						Sign Up
-					</Link>
+					Don’t have an account? <Link to="/sign-up">Sign Up</Link>
 				</p>
 			</div>
 

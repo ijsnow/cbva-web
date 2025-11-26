@@ -1,4 +1,17 @@
 import { createLink } from "@tanstack/react-router";
-import { Link as ReactAriaLink } from "react-aria-components";
+import { type LinkProps, Link as ReactAriaLink } from "react-aria-components";
+import { composeTailwindRenderProps } from "./utils";
 
-export const Link = createLink(ReactAriaLink);
+function BaseLink(props: LinkProps) {
+	return (
+		<ReactAriaLink
+			{...props}
+			className={composeTailwindRenderProps(
+				props.className,
+				"underline hover:no-underline",
+			)}
+		/>
+	);
+}
+
+export const Link = createLink(BaseLink);

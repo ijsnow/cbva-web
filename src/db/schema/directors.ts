@@ -15,7 +15,7 @@ export const directors = pgTable("directors", {
 		.unique()
 		.references(() => playerProfiles.id, { onDelete: "cascade" }),
 	email: text(),
-	phone: text(),
+	phoneNumber: text(),
 	externalRef: uuid(),
 });
 

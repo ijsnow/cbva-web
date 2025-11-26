@@ -16,6 +16,10 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 						id: viewer.id,
 						name: viewer.name,
 						role: viewer.role,
+						email: viewer.email,
+						emailVerified: viewer.emailVerified,
+						phoneNumber: viewer.phoneNumber,
+						phoneNumberVerified: viewer.phoneNumberVerified,
 					}
 				: undefined,
 			impersonatorId: viewer?.impersonatedBy,
