@@ -1,4 +1,5 @@
-import { getMockDb } from '@/tests/db';
+import { deleteMockDb } from '@/tests/db';
+import {  stopApp } from '@/tests/server';
 
 // setup('starting services', async () => {
 //   console.log('initializing database...');
@@ -7,11 +8,6 @@ import { getMockDb } from '@/tests/db';
 // });
 
 export default async function setup() {
-  const { url } = await getMockDb()
-
-  console.log(url)
-
-  process.env.DATABASE_URL = url
-
-  // startApp(url)
+  await stopApp()
+  await deleteMockDb()
 }

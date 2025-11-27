@@ -83,9 +83,12 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'pnpm exec vite dev --port 5174',
-  //   url: 'http://localhost:5174',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+  webServer: {
+    command: 'pnpm exec vite dev --port 5174',
+    url: 'http://localhost:5174',
+    reuseExistingServer: !process.env.CI,
+    // env: {
+    //   DATABASE_URL: 'postgresql://postgres:password@localhost:5555/e2e'
+    // }
+  },
 });

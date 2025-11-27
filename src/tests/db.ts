@@ -18,8 +18,6 @@ const container: PostgreSqlContainer = new PostgreSqlContainer(
 let startedContainer: StartedPostgreSqlContainer;
 
 export async function getMockDb() {
-	console.log("eyes");
-
 	if (!startedContainer) {
 		// called once before all tests run
 		startedContainer = await container.start();
