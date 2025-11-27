@@ -1,4 +1,4 @@
-import { groupBy, uniqBy } from "lodash";
+import { groupBy, uniqBy } from "lodash-es";
 import { db } from "../connection";
 import { legacy } from "../legacy";
 import * as legacyTables from "../legacy/schema/tables";

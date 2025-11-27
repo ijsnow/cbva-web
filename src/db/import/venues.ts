@@ -5,7 +5,7 @@ import type {
 	SerializedParagraphNode,
 	SerializedTextNode,
 } from "lexical";
-import { uniqBy } from "lodash";
+import { uniqBy } from "lodash-es";
 import { db } from "../connection";
 import type { beaches } from "../legacy/schema/tables";
 import { type Venue, venues } from "../schema";

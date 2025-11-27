@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker/locale/en";
 import { eq } from "drizzle-orm";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import {
 	type CreateVenue,
 	type Database,

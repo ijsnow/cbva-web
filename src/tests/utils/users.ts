@@ -1,6 +1,6 @@
 import { fakerEN as faker } from "@faker-js/faker";
 import { inArray } from "drizzle-orm";
-import { chunk, range } from "lodash";
+import { chunk, range } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 import { assert } from "vitest";
 import {

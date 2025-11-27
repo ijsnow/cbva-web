@@ -2,8 +2,8 @@ import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
-import orderBy from "lodash/orderBy";
-import sum from "lodash/sum";
+import orderBy from "lodash-es/orderBy";
+import sum from "lodash-es/sum";
 import z from "zod";
 
 import { db } from "@/db/connection";

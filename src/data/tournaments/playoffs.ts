@@ -1,7 +1,7 @@
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
-import orderBy from "lodash/orderBy";
+import orderBy from "lodash-es/orderBy";
 import z from "zod";
 import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";

@@ -39,7 +39,7 @@ function RouteComponent() {
 						size: "4xl",
 					})}
 				>
-					{isLoggedIn ? "EVENTS" : "SIGN UP"}
+					{isLoggedIn ? "Events" : "Sign Up"}
 				</Link>
 			</div>
 			<div className="w-full pt-10 pb-6 flex flex-col md:flex-row space-y-6 md:space-y-0 justify-center items-center">

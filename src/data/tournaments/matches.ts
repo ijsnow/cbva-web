@@ -1,7 +1,7 @@
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { eq, sql } from "drizzle-orm";
-import random from "lodash/random";
+import random from "lodash-es/random";
 import z from "zod";
 import { requireAuthenticated, requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";

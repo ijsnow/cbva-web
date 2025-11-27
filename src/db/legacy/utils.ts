@@ -1,4 +1,4 @@
-import { range } from "lodash";
+import { range } from "lodash-es";
 
 // export function bytesToScore(input: string) {
 //   if (input.length > 40) {

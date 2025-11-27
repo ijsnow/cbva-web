@@ -1,5 +1,5 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
-import uniqBy from "lodash/uniqBy";
+import uniqBy from "lodash-es/uniqBy";
 import type { ReactNode } from "react";
 import {
 	Label as AriaLabel,

@@ -1,5 +1,5 @@
-import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
+import groupBy from "lodash-es/groupBy";
+import sortBy from "lodash-es/sortBy";
 import type { MatchSet, PoolMatch, PoolTeam } from "@/db/schema";
 
 export type PoolTeamStats = {

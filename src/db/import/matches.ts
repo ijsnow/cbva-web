@@ -1,6 +1,6 @@
 import { eq, inArray, type SQL, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/gel-core";
-import { chunk } from "lodash";
+import { chunk } from "lodash-es";
 import { db } from "../connection";
 import { legacy } from "../legacy";
 import * as legacyTables from "../legacy/schema/tables";

@@ -1,4 +1,4 @@
-import { chunk, groupBy } from "lodash";
+import { chunk, groupBy } from "lodash-es";
 
 import { db } from "../connection";
 import { legacy } from "../legacy";

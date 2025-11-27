@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import orderBy from "lodash/orderBy";
+import orderBy from "lodash-es/orderBy";
 import { Heading } from "react-aria-components";
 
 import { Button } from "@/components/base/button";

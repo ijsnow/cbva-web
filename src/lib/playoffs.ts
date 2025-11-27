@@ -1,5 +1,5 @@
-import chunk from "lodash/chunk";
-import range from "lodash/range";
+import chunk from "lodash-es/chunk";
+import range from "lodash-es/range";
 
 import { snakeDraft } from "./snake-draft";
 

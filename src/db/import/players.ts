@@ -1,5 +1,5 @@
 import { eq, inArray, not } from "drizzle-orm";
-import { chunk } from "lodash";
+import { chunk } from "lodash-es";
 import { db } from "../connection";
 import { legacy } from "../legacy";
 import { teamPlayers, users } from "../legacy/schema/tables";

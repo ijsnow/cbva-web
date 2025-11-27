@@ -1,4 +1,4 @@
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { describe, expect, test } from "vitest";
 import { draftPlayoffs, recursiveSnakeDraft, seedPlayoffs } from "./playoffs";
 

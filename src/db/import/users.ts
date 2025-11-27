@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { chunk, groupBy, sortBy } from "lodash";
+import { chunk, groupBy, sortBy } from "lodash-es";
 import { v4 as uuidv4 } from "uuid";
 import { db, schema } from "../connection";
 import { legacy } from "../legacy";

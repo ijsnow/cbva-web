@@ -2,7 +2,7 @@ import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { setResponseStatus } from "@tanstack/react-start/server";
 import { eq, inArray } from "drizzle-orm";
-import range from "lodash/range";
+import range from "lodash-es/range";
 import z from "zod";
 
 import { requirePermissions } from "@/auth/shared";

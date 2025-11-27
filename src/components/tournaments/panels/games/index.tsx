@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState, useSearch } from "@tanstack/react-router";
-import sortBy from "lodash/sortBy";
-import unionBy from "lodash/unionBy";
+import sortBy from "lodash-es/sortBy";
+import unionBy from "lodash-es/unionBy";
 import { MinusIcon, PlusIcon, Undo2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import {

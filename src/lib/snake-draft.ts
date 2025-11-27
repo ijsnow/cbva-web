@@ -1,4 +1,4 @@
-import orderBy from "lodash/orderBy";
+import orderBy from "lodash-es/orderBy";
 import type { Pool, PoolTeam } from "@/db/schema";
 
 export function snake(spots: number, buckets: number): number[][] {

@@ -1,3 +1,4 @@
+import type { MailDataRequired } from "@sendgrid/mail";
 import {
 	PostgreSqlContainer,
 	type StartedPostgreSqlContainer,
@@ -156,3 +157,19 @@ async function MOCK_DB() {
 }
 
 vi.mock("@/db/connection", MOCK_DB);
+
+vi.mock("@/services/email", () => {
+	return {
+		sendSms: (message: MailDataRequired) => {
+			console.log(message);
+		},
+	};
+});
+
+vi.mock("@/services/sms", () => {
+	return {
+		sendSms: (to: string, message: string) => {
+			console.log({ to, message });
+		},
+	};
+});

@@ -1,4 +1,4 @@
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { expect, test } from "vitest";
 
 import { getPoolStats, type PoolTeamStats } from "./matches";

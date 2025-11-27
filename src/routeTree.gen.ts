@@ -17,6 +17,7 @@ import { Route as NotFoundRouteImport } from './routes/not-found'
 import { Route as LogOutRouteImport } from './routes/log-out'
 import { Route as LogInRouteImport } from './routes/log-in'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as HealthRouteImport } from './routes/health'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index'
 import { Route as JuniorsIndexRouteImport } from './routes/juniors/index'
@@ -78,6 +79,11 @@ const LogInRoute = LogInRouteImport.update({
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HealthRoute = HealthRouteImport.update({
+  id: '/health',
+  path: '/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -195,6 +201,7 @@ const TournamentsTournamentIdDivisionIdChar123TabChar125Route =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/health': typeof HealthRoute
   '/leaderboard': typeof LeaderboardRoute
   '/log-in': typeof LogInRoute
   '/log-out': typeof LogOutRoute
@@ -227,6 +234,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/health': typeof HealthRoute
   '/leaderboard': typeof LeaderboardRoute
   '/log-in': typeof LogInRoute
   '/log-out': typeof LogOutRoute
@@ -260,6 +268,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/health': typeof HealthRoute
   '/leaderboard': typeof LeaderboardRoute
   '/log-in': typeof LogInRoute
   '/log-out': typeof LogOutRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/health'
     | '/leaderboard'
     | '/log-in'
     | '/log-out'
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/health'
     | '/leaderboard'
     | '/log-in'
     | '/log-out'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/health'
     | '/leaderboard'
     | '/log-in'
     | '/log-out'
@@ -391,6 +403,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HealthRoute: typeof HealthRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LogInRoute: typeof LogInRoute
   LogOutRoute: typeof LogOutRoute
@@ -477,6 +490,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/health': {
+      id: '/health'
+      path: '/health'
+      fullPath: '/health'
+      preLoaderRoute: typeof HealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -649,6 +669,7 @@ const ProfileProfileIdRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HealthRoute: HealthRoute,
   LeaderboardRoute: LeaderboardRoute,
   LogInRoute: LogInRoute,
   LogOutRoute: LogOutRoute,
