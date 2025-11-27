@@ -32,7 +32,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
-  globalSetup: './tests/global.setup.ts',
+  // globalSetup: './tests/global.setup.ts',
 
   /* Configure projects for major browsers */
   projects: [
@@ -83,12 +83,17 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'pnpm exec vite dev --port 5174',
-    url: 'http://localhost:5174',
-    reuseExistingServer: !process.env.CI,
-    // env: {
-    //   DATABASE_URL: 'postgresql://postgres:password@localhost:5555/e2e'
-    // }
-  },
+  webServer: [
+    {
+      command: 'pnpm tsx src/tests/db-setup.ts',
+      wait: {
+        stdout: /DATABASE_URL=(?<database_url>[^\s]+)/
+      }
+    },
+    {
+      command: 'vite dev --port 5174',
+      url: 'http://localhost:5174',
+      reuseExistingServer: !process.env.CI,
+    }
+  ],
 });

@@ -1,3 +1,5 @@
+import { writeFileSync } from "node:fs";
+import path from "node:path";
 import {
 	PostgreSqlContainer,
 	type StartedPostgreSqlContainer,
@@ -55,4 +57,16 @@ export async function getMockDb() {
 
 export async function deleteMockDb() {
 	await startedContainer.stop();
+}
+
+export async function startMockDb() {
+	const { url } = await getMockDb();
+
+	// // Write DATABASE_URL to a temp file that the webServer can read
+	// const envPath = path.join(process.cwd(), ".env.test");
+	// writeFileSync(envPath, `DATABASE_URL=${url}\n`);
+
+	// process.env.DATABASE_URL = url;
+
+	console.log(`DATABASE_URL=${url}`);
 }
