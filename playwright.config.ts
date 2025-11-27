@@ -31,6 +31,7 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
   },
 
   // globalSetup: './tests/global.setup.ts',
@@ -89,12 +90,14 @@ export default defineConfig({
       command: 'pnpm tsx src/tests/db-setup.ts',
       wait: {
         stdout: /DATABASE_URL=(?<database_url>[^\s]+)/
-      }
+      },
+      stdout: "pipe"
     },
     {
       command: 'vite dev --port 5174',
       url: 'http://localhost:5174',
       reuseExistingServer: !process.env.CI,
+      stdout: "pipe"
     }
   ],
 });
