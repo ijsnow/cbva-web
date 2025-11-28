@@ -12,7 +12,7 @@ export const Route = createFileRoute("/profile/$profileId/edit")({
 	loader: async ({ params: { profileId }, context: { queryClient } }) => {
 		const result = await queryClient.ensureQueryData(
 			profileQueryOptions(Number.parseInt(profileId, 10)),
-		)
+		);
 
 		return result;
 	},
@@ -31,13 +31,13 @@ function RouteComponent() {
 			return {
 				...data,
 				birthdate: parseDate(data.birthdate),
-			}
+			};
 		},
-	})
+	});
 
 	const canImpersonate = useViewerHasPermission({
 		user: ["impersonate"],
-	})
+	});
 
 	console.log("canImpersonate", canImpersonate);
 
@@ -55,5 +55,5 @@ function RouteComponent() {
 				</Suspense>
 			</div>
 		</DefaultLayout>
-	)
+	);
 }

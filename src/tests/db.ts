@@ -1,5 +1,3 @@
-import { writeFileSync } from "node:fs";
-import path from "node:path";
 import {
 	PostgreSqlContainer,
 	type StartedPostgreSqlContainer,
@@ -10,8 +8,6 @@ import postgres from "postgres";
 import { relationships, tables } from "@/db/schema";
 import { seedDivisions, seedLevels } from "@/db/seed/divisions";
 import { createVenues } from "./utils/venues";
-
-// const SIXTY_SECONDS = 60 * 1000;
 
 const container: PostgreSqlContainer = new PostgreSqlContainer(
 	"postgres:17-alpine",
@@ -62,11 +58,6 @@ export async function deleteMockDb() {
 export async function startMockDb() {
 	const { url } = await getMockDb();
 
-	// // Write DATABASE_URL to a temp file that the webServer can read
-	// const envPath = path.join(process.cwd(), ".env.test");
-	// writeFileSync(envPath, `DATABASE_URL=${url}\n`);
-
-	// process.env.DATABASE_URL = url;
-
+	// Log to stdout so playwright can capture the url and set it as an env var.
 	console.log(`DATABASE_URL=${url}`);
 }

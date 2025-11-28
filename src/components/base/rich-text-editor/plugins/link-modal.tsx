@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { DialogTrigger, Button, Input, Label, Heading } from "react-aria-components";
+import {
+	DialogTrigger,
+	Button,
+	Input,
+	Label,
+	Heading,
+} from "react-aria-components";
 import { Modal } from "../../modal";
 
 interface LinkModalProps {

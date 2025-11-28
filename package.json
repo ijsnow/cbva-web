@@ -30,7 +30,7 @@
     "@sendgrid/mail": "^8.1.6",
     "@tailwindcss/vite": "^4.1.16",
     "@tanstack/query-core": "^5.90.8",
-    "@tanstack/react-form": "^1.23.8",
+    "@tanstack/react-form": "^1.26.0",
     "@tanstack/react-query": "^5.90.8",
     "@tanstack/react-router": "^1.135.2",
     "@tanstack/react-router-devtools": "^1.134.2",

@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('is ok', async ({ page }) => {
-  await page.goto('/health');
+test("is ok", async ({ page }) => {
+	await page.goto("/health");
 
-  await expect(page.getByText('"ok"')).toBeVisible();
+	await expect(page.getByText('"ok"')).toBeVisible();
 });
