@@ -38,7 +38,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		// Disable signup in production, allow in dev
-		disableSignUp: process.env.NODE_ENV === "production",
+		// disableSignUp: process.env.NODE_ENV === "production",
 		minPasswordLength: process.env.NODE_ENV === "production" ? 8 : 1,
 		requireEmailVerification: true,
 		sendResetPassword: async ({ user, url }) => {
