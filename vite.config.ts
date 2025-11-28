@@ -16,7 +16,7 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
-    nitroV2Plugin({ compatibilityDate: '2025-11-11', preset: process.env.NITRO_PRESET ?? "vercel" }),
+    nitroV2Plugin({ compatibilityDate: '2025-11-11', preset: "vercel" }),
     // visualizer({
     //   emitFile: true,
     //   filename: "stats.html",

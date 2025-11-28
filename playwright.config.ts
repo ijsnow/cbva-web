@@ -84,11 +84,11 @@ export default defineConfig({
       stdout: "pipe"
     },
     {
-      command: 'pnpm build && pnpm vite preview --port 5174',
+      // command: 'pnpm serve --port 5174 --host',
+      command: 'pnpm vite dev --port 5174',
       url: 'http://localhost:5174',
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",
-      timeout: 120000
     }
   ],
 });
