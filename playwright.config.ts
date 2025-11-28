@@ -39,11 +39,6 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     // {
-    //   name: 'setup db',
-    //   testMatch: /global\.setup\.ts/,
-    // },
-
-    // {
     //   name: 'chromium',
     //   use: { ...devices['Desktop Chrome'] },
     // },
@@ -56,11 +51,6 @@ export default defineConfig({
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    // {
-    //   name: 'cleanup db',
-    //   testMatch: /global\.teardown\.ts/,
     // },
 
     /* Test against mobile viewports. */
@@ -97,7 +87,8 @@ export default defineConfig({
       command: 'pnpm build && pnpm vite preview --port 5174',
       url: 'http://localhost:5174',
       reuseExistingServer: !process.env.CI,
-      stdout: "pipe"
+      stdout: "pipe",
+      timeout: 120000
     }
   ],
 });
