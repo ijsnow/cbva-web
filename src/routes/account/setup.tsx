@@ -4,6 +4,7 @@ import { EditIcon, PlusIcon, UserCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { Button, button } from "@/components/base/button";
 import { title } from "@/components/base/primitives";
+import { ProfileList } from "@/components/profiles/list";
 import { ProfileForm } from "@/components/users/profile-form";
 import { viewerProfileQueryOptions } from "@/data/profiles";
 import { DefaultLayout } from "@/layouts/default";
@@ -57,53 +58,8 @@ function RouteComponent() {
 						{!showForm && viewerProfiles && (
 							<>
 								<hr className="border-gray-300" />
-								<ul>
-									{viewerProfiles.map(
-										({
-											id,
-											firstName,
-											preferredName,
-											lastName,
-											imageSource = undefined,
-										}) => (
-											<li
-												key={id}
-												className="py-2 flex flex-row gap-x-3 items-center justify-between"
-											>
-												<span className="flex-1 grid grid-cols-10 gap-x-2">
-													{imageSource ? (
-														<img
-															className="h-6 w-6 rounded-full overflow-hidden border border-gray-300"
-															src={imageSource}
-															alt={`${preferredName || firstName}`}
-														/>
-													) : (
-														<UserCircleIcon className="h-6 w-6" />
-													)}
 
-													<span className="col-start-2 col-span-full">
-														{preferredName || firstName} {lastName}
-													</span>
-												</span>
-
-												<Link
-													to="/profile/$profileId"
-													params={{
-														profileId: id.toString(),
-													}}
-													className={button({
-														variant: "text",
-														size: "xs",
-														className: "col-span-2",
-													})}
-												>
-													<EditIcon size={18} />
-													Edit
-												</Link>
-											</li>
-										),
-									)}
-								</ul>
+								<ProfileList profiles={viewerProfiles} linkNames={false} />
 
 								<div className="flex flex-col items-stretch gap-y-2">
 									<Button

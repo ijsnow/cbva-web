@@ -31,7 +31,7 @@ test("can sign up", async ({ page }) => {
 test.describe.skip(() => {
   test.use({ storageState: 'playwright/.auth/unverifieduser.json' });
 
-  test("is shown account verification page if either email or phone aren't verified", async ({ page, request }) => {
+  test("is shown account verification page if either email or phone aren't verified", async ({ page }) => {
     // Authenticate
     page.goto('/')
 
@@ -48,9 +48,9 @@ test.describe.skip(() => {
 test("can log in", async ({ page }) => {
 	await page.goto("/log-in");
 
-	const delay = (ms: number) =>
-		new Promise((resolve) => setTimeout(resolve, ms));
-	await delay(5000);
+	// const delay = (ms: number) =>
+	// 	new Promise((resolve) => setTimeout(resolve, ms));
+	// await delay(5000);
 
 	await page
 		.getByRole("textbox", { name: "Email*", exact: true })
@@ -59,7 +59,7 @@ test("can log in", async ({ page }) => {
 		.getByRole("textbox", { name: "Password*", exact: true })
 		.fill("Password1!");
 
-	await delay(5000);
+	// await delay(5000);
 	await page.getByRole("button", { name: "Log in" }).click();
 
 	await page.waitForURL("**/account**");

@@ -52,3 +52,34 @@ export const subtitle = tv({
 		fullWidth: true,
 	},
 });
+
+export const card = tv({
+	base: "p-6 rounded-lg border border-gray-900 bg-white",
+	variants: {
+		size: {
+			// TODO
+			sm: "",
+			md: "",
+			lg: "",
+		},
+	},
+	defaultVariants: {
+		size: "md",
+	},
+});
+
+export const pill = tv({
+	base: "rounded-full flex flex-row items-center space-x-2",
+	variants: {
+		color: {
+			lightBlue: "bg-[#97E1F0]",
+		},
+		size: {
+			sm: "px-2 py-1.25 text-sm",
+			md: "px-3 py-1.5 ",
+		},
+	},
+	defaultVariants: {
+		color: "lightBlue",
+	},
+});

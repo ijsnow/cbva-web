@@ -32,25 +32,20 @@ setup("create verified test user", async ({ page, request }) => {
 
 	// console.log(res)
 
-	// await page.goto("/log-in");
+	await page.goto("/log-in");
 
-	// const delay = (ms: number) =>
-	// 	new Promise((resolve) => setTimeout(resolve, ms));
-	// await delay(5000);
+	await page
+		.getByRole("textbox", { name: "Email*", exact: true })
+		.fill("verifieduser@example.com");
+	await page
+		.getByRole("textbox", { name: "Password*", exact: true })
+		.fill("Password1!");
 
-	// await page
-	// 	.getByRole("textbox", { name: "Email*", exact: true })
-	// 	.fill("verifieduser@example.com");
-	// await page
-	// 	.getByRole("textbox", { name: "Password*", exact: true })
-	// 	.fill("Password1!");
+	await page.getByRole("button", { name: "Log in" }).click();
 
-	// await delay(5000);
-	// await page.getByRole("button", { name: "Log in" }).click();
+	await page.waitForURL("**/account**");
 
-	// await page.waitForURL("**/account**");
-
-	// await page.context().storageState({ path: `${authDir}/verifieduser.json` });
+	await page.context().storageState({ path: `${authDir}/verifieduser.json` });
 });
 
 setup("create unverified test user", async ({ page, request }) => {

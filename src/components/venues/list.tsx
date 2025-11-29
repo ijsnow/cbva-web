@@ -33,7 +33,7 @@ export function VenuesList() {
 					)}
 				</div>
 
-				<div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 md:gap-6">
 					{venues?.map(({ id, name, city, imageSource }) => (
 						<Link
 							key={id}

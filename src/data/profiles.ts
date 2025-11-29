@@ -155,6 +155,47 @@ export const profileOverviewQueryOptions = (id: number) =>
 		queryFn: () => getProfileOverview({ data: { id } }),
 	});
 
+const getProfileResults = createServerFn({
+	method: "GET",
+})
+	.inputValidator(selectPlayerProfileSchema.pick({ id: true }))
+	.handler(async ({ data: { id } }) => {
+		const result = await db.query.teamPlayers.findMany({
+			with: {
+				team: {
+					with: {
+						players: {
+							with: {
+								profile: true,
+							},
+							where: (t, { eq, not }) => not(eq(t.playerProfileId, id)),
+						},
+						tournamentDivisionTeams: {
+							where: (t, { eq }) => eq(t.status, "confirmed"),
+						},
+					},
+				},
+			},
+			where: (t, { eq }) => eq(t.playerProfileId, id),
+		});
+
+		if (!result) {
+			throw notFound();
+		}
+
+		return result.filter((data) =>
+			data.team.tournamentDivisionTeams.some(
+				(team) => team.status === "confirmed",
+			),
+		);
+	});
+
+export const profileResultsQueryOptions = (id: number) =>
+	queryOptions({
+		queryKey: ["profile_results", id],
+		queryFn: () => getProfileResults({ data: { id } }),
+	});
+
 export const updatePlayerProfileFn = createServerFn({ method: "POST" })
 	.inputValidator(updatePlayerProfileSchema)
 	.handler(async ({ data }) => {

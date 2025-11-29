@@ -124,19 +124,19 @@ function RouteComponent() {
 				<img
 					alt="A bear"
 					src="/bear.svg"
-					className="absolute left-0 top-1/2 -translate-y-1/2"
+					className="absolute left-0 top-1/2 -translate-y-1/2 h-1/4 md:h-auto z-0"
 				/>
 				<img
 					alt="A bear"
 					src="/bear.svg"
-					className="absolute right-0 -scale-x-100 top-1/2 -translate-y-1/2"
+					className="absolute right-0 -scale-x-100 top-1/2 h-1/4 md:h-auto -translate-y-1/2 z-0"
 				/>
 
-				<div className="flex flex-col space-y-6 justify-center items-center h-full max-w-2xl mx-auto px-3">
+				<div className="relative z-1 flex flex-col space-y-6 justify-center items-center h-full max-w-2xl mx-auto px-3">
 					<h1 className={title({ size: "md", class: "leading-tight" })}>
-						THE BEST OF THE BEST WIN ON CALIFORNIA SAND.
+						The best of the best win on California sand.
 					</h1>
-					<h2 className={title({ size: "lg" })}>JOIN THEM. BEAT THEM.</h2>
+					<h2 className={title({ size: "lg" })}>Join Them. Beat Them.</h2>
 					<Link
 						to={isLoggedIn ? "/tournaments" : "/sign-up"}
 						className={button({
@@ -146,7 +146,7 @@ function RouteComponent() {
 							className: "font-bold",
 						})}
 					>
-						START HERE
+						Start Here
 					</Link>
 				</div>
 			</div>
@@ -170,7 +170,7 @@ function RouteComponent() {
 						<h3
 							className={title({ size: "xs", class: "font-bold text-white" })}
 						>
-							THE CBVA IS CALIFORNIA'S PREMIER TOUR
+							The CBVA is California's premier tour
 						</h3>
 						<p className="text-[5svw] md:text-4xl mx-6 my-2 max-w-[900] font-light text-white leading-snug md:leading-snug pb-[100]">
 							Founded in 1962, the CBVA was created to bring together all levels

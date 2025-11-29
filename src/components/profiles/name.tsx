@@ -6,11 +6,13 @@ export type ProfileNameProps = Pick<
 	PlayerProfile,
 	"id" | "preferredName" | "firstName" | "lastName"
 > & {
+	className?: string;
 	showFirst?: boolean;
 	link?: boolean;
 };
 
 export function ProfileName({
+	className,
 	id,
 	preferredName,
 	firstName,
@@ -35,12 +37,12 @@ export function ProfileName({
 			<Link
 				to="/profile/$profileId"
 				params={{ profileId: id.toString() }}
-				className="hover:underline"
+				className={clsx("hover:underline", className)}
 			>
 				{content}
 			</Link>
 		);
 	}
 
-	return <span>{content}</span>;
+	return <span className={className}>{content}</span>;
 }
