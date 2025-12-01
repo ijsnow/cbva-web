@@ -61,7 +61,7 @@ const links: {
 ];
 
 const linkClassName =
-	"uppercase text-navbar-foreground outline-none hover:bg-navbar-foreground hover:text-navbar-foreground-hover px-3 py-1 font-bold tracking-wide";
+	"uppercase text-navbar-foreground hover:bg-navbar-foreground hover:text-navbar-foreground-hover px-3 py-1 font-bold tracking-wide";
 
 export function Navbar() {
 	const viewerId = useViewerId();
@@ -78,7 +78,7 @@ export function Navbar() {
 			>
 				<MenuSection className="flex-1 gap-3 justify-end hidden lg:flex">
 					{visibleLinks.slice(0, 3).map(({ to, label, className }) => (
-						<MenuItem key={to} className="rounded-full">
+						<MenuItem key={to} className="rounded-full outline-none">
 							<Link
 								to={to}
 								className={clsx(linkClassName, "rounded-full", className)}
@@ -88,14 +88,14 @@ export function Navbar() {
 						</MenuItem>
 					))}
 				</MenuSection>
-				<MenuItem className="flex lg:justify-center transition-colors hover:brightness-75 rounded-full">
+				<MenuItem className="flex lg:justify-center transition-colors hover:brightness-75 rounded-full outline-none">
 					<Link to="/">
 						<img alt="CBVA Logo" src="/logos/cbva.svg" />
 					</Link>
 				</MenuItem>
 				<MenuSection className="flex-1 justify-end lg:justify-start hidden md:flex gap-3">
 					{visibleLinks.slice(3).map(({ to, label, className }) => (
-						<MenuItem key={to} className="rounded-full">
+						<MenuItem key={to} className="rounded-full outline-none">
 							<Link
 								to={to}
 								className={clsx(linkClassName, "rounded-full", className)}

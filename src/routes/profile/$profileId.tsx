@@ -1,8 +1,4 @@
-import {
-	DateFormatter,
-	getLocalTimeZone,
-	parseDate,
-} from "@internationalized/date";
+import { getLocalTimeZone, parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -11,7 +7,6 @@ import { CircleCheckIcon } from "lucide-react";
 import { Suspense, useState } from "react";
 import { titleCase } from "title-case";
 import { ComboBox, ComboBoxItem } from "@/components/base/combo-box";
-import { MultiSelect } from "@/components/base/multi-select";
 import { pill, title } from "@/components/base/primitives";
 import { Select } from "@/components/base/select";
 import {
@@ -31,7 +26,7 @@ import {
 	profileResultsQueryOptions,
 } from "@/data/profiles";
 import { DefaultLayout } from "@/layouts/default";
-import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
+import { isNotNullOrUndefined } from "@/utils/types";
 
 export const Route = createFileRoute("/profile/$profileId")({
 	// validateSearch: (
