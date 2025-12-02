@@ -69,24 +69,6 @@ export function EditDivisionsForm({
 		},
 	});
 
-	const schema = removeTournamentDivisionSchema;
-
-	const form = useAppForm({
-		defaultValues: {
-			id: 0,
-			gender: undefined as unknown as "male" | "female",
-		},
-		validators: {
-			onMount: schema,
-			onChange: schema,
-		},
-		onSubmit: ({ value: { id } }) => {
-			mutate({
-				id,
-			});
-		},
-	});
-
 	const [addingOrEditId, setAddingOrEditId] = useState<
 		true | number | undefined
 	>();
@@ -106,58 +88,45 @@ export function EditDivisionsForm({
 					<h3 className={title({ size: "xs" })}>Existing Divisions</h3>
 
 					{tournamentDivisions?.map((td) => (
-						<Disclosure isExpanded={addingOrEditId === td.id}>
-							<div
-								key={td.id}
-								className="flex flex-col space-y-2 last-of-type:border-b-0 border-b border-gray-300 py-2"
-							>
-								<div className="w-full flex flex-row justify-between items-center">
-									<span
-										className={clsx(
-											td.id === addingOrEditId && "font-semibold",
-										)}
+						<div
+							key={td.id}
+							className="flex flex-col space-y-2 last-of-type:border-b-0 border-b border-gray-300 py-2"
+						>
+							<div className="w-full flex flex-row justify-between items-center">
+								<span
+									className={clsx(td.id === addingOrEditId && "font-semibold")}
+								>
+									{getTournamentDivisionDisplay(td)}
+								</span>
+
+								<div className="flex flex-row gap-2">
+									<Button
+										size="sm"
+										isDisabled={addingOrEditId !== undefined}
+										onPress={() => {
+											setAddingOrEditId(td.id);
+										}}
 									>
-										{getTournamentDivisionDisplay(td)}
-									</span>
+										<EditIcon size={12} className="-mr" /> <span>Edit</span>
+									</Button>
 
-									<div className="flex flex-row gap-2">
-										<Button
-											size="sm"
-											isDisabled={addingOrEditId !== undefined}
-											onPress={() => {
-												setAddingOrEditId(td.id);
-											}}
-										>
-											<EditIcon size={12} className="-mr" /> <span>Edit</span>
-										</Button>
-
-										<RemoveDivisionForm
-											isDisabled={addingOrEditId !== undefined}
-											tournamentId={tournamentId}
-											divisionId={td.id}
-										/>
-									</div>
-								</div>
-
-								<DisclosurePanel>
-									<DivisionForm
-										showTitle={false}
+									<RemoveDivisionForm
+										isDisabled={addingOrEditId !== undefined}
 										tournamentId={tournamentId}
-										divisionId={addingOrEditId}
-										onCancel={() => setAddingOrEditId(undefined)}
+										divisionId={td.id}
 									/>
-								</DisclosurePanel>
+								</div>
+							</div>
 
-								{/*{addingOrEditId === td.id && (
+							{addingOrEditId === td.id && (
 								<DivisionForm
 									showTitle={false}
 									tournamentId={tournamentId}
 									divisionId={addingOrEditId}
 									onCancel={() => setAddingOrEditId(undefined)}
 								/>
-							)}*/}
-							</div>
-						</Disclosure>
+							)}
+						</div>
 					))}
 				</div>
 
