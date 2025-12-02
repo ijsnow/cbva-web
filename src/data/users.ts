@@ -75,7 +75,12 @@ export const updateUserFn = createServerFn({ method: "POST" })
 				.update(users)
 				.set({
 					...values,
-					phoneNumberVerified: values.phoneNumber ? sql`` : undefined,
+					emailVerified: values.email
+						? sql`CASE WHEN ${users.email} != ${values.email} THEN false ELSE ${users.emailVerified} END`
+						: undefined,
+					phoneNumberVerified: values.phoneNumber
+						? sql`CASE WHEN ${users.phoneNumber} != ${values.phoneNumber} THEN false ELSE ${users.phoneNumberVerified} END`
+						: undefined,
 				})
 				.where(eq(users.id, id));
 
