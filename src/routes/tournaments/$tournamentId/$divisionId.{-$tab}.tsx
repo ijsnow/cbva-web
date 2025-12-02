@@ -5,7 +5,7 @@ import {
 } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, linkOptions } from "@tanstack/react-router";
+import { createFileRoute, linkOptions, redirect } from "@tanstack/react-router";
 import clsx from "clsx";
 import { CheckIcon } from "lucide-react";
 import { match, P } from "ts-pattern";
@@ -47,13 +47,27 @@ export const Route = createFileRoute(
 			courts: Array.isArray(search?.courts) ? search.courts : undefined,
 		};
 	},
-	loader: async ({ params: { tournamentId }, context: { queryClient } }) => {
+	loader: async ({
+		params: { tournamentId, divisionId: divisionIdStr },
+		context: { queryClient },
+	}) => {
 		const tournament = await queryClient.ensureQueryData(
 			tournamentQueryOptions(Number.parseInt(tournamentId, 10)),
 		);
 
 		if (!tournament) {
 			throw new Error("not found");
+		}
+
+		const divisionId = Number.parseInt(divisionIdStr, 10);
+
+		if (!tournament.tournamentDivisions.some(({ id }) => id === divisionId)) {
+			throw redirect({
+				to: "/tournaments/$tournamentId",
+				params: {
+					tournamentId: tournamentId,
+				},
+			});
 		}
 
 		return tournament;

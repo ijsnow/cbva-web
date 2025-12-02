@@ -43,9 +43,6 @@ export function FillTournamentForm({
 	});
 
 	const form = useAppForm({
-		defaultValues: {
-			// overwrite: false,
-		},
 		validators: {
 			// onMount: schema,
 			// onChange: schema,
@@ -89,7 +86,9 @@ export function FillTournamentForm({
 						<form.Footer>
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 
-							<form.SubmitButton>Submit</form.SubmitButton>
+							<form.SubmitButton requireChange={false}>
+								Submit
+							</form.SubmitButton>
 						</form.Footer>
 					</form.AppForm>
 				</form>

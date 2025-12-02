@@ -92,7 +92,9 @@ export function SimulateMatchesForm({
 						<form.Footer>
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 
-							<form.SubmitButton>Submit</form.SubmitButton>
+							<form.SubmitButton requireChange={false}>
+								Submit
+							</form.SubmitButton>
 						</form.Footer>
 					</form.AppForm>
 				</form>

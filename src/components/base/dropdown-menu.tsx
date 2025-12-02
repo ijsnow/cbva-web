@@ -74,7 +74,7 @@ export function DropdownMenu({
 					popoverStyles({ ...render, className }),
 				)}
 			>
-				<Menu className="border border-gray-300 outline-0 p-1 shadow-lg rounded-lg bg-popover outline-hidden max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]">
+				<Menu className="border border-gray-300 outline-0 p-1 shadow-lg rounded-xl bg-popover outline-hidden max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]">
 					{children}
 				</Menu>
 			</Popover>

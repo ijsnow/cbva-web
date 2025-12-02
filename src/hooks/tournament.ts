@@ -9,9 +9,9 @@ export function getLevelDisplay(level: Level | null) {
 export function getTournamentDivisionDisplay({
 	teamSize,
 	gender,
-	division: { maxAge, name },
+	division: { maxAge, name, display: divisionDisplay },
 }: Pick<TournamentDivision, "name" | "teamSize" | "gender"> & {
-	division: Pick<Division, "maxAge" | "name">;
+	division: Pick<Division, "maxAge" | "name" | "display">;
 }) {
 	let display = maxAge
 		? gender === "male"
@@ -21,7 +21,7 @@ export function getTournamentDivisionDisplay({
 			? "Men's"
 			: "Women's";
 
-	display += ` ${name === "open" ? "Open" : name.toUpperCase()}`;
+	display += ` ${divisionDisplay ?? name.toUpperCase()}`;
 
 	if (teamSize === 4) {
 		display += " quads";

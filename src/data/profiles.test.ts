@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { tournamentDivisionTeams } from "@/db";
 import { db } from "@/db/connection";
+import { tournamentDivisionTeams } from "@/db/schema";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
 import { createProfiles, createTeams } from "@/tests/utils/users";
 import { createVenues } from "@/tests/utils/venues";

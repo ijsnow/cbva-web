@@ -12,28 +12,31 @@ import {
 	upsertTournamentDivisionMutationOptions,
 	upsertTournamentDivisionSchema,
 } from "@/data/tournaments/divisions";
+import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { isNotNullOrUndefined } from "@/utils/types";
 
 export type DivisionFormProps = {
 	tournamentId: number;
 	divisionId?: number;
+	showTitle?: boolean;
 	onCancel: () => void;
 };
 
 export function DivisionForm({
 	tournamentId,
 	divisionId,
+	showTitle = true,
 	onCancel,
 }: DivisionFormProps) {
-	const { data: divisionOptions } = useSuspenseQuery({
+	const { data: divisions } = useSuspenseQuery({
 		...divisionsQueryOptions(),
-		select: (divisions) =>
-			divisions.map(({ id, display, name, maxAge }) => ({
-				value: id,
-				display: display ?? name.toUpperCase(),
-				hasMaxAge: isNotNullOrUndefined(maxAge),
-			})),
 	});
+
+	const divisionOptions = divisions.map(({ id, display, name, maxAge }) => ({
+		value: id,
+		display: display ?? name.toUpperCase(),
+		hasMaxAge: isNotNullOrUndefined(maxAge),
+	}));
 
 	const { data: editDivision } = useSuspenseQuery({
 		...tournamentQueryOptions(tournamentId),
@@ -52,23 +55,30 @@ export function DivisionForm({
 		},
 	});
 
+	const schema = upsertTournamentDivisionSchema.omit({
+		tournamentId: true,
+	});
+
 	const form = useAppForm({
 		defaultValues: {
 			id: divisionId,
 			divisionId: editDivision?.divisionId,
+			name: editDivision?.name,
 			gender: editDivision?.gender,
 			capacity: editDivision?.capacity,
 			waitlistCapacity: editDivision?.waitlistCapacity,
 			autopromoteWaitlist: editDivision?.autopromoteWaitlist,
-			teamSize: editDivision?.teamSize,
+			teamSize: editDivision?.teamSize ?? 2,
 		},
 		validators: {
-			onChange: upsertTournamentDivisionSchema,
+			onMount: schema,
+			onChange: schema,
 		},
 		onSubmit: ({
 			value: {
 				id,
 				divisionId,
+				name,
 				gender,
 				capacity,
 				waitlistCapacity,
@@ -78,6 +88,8 @@ export function DivisionForm({
 		}) => {
 			mutate({
 				id,
+				tournamentId,
+				name,
 				divisionId,
 				gender,
 				capacity,
@@ -97,15 +109,17 @@ export function DivisionForm({
 				form.handleSubmit();
 			}}
 		>
-			<h3 className={title({ size: "xs", class: "col-span-full" })}>
-				{divisionId ? "Edit Division" : "Add Division"}
-			</h3>
+			{showTitle && (
+				<h3 className={title({ size: "xs", class: "col-span-full" })}>
+					{divisionId ? "Edit Division" : "Add Division"}
+				</h3>
+			)}
 
 			{failureReason && (
 				<form.AppForm>
 					<form.Alert
 						className="col-span-full"
-						title={"Unable to set seeds"}
+						title={`Unable to ${divisionId ? "edit" : "add"} division.`}
 						description={failureReason.message}
 					/>
 				</form.AppForm>
@@ -115,6 +129,7 @@ export function DivisionForm({
 				name="divisionId"
 				children={(field) => (
 					<field.Select
+						isRequired={true}
 						label="Division"
 						field={field}
 						options={divisionOptions}
@@ -135,8 +150,9 @@ export function DivisionForm({
 							name="gender"
 							children={(field) => (
 								<field.Select
+									isRequired={true}
 									label="Gender"
-									className="col-span-full"
+									className="col-span-full sm:col-span-3"
 									field={field}
 									isDisabled={!selectedDivision}
 									options={[
@@ -160,9 +176,57 @@ export function DivisionForm({
 			</form.Subscribe>
 
 			<form.AppField
+				name="teamSize"
+				children={(field) => (
+					<field.Number
+						isRequired={true}
+						label="Team Size"
+						className="col-span-full sm:col-span-3"
+						field={field}
+					/>
+				)}
+			/>
+
+			<form.Subscribe
+				selector={(state) => ({
+					values: state.values,
+				})}
+			>
+				{({ values: { name, gender, teamSize, divisionId, ...values } }) => {
+					const division = divisions.find(({ id }) => id === divisionId);
+
+					const placeholder =
+						division && gender && teamSize
+							? getTournamentDivisionDisplay({
+									division,
+									name: name ?? null,
+									gender,
+									teamSize,
+									...values,
+								})
+							: undefined;
+
+					return (
+						<form.AppField
+							name="name"
+							children={(field) => (
+								<field.Text
+									label="Name"
+									field={field}
+									placeholder={placeholder}
+									className="col-span-full"
+								/>
+							)}
+						/>
+					);
+				}}
+			</form.Subscribe>
+
+			<form.AppField
 				name="capacity"
 				children={(field) => (
 					<field.Number
+						isRequired={true}
 						label="Capacity"
 						className="col-span-full sm:col-span-3"
 						field={field}
@@ -174,6 +238,7 @@ export function DivisionForm({
 				name="waitlistCapacity"
 				children={(field) => (
 					<field.Number
+						isRequired={true}
 						label="Waitlist Capacity"
 						className="col-span-full sm:col-span-3"
 						field={field}

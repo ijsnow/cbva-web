@@ -24,7 +24,7 @@ export function Menu<T extends object>(props: MenuProps<T>) {
 		<Popover placement={props.placement} className="min-w-[150px]">
 			<AriaMenu
 				{...props}
-				className="p-1 outline outline-0 max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]"
+				className="p-1 outline-0 max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]"
 			/>
 		</Popover>
 	);
@@ -83,7 +83,7 @@ export function MenuSection<T extends object>(props: MenuSectionProps<T>) {
 			className="first:-mt-[5px] after:content-[''] after:block after:h-[5px]"
 		>
 			{props.title && (
-				<Header className="text-sm font-semibold text-gray-500 dark:text-zinc-300 px-4 py-1 truncate sticky -top-[5px] -mt-px -mx-1 z-10 bg-gray-100/60 dark:bg-zinc-700/60 backdrop-blur-md supports-[-moz-appearance:none]:bg-gray-100 border-y border-y-gray-200 dark:border-y-zinc-700 [&+*]:mt-1">
+				<Header className="text-sm font-semibold text-gray-500 px-4 py-1 truncate sticky -top-[5px] -mt-px -mx-1 z-10 bg-gray-100/60 backdrop-blur-md supports-[-moz-appearance:none]:bg-gray-100 border-y border-y-gray-200 [&+*]:mt-1">
 					{props.title}
 				</Header>
 			)}

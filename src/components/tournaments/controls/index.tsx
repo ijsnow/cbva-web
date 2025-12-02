@@ -6,8 +6,8 @@ import {
 	DropdownMenu,
 	DropdownMenuItem,
 } from "@/components/base/dropdown-menu";
+import { MenuSection } from "@/components/base/menu";
 import type { Division, TournamentDivision } from "@/db/schema";
-
 import { AddTeamForm } from "./add-team";
 import { CalculateSeedsForm } from "./calculate-seeds";
 import { CompletePoolsForm } from "./complete-pools";
@@ -71,22 +71,22 @@ export function TournamentControls({
 				buttonIcon={<SettingsIcon />}
 			>
 				{canCreate && (
-					<>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.EditDivisions)}
-						>
-							Edit Divisions
-						</DropdownMenuItem>
+					<MenuSection title="Admin Controls">
 						<DropdownMenuItem
 							onPress={() => setActiveModal(ModalKind.Duplicate)}
 						>
 							Duplicate
 						</DropdownMenuItem>
-					</>
+					</MenuSection>
 				)}
 
 				{canUpdate && (
-					<>
+					<MenuSection title="Tournament Controls">
+						<DropdownMenuItem
+							onPress={() => setActiveModal(ModalKind.EditDivisions)}
+						>
+							Edit Divisions
+						</DropdownMenuItem>
 						<DropdownMenuItem onPress={() => setActiveModal(ModalKind.AddTeam)}>
 							Add Team
 						</DropdownMenuItem>
@@ -125,7 +125,7 @@ export function TournamentControls({
 						>
 							Create Playoffs
 						</DropdownMenuItem>
-					</>
+					</MenuSection>
 				)}
 			</DropdownMenu>
 

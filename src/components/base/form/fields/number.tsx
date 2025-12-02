@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import {
 	NumberField as AriaNumberField,
 	type NumberFieldProps as AriaNumberFieldProps,
@@ -44,20 +44,18 @@ export function NumberField({
 			{label && <Label isRequired={props.isRequired}>{label}</Label>}
 
 			<Group>
+				<StepperButton slot="decrement" className="rounded-l-lg border-e">
+					<Minus aria-hidden className="w-4 h-4" />
+				</StepperButton>
+
 				<Input
 					placeholder={placeholder}
-					className={clsx("pl-3 py-1.5", baseInputStyles)}
+					className={clsx("px-3 py-1.5 text-center", baseInputStyles)}
 				/>
 
-				<div className="flex flex-col rounded-r-lg border-s overflow-hidden">
-					<StepperButton slot="increment">
-						<ChevronUp aria-hidden className="w-4 h-4" />
-					</StepperButton>
-					<div className="border-b" />
-					<StepperButton slot="decrement">
-						<ChevronDown aria-hidden className="w-4 h-4" />
-					</StepperButton>
-				</div>
+				<StepperButton slot="increment" className="rounded-r-lg border-s">
+					<Plus aria-hidden className="w-4 h-4" />
+				</StepperButton>
 			</Group>
 
 			{description && <Description>{description}</Description>}
@@ -66,12 +64,13 @@ export function NumberField({
 	);
 }
 
-function StepperButton(props: ButtonProps) {
+function StepperButton({ className, ...props }: ButtonProps) {
 	return (
 		<Button
 			{...props}
 			className={clsx(
-				"px-0.5 cursor-pointer text-gray-600 hover:bg-gray-200 pressed:bg-gray-100 group-disabled:text-gray-200 forced-colors:group-disabled:text-[GrayText]",
+				"px-2 py-1.5 cursor-pointer text-gray-600 hover:bg-gray-200 pressed:bg-gray-100 group-disabled:text-gray-200 forced-colors:group-disabled:text-[GrayText]",
+				className,
 			)}
 		/>
 	);

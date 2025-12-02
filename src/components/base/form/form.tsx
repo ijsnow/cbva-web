@@ -60,19 +60,32 @@ function SubmitButton({
 	isDisabled,
 	className,
 	children = <>Submit</>,
+	requireChange = true,
 	...props
-}: Omit<ButtonProps, "type" | "children"> & { children?: ReactNode }) {
+}: Omit<ButtonProps, "type" | "children"> & {
+	children?: ReactNode;
+	requireChange?: boolean;
+}) {
 	const form = useFormContext();
 
 	return (
 		<form.Subscribe
-			selector={(state) => [state.canSubmit, state.isSubmitting]}
-			children={([canSubmit, isSubmitting]) => (
+			selector={(state) => [
+				state.canSubmit,
+				state.isDefaultValue,
+				state.isSubmitting,
+			]}
+			children={([canSubmit, isDefaultValue, isSubmitting]) => (
 				<Button
 					type="submit"
 					color="primary"
 					className={clsx(className)}
-					isDisabled={!canSubmit || isSubmitting || isDisabled}
+					isDisabled={
+						!canSubmit ||
+						isSubmitting ||
+						isDisabled ||
+						(requireChange && isDefaultValue)
+					}
 					{...props}
 				>
 					{children}
@@ -90,10 +103,12 @@ function ConfirmSubmitButton({
 	variant,
 	color,
 	size,
+	requireChange = true,
 	...props
 }: Omit<ButtonProps, "type" | "children"> & {
 	description: ReactNode;
 	children?: ReactNode;
+	requireChange?: boolean;
 }) {
 	const form = useFormContext();
 
@@ -101,8 +116,12 @@ function ConfirmSubmitButton({
 
 	return (
 		<form.Subscribe
-			selector={(state) => [state.canSubmit, state.isSubmitting]}
-			children={([canSubmit, isSubmitting]) => (
+			selector={(state) => [
+				state.canSubmit,
+				state.isDefaultValue,
+				state.isSubmitting,
+			]}
+			children={([canSubmit, isDefaultValue, isSubmitting]) => (
 				<>
 					<Button
 						color={color ?? "primary"}
@@ -134,7 +153,12 @@ function ConfirmSubmitButton({
 										form.handleSubmit();
 									}}
 									className={clsx(className)}
-									isDisabled={!canSubmit || isSubmitting || isDisabled}
+									isDisabled={
+										!canSubmit ||
+										isSubmitting ||
+										isDisabled ||
+										(requireChange && isDefaultValue)
+									}
 									{...props}
 								>
 									{children}
@@ -148,14 +172,14 @@ function ConfirmSubmitButton({
 	);
 }
 
-function StateDebugger({ className }: { className: string }) {
+function StateDebugger({ className }: { className?: string }) {
 	const form = useFormContext();
 
 	return (
 		<form.Subscribe
 			selector={({ values, errors }) => [values, errors]}
 			children={([values, errors]) => (
-				<pre className={className}>
+				<pre className={clsx("col-span-full", className)}>
 					{JSON.stringify({ values, errors }, null, 2)}
 				</pre>
 			)}

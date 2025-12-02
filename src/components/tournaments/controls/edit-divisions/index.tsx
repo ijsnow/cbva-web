@@ -4,9 +4,10 @@ import {
 	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
+import clsx from "clsx";
 import { EditIcon, PlusIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Heading } from "react-aria-components";
+import { Disclosure, DisclosurePanel, Heading } from "react-aria-components";
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal, ModalHeading } from "@/components/base/modal";
@@ -105,38 +106,71 @@ export function EditDivisionsForm({
 					<h3 className={title({ size: "xs" })}>Existing Divisions</h3>
 
 					{tournamentDivisions?.map((td) => (
-						<div
-							key={td.id}
-							className="w-full flex flex-row justify-between items-center last-of-type:border-b-0 border-b border-gray-300 py-2"
-						>
-							<span>{getTournamentDivisionDisplay(td)}</span>
+						<Disclosure isExpanded={addingOrEditId === td.id}>
+							<div
+								key={td.id}
+								className="flex flex-col space-y-2 last-of-type:border-b-0 border-b border-gray-300 py-2"
+							>
+								<div className="w-full flex flex-row justify-between items-center">
+									<span
+										className={clsx(
+											td.id === addingOrEditId && "font-semibold",
+										)}
+									>
+										{getTournamentDivisionDisplay(td)}
+									</span>
 
-							<div className="flex flex-row gap-2">
-								<Button
-									size="sm"
-									isDisabled={addingOrEditId !== undefined}
-									onPress={() => {
-										setAddingOrEditId(td.id);
-									}}
-								>
-									<EditIcon size={12} className="-mr" /> <span>Edit</span>
-								</Button>
+									<div className="flex flex-row gap-2">
+										<Button
+											size="sm"
+											isDisabled={addingOrEditId !== undefined}
+											onPress={() => {
+												setAddingOrEditId(td.id);
+											}}
+										>
+											<EditIcon size={12} className="-mr" /> <span>Edit</span>
+										</Button>
 
-								<RemoveDivisionForm
-									isDisabled={addingOrEditId !== undefined}
+										<RemoveDivisionForm
+											isDisabled={addingOrEditId !== undefined}
+											tournamentId={tournamentId}
+											divisionId={td.id}
+										/>
+									</div>
+								</div>
+
+								<DisclosurePanel>
+									<DivisionForm
+										showTitle={false}
+										tournamentId={tournamentId}
+										divisionId={addingOrEditId}
+										onCancel={() => setAddingOrEditId(undefined)}
+									/>
+								</DisclosurePanel>
+
+								{/*{addingOrEditId === td.id && (
+								<DivisionForm
+									showTitle={false}
 									tournamentId={tournamentId}
-									divisionId={td.id}
+									divisionId={addingOrEditId}
+									onCancel={() => setAddingOrEditId(undefined)}
 								/>
+							)}*/}
 							</div>
-						</div>
+						</Disclosure>
 					))}
 				</div>
 
-				{addingOrEditId === undefined ? (
-					<Button onPress={() => setAddingOrEditId(true)}>
+				{addingOrEditId !== true && (
+					<Button
+						onPress={() => setAddingOrEditId(true)}
+						isDisabled={addingOrEditId !== undefined}
+					>
 						<PlusIcon size={12} /> Add Another
 					</Button>
-				) : (
+				)}
+
+				{addingOrEditId === true && (
 					<DivisionForm
 						tournamentId={tournamentId}
 						divisionId={addingOrEditId === true ? undefined : addingOrEditId}

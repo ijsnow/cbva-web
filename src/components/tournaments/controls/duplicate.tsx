@@ -110,7 +110,9 @@ export function DuplicateForm({
 						<form.Footer className="col-span-full">
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 
-							<form.SubmitButton>Duplicate</form.SubmitButton>
+							<form.SubmitButton requireChange={false}>
+								Duplicate
+							</form.SubmitButton>
 						</form.Footer>
 					</form.AppForm>
 				</form>

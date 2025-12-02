@@ -85,6 +85,7 @@ export function CopyScheduleForm() {
 			<form.AppForm>
 				<form.Footer>
 					<form.ConfirmSubmitButton
+						requireChange={false}
 						description={
 							<div className="flex flex-col space-y">
 								<div className="flex flex-row space-x-2">

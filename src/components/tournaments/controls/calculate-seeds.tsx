@@ -100,7 +100,9 @@ export function CalculateSeedsForm({
 						<form.Footer>
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 
-							<form.SubmitButton>Calculate</form.SubmitButton>
+							<form.SubmitButton requireChange={false}>
+								Calculate
+							</form.SubmitButton>
 						</form.Footer>
 					</form.AppForm>
 				</form>

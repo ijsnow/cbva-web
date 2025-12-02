@@ -106,7 +106,9 @@ export function CreatePoolMatchesForm({
 						<form.Footer>
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 
-							<form.SubmitButton>Create</form.SubmitButton>
+							<form.SubmitButton requireChange={false}>
+								Create
+							</form.SubmitButton>
 						</form.Footer>
 					</form.AppForm>
 				</form>

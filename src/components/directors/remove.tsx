@@ -94,7 +94,9 @@ export function RemoveDirector({
 						<form.AppForm>
 							<form.Footer className="justify-end">
 								<Button onPress={() => setOpen(false)}>Cancel</Button>
-								<form.SubmitButton>Confirm</form.SubmitButton>
+								<form.SubmitButton requireChange={false}>
+									Confirm
+								</form.SubmitButton>
 							</form.Footer>
 						</form.AppForm>
 					</form>
