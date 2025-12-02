@@ -29,6 +29,7 @@ import {
 } from "@/data/profiles";
 import { useVenueFilterOptions } from "@/data/venues";
 import { DefaultLayout } from "@/layouts/default";
+import { dbg } from "@/utils/dbg";
 import { isNotNullOrUndefined } from "@/utils/types";
 
 export const Route = createFileRoute("/profile/$profileId")({
@@ -69,9 +70,6 @@ function RouteComponent() {
 		...profileOverviewQueryOptions(Number.parseInt(profileId, 10)),
 	});
 
-	const [selectedVenue, setSelectedVenue] = useState<string | null>(null);
-	const [selectedDivisions, setSelectedDivisions] = useState<string[]>([]);
-
 	const dateFormatter = useDateFormatter({
 		dateStyle: "short",
 	});
@@ -87,7 +85,7 @@ function RouteComponent() {
 			},
 		}),
 		select: (data) => ({
-			...data,
+			...dbg(data),
 			data: data.data.map(({ date, ...rest }) => ({
 				date: dateFormatter.format(parseDate(date).toDate(getLocalTimeZone())),
 				...rest,
@@ -116,14 +114,6 @@ function RouteComponent() {
 
 	const venueOptions = useVenueFilterOptions(true);
 	const divisionOptions = useDivisionFilterOptions(true);
-
-	// const filteredResults = resultData.data.filter(
-	// 	({ venue, division }) =>
-	// 		!(
-	// 			(selectedVenue && venue !== selectedVenue) ||
-	// 			(selectedDivisions.length && !selectedDivisions.includes(division))
-	// 		),
-	// );
 
 	const info = [
 		{
@@ -232,9 +222,6 @@ function RouteComponent() {
 										items={venueOptions}
 										placeholder="All Beaches"
 										className="w-full sm:max-w-xs"
-										onSelectionChange={(key) => {
-											setSelectedVenue(key as string);
-										}}
 									>
 										{({ value, display, link }) => (
 											<ComboBoxItem id={value} link={link}>
@@ -253,9 +240,6 @@ function RouteComponent() {
 										placeholder="All Divisions"
 										className="bg-white"
 										containerClassName="w-full sm:max-w-xs"
-										onChange={(keys) => {
-											setSelectedDivisions(keys as string[]);
-										}}
 									/>
 								</Suspense>
 							</div>
