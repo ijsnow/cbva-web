@@ -4,10 +4,12 @@ import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
 
-import { Provider, queryClient } from "./providers";
+import { queryClient } from "./providers";
 
 export function getRouter() {
 	return createTanstackRouter({
+		scrollRestoration: true,
+		scrollToTopSelectors: ["#scroll-ref"],
 		routeTree,
 		context: { queryClient: queryClient },
 		defaultPreload: "intent",

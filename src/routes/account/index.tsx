@@ -1,12 +1,29 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Suspense } from "react";
-import { Header } from "react-aria-components";
-import { useViewer } from "@/auth/shared";
+import {
+	CircleAlertIcon,
+	CircleCheck,
+	CircleQuestionMarkIcon,
+	EditIcon,
+} from "lucide-react";
+import { Suspense, useState } from "react";
+import { TooltipTrigger } from "react-aria-components";
+import z from "zod/v4";
+import { authClient } from "@/auth/client";
+import { useViewer, viewerQueryOptions } from "@/auth/shared";
+import { Button } from "@/components/base/button";
+import { useAppForm } from "@/components/base/form";
 import { Link } from "@/components/base/link";
 import { card, title } from "@/components/base/primitives";
+import { Tooltip } from "@/components/base/tooltip";
 import { ProfileList } from "@/components/profiles/list";
+import { VerifyPhoneForm } from "@/components/users/verify-phone-form";
 import { viewerProfileQueryOptions } from "@/data/profiles";
+import { updateUserFnSchema, updateUserMutationOptions } from "@/data/users";
 import { useNotLoggedInRedirect } from "@/hooks/auth";
 import { DefaultLayout } from "@/layouts/default";
 
@@ -24,6 +41,61 @@ function RouteComponent() {
 
 	const { data: profiles } = useSuspenseQuery(viewerProfileQueryOptions());
 
+	const [verifyPhoneSent, setVerifyPhoneSent] = useState(false);
+
+	const queryClient = useQueryClient();
+
+	const { mutate: sendOtp } = useMutation({
+		mutationFn: async () => {
+			if (viewer?.phoneNumber) {
+				await authClient.phoneNumber.sendOtp({
+					phoneNumber: viewer?.phoneNumber,
+				});
+			}
+		},
+		onSuccess: () => {
+			setVerifyPhoneSent(true);
+		},
+	});
+
+	const phoneValidResult = z.e164().safeParse(viewer?.phoneNumber);
+
+	const { mutate: updateUser, failureReason } = useMutation({
+		...updateUserMutationOptions(),
+		onSuccess: () => {
+			setEdit(false);
+
+			queryClient.invalidateQueries(viewerQueryOptions());
+		},
+	});
+
+	const schema = updateUserFnSchema.omit({ id: true });
+
+	const form = useAppForm({
+		defaultValues: {
+			name: viewer?.name,
+			email: viewer?.email,
+			phoneNumber:
+				viewer && phoneValidResult.success ? (viewer.phoneNumber ?? "") : "",
+		},
+		validators: {
+			onMount: schema,
+			onChange: schema,
+		},
+		onSubmit: ({ value }) => {
+			console.log(viewer);
+
+			if (viewer) {
+				updateUser({
+					id: viewer.id,
+					...value,
+				});
+			}
+		},
+	});
+
+	const [isEdit, setEdit] = useState(false);
+
 	return (
 		<DefaultLayout
 			classNames={{
@@ -37,9 +109,194 @@ function RouteComponent() {
 			{viewer?.role === "admin" && <Link to="/admin">Admin Dashboard</Link>}
 
 			<Suspense>
-				<pre className="p-6 rounded-lg border border-gray-900 bg-white">
-					{JSON.stringify(viewer, null, 2)}
-				</pre>
+				<h1
+					className={title({
+						size: "sm",
+						class: "flex flex-row justify-between items-center",
+					})}
+				>
+					<span>Account</span>
+				</h1>
+
+				<div className={card({ class: "flex flex-col space-y-3 relative" })}>
+					{isEdit ? (
+						<form
+							className="grid grid-cols-6 gap-3"
+							onSubmit={(e) => {
+								e.preventDefault();
+
+								form.handleSubmit();
+							}}
+						>
+							{failureReason && (
+								<form.Alert
+									color="error"
+									title="Uh oh!"
+									description={failureReason.message}
+								/>
+							)}
+
+							<form.AppField
+								name="name"
+								children={(field) => (
+									<field.Text
+										isRequired
+										className="col-span-full"
+										name="name"
+										label="Name"
+										field={field}
+										isDisabled={true}
+										description={
+											<p>
+												Contact{" "}
+												<Link to="mailto:info@cbva.com">info@cbva.com</Link> to
+												change this field.
+											</p>
+										}
+									/>
+								)}
+							/>
+
+							<form.AppField
+								name="email"
+								children={(field) => (
+									<field.Text
+										isRequired
+										className="col-span-full"
+										name="email"
+										label="Email"
+										placeholder="name@example.com"
+										field={field}
+										isDisabled={true}
+										description={
+											<p>
+												Contact{" "}
+												<Link to="mailto:info@cbva.com">info@cbva.com</Link> to
+												change this field.
+											</p>
+										}
+									/>
+								)}
+							/>
+
+							<form.AppField
+								name="phoneNumber"
+								children={(field) => (
+									<field.Text
+										isRequired
+										className="col-span-full"
+										name="phoneNumber"
+										label="Phone"
+										type="tel"
+										placeholder="+1(555)555-5555"
+										field={field}
+									/>
+								)}
+							/>
+
+							<form.AppForm>
+								<form.StateDebugger />
+
+								<form.Footer className="col-span-full">
+									<Button onPress={() => setEdit(false)}>Cancel</Button>
+									<form.SubmitButton>Submit</form.SubmitButton>
+								</form.Footer>
+							</form.AppForm>
+						</form>
+					) : (
+						<>
+							<Button
+								size="sm"
+								color="primary"
+								className="absolute top-3 right-3"
+								onPress={() => setEdit(true)}
+							>
+								<EditIcon size={12} className="-ml mr" />
+								Update
+							</Button>
+
+							<div className="flex flex-col space-y">
+								<span className="font-semibold">Name</span>
+
+								<span>{viewer?.name}</span>
+							</div>
+
+							<div className="flex flex-col space-y">
+								<span className="font-semibold">Email</span>
+
+								<span>{viewer?.email}</span>
+							</div>
+
+							<div>
+								<span className="font-semibold">Phone Number</span>
+
+								<div className="flex flex-row justify-between items-center">
+									{phoneValidResult.success ? (
+										<>
+											<span>{viewer?.phoneNumber}</span>
+
+											{viewer?.phoneNumberVerified ? (
+												<div className="flex flex-row space-x-1.5 items-center">
+													<CircleCheck className="text-green-500" size={16} />
+													<span className="text-xs">Verified</span>
+												</div>
+											) : (
+												<Button
+													color="primary"
+													variant="link"
+													size="sm"
+													onPress={() => {
+														sendOtp();
+													}}
+												>
+													<CircleAlertIcon className="text-red-500" size={16} />
+													Verify
+												</Button>
+											)}
+										</>
+									) : (
+										<TooltipTrigger delay={100} closeDelay={50} trigger="hover">
+											<Button
+												variant="text"
+												className="cursor-default no-underline"
+											>
+												Not Set{" "}
+												<CircleQuestionMarkIcon size={12} className="-ml" />
+											</Button>
+
+											<Tooltip
+												fill="fill-white"
+												className={card({ class: "max-w-xs p-3 border-none" })}
+											>
+												<div className="flex flex-col space-y">
+													<p className="font-semibold">
+														If you had a phone number on your account before,
+														you either:
+													</p>
+
+													<ol className="list-decimal p-3">
+														<li>
+															Had multiple accounts with the same number and we
+															couldn't determine which was the main one.
+														</li>
+														<li>
+															Entered the number in a format that doesn't
+															satisfy the new system's validation.
+														</li>
+													</ol>
+												</div>
+											</Tooltip>
+										</TooltipTrigger>
+									)}
+								</div>
+
+								{viewer?.phoneNumber && verifyPhoneSent && (
+									<VerifyPhoneForm phoneNumber={viewer.phoneNumber} />
+								)}
+							</div>
+						</>
+					)}
+				</div>
 			</Suspense>
 
 			<Suspense>

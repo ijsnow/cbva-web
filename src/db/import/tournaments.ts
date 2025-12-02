@@ -130,7 +130,10 @@ export async function importTournamentsForYear(
 
 	const divisionsToCreate: (typeof tournamentDivisions.$inferInsert & {
 		requirements:
-			| Omit<CreateTournamentDivisionRequirement, "tournamentDivisionId">[]
+			| ({ ref: string } & Omit<
+					CreateTournamentDivisionRequirement,
+					"tournamentDivisionId"
+			  >[])
 			| null;
 	})[] = Array.from(
 		Object.entries(groupBy(batch, (t) => toKey(t.beachId, t.startAt))),
@@ -179,14 +182,19 @@ export async function importTournamentsForYear(
 				// ),
 			)
 			// .onConflictDoNothing()
-			.returning({ id: tournamentDivisions.id });
+			.returning({
+				id: tournamentDivisions.id,
+				ref: tournamentDivisions.externalRef,
+			});
+
+		const resultMap = new Map(result.map(({ ref, id }) => [ref as string, id]));
 
 		const requirementsToCreate: CreateTournamentDivisionRequirement[] =
-			result.flatMap(
-				({ id }, i) =>
-					divisionsToCreate[i].requirements?.map((req) => ({
+			divisionsToCreate.flatMap(
+				({ externalRef, requirements }) =>
+					requirements?.map((req) => ({
+						tournamentDivisionId: resultMap.get(externalRef!)!,
 						...req,
-						tournamentDivisionId: id,
 					})) ?? [],
 			);
 

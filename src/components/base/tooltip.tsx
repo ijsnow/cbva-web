@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import type React from "react";
 import {
 	Tooltip as AriaTooltip,
@@ -8,6 +9,7 @@ import {
 import { tv } from "tailwind-variants";
 
 export interface TooltipProps extends Omit<AriaTooltipProps, "children"> {
+	fill?: string;
 	children: React.ReactNode;
 }
 
@@ -23,7 +25,11 @@ const styles = tv({
 	},
 });
 
-export function Tooltip({ children, ...props }: TooltipProps) {
+export function Tooltip({
+	fill = "fill-content-background",
+	children,
+	...props
+}: TooltipProps) {
 	return (
 		<AriaTooltip
 			{...props}
@@ -37,9 +43,13 @@ export function Tooltip({ children, ...props }: TooltipProps) {
 					width={8}
 					height={8}
 					viewBox="0 0 8 8"
-					className="fill-content-background forced-colors:fill-[Canvas] forced-colors:stroke-[ButtonBorder] group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90"
+					className={clsx(
+						fill,
+						"forced-colors:fill-[Canvas] forced-colors:stroke-[ButtonBorder] group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90",
+					)}
 				>
 					<path d="M0 0 L4 4 L8 0" />
+					<title>arrow</title>
 				</svg>
 			</OverlayArrow>
 			{children}

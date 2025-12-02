@@ -40,7 +40,12 @@ async function main() {
       filter count(.elements) > 1;
   `);
 
-	// console.log(JSON.stringify(res, null, 2));
+	if (res.length === 0) {
+		console.log("all good");
+		return;
+	}
+
+	console.log(`found ${res.length}`);
 
 	await gelClient.transaction(async (txn) => {
 		for (const group of res) {
@@ -48,12 +53,17 @@ async function main() {
 
 			for (const { id } of rest.flatMap(({ teams }) => teams)) {
 				// insert team, set old to transferred
-				const r = await txn.querySingle(
+				await txn.execute(
 					`
 					with
 					  team := (select Team filter .id = <uuid>$teamId),
-						tournament := (select Tournament filter .id = <uuid>$tournamentId limit 1)
-					select {
+						tournament := (select Tournament filter .id = <uuid>$tournamentId limit 1),
+						updated := (
+						  update team set {
+								status := TeamStatus.Transferred
+							}
+						)
+					insert Team {
 					  status := TeamStatus.Active,
 					  tournament := tournament,
 					  transaction_key := team.transaction_key,
@@ -68,7 +78,20 @@ async function main() {
 				);
 			}
 
-			// set rest tournaments to Cancelled
+			for (const { id } of rest) {
+				await txn.execute(
+					`
+			  update Tournament
+				filter .id = <uuid>$id
+				set {
+				  status := TournamentStatus.Cancelled
+				}
+				`,
+					{
+						id,
+					},
+				);
+			}
 		}
 	});
 }

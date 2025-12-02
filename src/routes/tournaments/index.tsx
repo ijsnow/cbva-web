@@ -3,8 +3,7 @@ import { useDateFormatter } from "@react-aria/i18n";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import clsx from "clsx";
-import { AlertTriangleIcon, ConstructionIcon } from "lucide-react";
-import { useViewerIsAdmin } from "@/auth/shared";
+import { ConstructionIcon } from "lucide-react";
 import { button } from "@/components/base/button";
 import { Checkbox } from "@/components/base/checkbox";
 import { Pagination } from "@/components/base/pagination";
@@ -90,7 +89,7 @@ function RouteComponent() {
 
 	return (
 		<DefaultLayout classNames={{ content: "pb-12 space-y-12 w-full" }}>
-			<div className="py-8 w-full bg-slate-300">
+			<div className="py-8 w-full bg-slate-300 scroll-ref">
 				<div className="max-w-xl mx-auto flex flex-col space-y-2 px-2">
 					<FilterVenues values={new Set(venues)} />
 					<FilterDivisions values={new Set(divisions)} />

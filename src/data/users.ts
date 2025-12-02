@@ -1,8 +1,8 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import z from "zod";
-import { requireRole } from "@/auth/shared";
+import { authMiddleware, requireRole } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
 	createUserSchema,
@@ -10,6 +10,7 @@ import {
 	updateUserSchema,
 	users,
 } from "@/db/schema";
+import { forbidden } from "@/lib/responses";
 
 export const searchUsersSchema = selectUserSchema.pick({
 	name: true,
@@ -39,6 +40,55 @@ export const usersQueryOptions = ({
 			const data = await getUsersFn({ data: { name } });
 
 			return { users: data };
+		},
+	});
+
+export const updateUserFnSchema = updateUserSchema
+	.pick({
+		name: true,
+		email: true,
+		phoneNumber: true,
+	})
+	.extend({
+		id: z.string(),
+	});
+
+export const updateUserFn = createServerFn({ method: "POST" })
+	.middleware([authMiddleware])
+	.inputValidator(updateUserFnSchema)
+	.handler(
+		async ({ data: { id, name, email, phoneNumber }, context: { viewer } }) => {
+			const isAdmin = viewer?.role === "admin";
+			const isViewer = viewer?.id === id;
+
+			if (!isAdmin && !isViewer) {
+				throw forbidden();
+			}
+
+			const values = {
+				name: isAdmin ? name : undefined,
+				email: isAdmin ? email : undefined,
+				phoneNumber,
+			};
+
+			await db
+				.update(users)
+				.set({
+					...values,
+					phoneNumberVerified: values.phoneNumber ? sql`` : undefined,
+				})
+				.where(eq(users.id, id));
+
+			return {
+				success: true,
+			};
+		},
+	);
+
+export const updateUserMutationOptions = () =>
+	mutationOptions({
+		mutationFn: async (data: z.infer<typeof updateUserFnSchema>) => {
+			return updateUserFn({ data });
 		},
 	});
 

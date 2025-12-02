@@ -1,10 +1,8 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-
-import { button } from "./button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-import { useMemo } from "react";
+import { type Ref, useMemo } from "react";
 import type { FileRouteTypes } from "@/routeTree.gen";
+import { button } from "./button";
 
 interface UsePagesOptions {
 	currentPage: number;
@@ -137,6 +135,7 @@ type PaginationProps<T extends FileRouteTypes["fullPaths"]> = {
 	page: number;
 	pageSize: number;
 	pageInfo: PageInfo;
+	scrollRef?: Ref<HTMLElement>;
 } & Omit<LinkProps<T>, "to" | "search">;
 
 export function Pagination<T extends FileRouteTypes["fullPaths"]>({
