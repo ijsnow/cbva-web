@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin as adminPlugin } from "better-auth/plugins/admin";
 import { phoneNumber } from "better-auth/plugins/phone-number";
-import { reactStartCookies } from "better-auth/react-start";
+import { reactStartCookies } from "better-auth/tanstack-start";
 import { db } from "@/db/connection";
 import * as schema from "@/db/schema/auth";
 import { sendEmail } from "@/services/email";
