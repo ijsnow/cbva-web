@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { auth } from "@/auth";
 
 const serve = ({ request }: { request: Request }) => {
+	console.log("here", request.destination);
+
 	return auth.handler(request);
 };
 
