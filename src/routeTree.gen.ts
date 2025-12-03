@@ -26,6 +26,7 @@ import { Route as AccountIndexRouteImport } from './routes/account/index'
 import { Route as VenuesVenueIdRouteImport } from './routes/venues/$venueId'
 import { Route as TournamentsCreateRouteImport } from './routes/tournaments/create'
 import { Route as JuniorsLeaderboardRouteImport } from './routes/juniors/leaderboard'
+import { Route as ApiPingRouteImport } from './routes/api/ping'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminScheduleRouteImport } from './routes/admin/schedule'
@@ -126,6 +127,11 @@ const JuniorsLeaderboardRoute = JuniorsLeaderboardRouteImport.update({
   path: '/juniors/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPingRoute = ApiPingRouteImport.update({
+  id: '/api/ping',
+  path: '/api/ping',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiFilesRoute = ApiFilesRouteImport.update({
   id: '/api/files',
   path: '/api/files',
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/files': typeof ApiFilesRoute
+  '/api/ping': typeof ApiPingRoute
   '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
   '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/files': typeof ApiFilesRoute
+  '/api/ping': typeof ApiPingRoute
   '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
   '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/files': typeof ApiFilesRoute
+  '/api/ping': typeof ApiPingRoute
   '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
   '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
@@ -318,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/schedule'
     | '/admin/users'
     | '/api/files'
+    | '/api/ping'
     | '/juniors/leaderboard'
     | '/tournaments/create'
     | '/venues/$venueId'
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/admin/schedule'
     | '/admin/users'
     | '/api/files'
+    | '/api/ping'
     | '/juniors/leaderboard'
     | '/tournaments/create'
     | '/venues/$venueId'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/admin/schedule'
     | '/admin/users'
     | '/api/files'
+    | '/api/ping'
     | '/juniors/leaderboard'
     | '/tournaments/create'
     | '/venues/$venueId'
@@ -418,6 +430,7 @@ export interface RootRouteChildren {
   AdminScheduleRoute: typeof AdminScheduleRoute
   AdminUsersRoute: typeof AdminUsersRoute
   ApiFilesRoute: typeof ApiFilesRoute
+  ApiPingRoute: typeof ApiPingRoute
   JuniorsLeaderboardRoute: typeof JuniorsLeaderboardRoute
   TournamentsCreateRoute: typeof TournamentsCreateRoute
   VenuesVenueIdRoute: typeof VenuesVenueIdRoute
@@ -556,6 +569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JuniorsLeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/ping': {
+      id: '/api/ping'
+      path: '/api/ping'
+      fullPath: '/api/ping'
+      preLoaderRoute: typeof ApiPingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/files': {
       id: '/api/files'
       path: '/api/files'
@@ -674,6 +694,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminScheduleRoute: AdminScheduleRoute,
   AdminUsersRoute: AdminUsersRoute,
   ApiFilesRoute: ApiFilesRoute,
+  ApiPingRoute: ApiPingRoute,
   JuniorsLeaderboardRoute: JuniorsLeaderboardRoute,
   TournamentsCreateRoute: TournamentsCreateRoute,
   VenuesVenueIdRoute: VenuesVenueIdRoute,
