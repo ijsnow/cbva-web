@@ -1,9 +1,13 @@
 import createClient from "gel";
 
 async function main() {
+	console.log("connecting...");
+
 	const gelClient = createClient({
 		instanceName: "drizzle",
 	});
+
+	console.log("connected");
 
 	const res = await gelClient.query<{
 		elements: {
