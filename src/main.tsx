@@ -1,6 +1,6 @@
 import { RouterProvider } from "@tanstack/react-router";
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM, { hydrateRoot } from "react-dom/client";
 import { getRouter } from "./router";
 
 // Set up a Router instance
@@ -22,11 +22,12 @@ const rootElement = document.getElementById("app")!;
 // }
 
 if (!rootElement.innerHTML) {
-	const root = ReactDOM.createRoot(rootElement);
+	// const root = ReactDOM.createRoot(rootElement);
 
-	root.render(
-		<React.StrictMode>
-			<RouterProvider router={router} />
-		</React.StrictMode>,
+	hydrateRoot(
+		rootElement,
+		// <React.StrictMode>
+		<RouterProvider router={router} />,
+		// </React.StrictMode>,
 	);
 }
