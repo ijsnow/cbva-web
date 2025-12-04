@@ -12,16 +12,10 @@ export async function sendEmail(message: MailDataRequired) {
 	if (process.env.LOG_EMAILS === "true") {
 		console.log(message);
 	} else {
-		console.log("sending email to:", message.to, message.subject);
+		console.log(`sendEmail(to: ${message.to}, subject: ${message.subject})`);
 
-		sgMail
-			.send(message)
-			.then((response) => {
-				console.log(response[0].statusCode);
-				console.log(response[0].headers);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
+		const [result] = await sgMail.send(message);
+
+		console.log(`sendEmail result status: ${result.statusCode}`, result.body);
 	}
 }
