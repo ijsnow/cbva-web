@@ -20,19 +20,22 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
-    // nitroV2Plugin({ compatibilityDate: '2025-11-11', preset: "vercel" }),
     // visualizer({
     //   emitFile: true,
     //   filename: "stats.html",
     //   template: "network",
     // }),
-    nitro({ compatibilityDate: '2025-11-11', preset: "vercel" }),
+    nitro(), // { compatibilityDate: '2025-11-11', preset: "vercel" }),
+    // nitroV2Plugin({ compatibilityDate: '2025-11-11', preset: "vercel" }),
     sentryVitePlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,
       org: "isaac-snow",
       project: "cbva-vercel",
     }),
   ],
+  nitro: {
+    compatibilityDate: 'latest', preset: "vercel"
+  }
 })
 
 export default config
