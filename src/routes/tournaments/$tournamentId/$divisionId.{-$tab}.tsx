@@ -8,6 +8,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, linkOptions, redirect } from "@tanstack/react-router";
 import clsx from "clsx";
 import { CheckIcon } from "lucide-react";
+import { Suspense } from "react";
 import { match, P } from "ts-pattern";
 import {
 	DropdownMenu,
@@ -229,64 +230,66 @@ function RouteComponent() {
 					</DropdownMenu>
 				</div>
 
-				<Tabs selectedKey={tabParam || "info"}>
-					<div className="overflow-x-auto">
-						<TabList
-							aria-label="Tournament Overview"
-							className="px-6 min-w-max"
-						>
-							<TabLink id="info" {...tabLinkProps("info")}>
-								Information
-							</TabLink>
-							<TabLink
-								id="teams"
-								{...tabLinkProps("teams")}
-								isDisabled={!hasTeams}
+				<Suspense>
+					<Tabs selectedKey={tabParam || "info"}>
+						<div className="overflow-x-auto">
+							<TabList
+								aria-label="Tournament Overview"
+								className="px-6 min-w-max"
 							>
-								Teams
-							</TabLink>
-							<TabLink
-								id="pools"
-								{...tabLinkProps("pools")}
-								isDisabled={!hasPools}
-							>
-								Pools
-							</TabLink>
-							<TabLink
-								id="games"
-								{...tabLinkProps("games")}
-								isDisabled={!hasGames}
-							>
-								Games
-							</TabLink>
-							<TabLink
-								id="playoffs"
-								{...tabLinkProps("playoffs")}
-								isDisabled={!hasPlayoffs}
-							>
-								Playoffs
-							</TabLink>
-						</TabList>
-					</div>
-					<InformationPanel {...tournament} />
-					<TeamsPanel
-						{...tournament}
-						tournamentDivisionId={activeDivision.id}
-						teamSize={activeDivision.teamSize}
-					/>
-					<PoolsPanel
-						{...tournament}
-						tournamentDivisionId={activeDivision.id}
-					/>
-					<GamesPanel
-						{...tournament}
-						tournamentDivisionId={activeDivision.id}
-					/>
-					<PlayoffsPanel
-						{...tournament}
-						tournamentDivisionId={activeDivision.id}
-					/>
-				</Tabs>
+								<TabLink id="info" {...tabLinkProps("info")}>
+									Information
+								</TabLink>
+								<TabLink
+									id="teams"
+									{...tabLinkProps("teams")}
+									isDisabled={!hasTeams}
+								>
+									Teams
+								</TabLink>
+								<TabLink
+									id="pools"
+									{...tabLinkProps("pools")}
+									isDisabled={!hasPools}
+								>
+									Pools
+								</TabLink>
+								<TabLink
+									id="games"
+									{...tabLinkProps("games")}
+									isDisabled={!hasGames}
+								>
+									Games
+								</TabLink>
+								<TabLink
+									id="playoffs"
+									{...tabLinkProps("playoffs")}
+									isDisabled={!hasPlayoffs}
+								>
+									Playoffs
+								</TabLink>
+							</TabList>
+						</div>
+						<InformationPanel {...tournament} />
+						<TeamsPanel
+							{...tournament}
+							tournamentDivisionId={activeDivision.id}
+							teamSize={activeDivision.teamSize}
+						/>
+						<PoolsPanel
+							{...tournament}
+							tournamentDivisionId={activeDivision.id}
+						/>
+						<GamesPanel
+							{...tournament}
+							tournamentDivisionId={activeDivision.id}
+						/>
+						<PlayoffsPanel
+							{...tournament}
+							tournamentDivisionId={activeDivision.id}
+						/>
+					</Tabs>
+				</Suspense>
 			</div>
 		</DefaultLayout>
 	);

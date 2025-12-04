@@ -1,4 +1,5 @@
 import { createRouter as createTanstackRouter } from "@tanstack/react-router";
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
 import { routeTree } from "./routeTree.gen";
 
@@ -17,6 +18,11 @@ export function getRouter() {
 		// Wrap: (props: { children: React.ReactNode }) => {
 		// 	return <Provider>{props.children}</Provider>;
 		// },
+	});
+
+	setupRouterSsrQueryIntegration({
+		router,
+		queryClient,
 	});
 
 	if (!router.isServer) {
