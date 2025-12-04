@@ -1,10 +1,17 @@
-import { queryOptions } from "@tanstack/react-query";
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
+import { eq } from "drizzle-orm";
+import type z from "zod";
 import type { Viewer } from "@/auth";
-import { authMiddleware } from "@/auth/shared";
+import { authMiddleware, requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import { findPaged } from "@/db/pagination";
-import { type TournamentDivision, tournamentDivisions } from "@/db/schema";
+import {
+	selectTournamentSchema,
+	type TournamentDivision,
+	tournamentDivisions,
+	tournaments,
+} from "@/db/schema";
 import { isNotNull } from "@/utils/types";
 
 async function readTournaments(
@@ -183,4 +190,40 @@ export const tournamentQueryOptions = (id?: number) =>
 	queryOptions({
 		queryKey: ["tournament", id],
 		queryFn: () => (id ? getTournament({ data: { id: id as number } }) : null),
+	});
+
+export const editDateSchema = selectTournamentSchema.pick({
+	id: true,
+	date: true,
+	startTime: true,
+});
+
+export type SetCapacityParams = z.infer<typeof editDateSchema>;
+
+export const editDateFn = createServerFn({ method: "POST" })
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
+	.inputValidator(editDateSchema)
+	.handler(async ({ data: { id, date, startTime } }) => {
+		await db
+			.update(tournaments)
+			.set({
+				date,
+				startTime,
+			})
+			.where(eq(tournaments.id, id));
+
+		return {
+			success: true,
+		};
+	});
+
+export const editDateMutationOptions = () =>
+	mutationOptions({
+		mutationFn: async (data: SetCapacityParams) => {
+			return editDateFn({ data });
+		},
 	});

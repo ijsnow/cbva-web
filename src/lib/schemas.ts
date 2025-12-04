@@ -1,4 +1,4 @@
-import { CalendarDate, parseDate } from "@internationalized/date";
+import { CalendarDate, parseDate, Time } from "@internationalized/date";
 import z from "zod";
 
 export const calendarDateSchema = () =>
@@ -61,3 +61,5 @@ export const calendarDateSchema = () =>
 				}
 			}),
 	]);
+
+export const timeSchema = () => z.instanceof(Time);
