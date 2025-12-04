@@ -1,5 +1,3 @@
-"use server";
-
 import sgMail, { type MailDataRequired } from "@sendgrid/mail";
 
 if (!process.env.SENDGRID_API_KEY && process.env.LOG_EMAILS !== "true") {
