@@ -11,7 +11,7 @@ import { titleCase } from "title-case";
 import z from "zod";
 import type { Viewer } from "@/auth";
 import { getViewer } from "@/auth/server";
-import { requireAuthenticated } from "@/auth/shared";
+import { authMiddleware, requireAuthenticated } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
 	getLimitAndOffset,
@@ -35,7 +35,7 @@ import { tournamentDivisions } from "@/db/schema/tournament-divisions";
 import { tournaments } from "@/db/schema/tournaments";
 import { venues } from "@/db/schema/venues";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
-import { forbidden } from "@/lib/responses";
+import { forbidden, unauthorized } from "@/lib/responses";
 import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
 
 async function readViewerProfiles(userId: Viewer["id"]) {
@@ -44,17 +44,18 @@ async function readViewerProfiles(userId: Viewer["id"]) {
 	});
 }
 
+// TODO: write test for unauthenticated request
 const getViewerProfiles = createServerFn({
 	method: "GET",
-}).handler(async () => {
-	const viewer = await getViewer();
+})
+	.middleware([authMiddleware])
+	.handler(async ({ context: { viewer } }) => {
+		if (!viewer) {
+			throw unauthorized();
+		}
 
-	if (!viewer) {
-		throw new Error("UNAUTHENTICATED");
-	}
-
-	return await readViewerProfiles(viewer.id);
-});
+		return await readViewerProfiles(viewer.id);
+	});
 
 export const viewerProfileQueryOptions = () =>
 	queryOptions({

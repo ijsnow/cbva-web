@@ -1,7 +1,9 @@
 import { relations } from "drizzle-orm";
 import {
+	bigint,
 	boolean,
 	date,
+	integer,
 	pgEnum,
 	pgTable,
 	text,
@@ -97,4 +99,11 @@ export const verifications = pgTable("verifications", {
 	expiresAt: timestamp().notNull(),
 	createdAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
 	updatedAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
+});
+
+export const rate_limits = pgTable("rate_limits", {
+	id: text().primaryKey(),
+	key: text().notNull().unique(),
+	count: integer().notNull(),
+	lastRequest: bigint({ mode: "number" }).notNull(),
 });

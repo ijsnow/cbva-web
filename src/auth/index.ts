@@ -72,6 +72,11 @@ export const auth = betterAuth({
 			});
 		},
 	},
+	rateLimit: {
+		enabled: true,
+		storage: "database",
+		modelName: "rate_limit",
+	},
 	// trustedOrigins: ["*"]
 	// trustedOrigins: ["http://localhost:5173", "https://cbva-web.vercel.app"],
 });

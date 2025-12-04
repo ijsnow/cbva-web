@@ -3,7 +3,7 @@ import {
 	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import {
 	CircleAlertIcon,
 	CircleCheck,
@@ -26,10 +26,19 @@ import { viewerProfileQueryOptions } from "@/data/profiles";
 import { updateUserFnSchema, updateUserMutationOptions } from "@/data/users";
 import { useNotLoggedInRedirect } from "@/hooks/auth";
 import { DefaultLayout } from "@/layouts/default";
+import { isUnauthorized } from "@/lib/errors";
 
 export const Route = createFileRoute("/account/")({
 	loader: async ({ context: { queryClient } }) => {
-		await queryClient.ensureQueryData(viewerProfileQueryOptions());
+		try {
+			await queryClient.ensureQueryData(viewerProfileQueryOptions());
+		} catch (err) {
+			if (isUnauthorized(err)) {
+				throw redirect({ to: "/log-in" });
+			}
+
+			throw err;
+		}
 	},
 	component: RouteComponent,
 });

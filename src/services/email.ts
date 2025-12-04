@@ -14,8 +14,16 @@ export async function sendEmail(message: MailDataRequired) {
 	} else {
 		console.log(`sendEmail(to: ${message.to}, subject: ${message.subject})`);
 
-		const [result] = await sgMail.send(message);
-
-		console.log(`sendEmail result status: ${result.statusCode}`, result.body);
+		sgMail
+			.send(message)
+			.then(([result]) => {
+				console.log(
+					`sendEmail result status: ${result.statusCode}`,
+					result.body,
+				);
+			})
+			.catch((err) => {
+				console.error("sendEmail error:", err);
+			});
 	}
 }

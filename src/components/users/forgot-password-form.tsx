@@ -92,30 +92,30 @@ export function ForgotPasswordForm({ className }: ForgotPasswordFormProps) {
 							state.values.email,
 						]}
 						children={([canSubmit, isSubmitting, email]) => {
-							if (email === sentTo) {
-								return (
-									<div className="space-y-3">
-										<p>A confirmation email has been sent to:</p>
-										<p className="border border-gray-500 rounded-md p-2 bg-gray-200 font-semibold">
-											{form.state.values.email}
-										</p>
-										<p>
-											Check your inbox for an email with a link to reset your
-											password.
-										</p>
-									</div>
-								);
-							}
-
 							return (
-								<form.Footer>
-									<form.SubmitButton
-										className="w-full"
-										isDisabled={Boolean(!canSubmit || isSubmitting)}
-									>
-										Send
-									</form.SubmitButton>
-								</form.Footer>
+								<>
+									{email === sentTo && (
+										<div className="space-y-3">
+											<p>A confirmation email has been sent to:</p>
+											<p className="border border-gray-500 rounded-md p-2 bg-gray-200 font-semibold">
+												{form.state.values.email}
+											</p>
+											<p>
+												Check your inbox for an email with a link to reset your
+												password.
+											</p>
+										</div>
+									)}
+
+									<form.Footer>
+										<form.SubmitButton
+											className="w-full"
+											isDisabled={Boolean(!canSubmit || isSubmitting)}
+										>
+											Send {email === sentTo ? " again" : null}
+										</form.SubmitButton>
+									</form.Footer>
+								</>
 							);
 						}}
 					/>
