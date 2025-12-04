@@ -158,7 +158,7 @@ export function RegisterUserForm({ className }: UserRegistrationFormProps) {
 							name="phoneNumber"
 							label="Phone"
 							type="tel"
-							placeholder="+1(555)555-5555"
+							placeholder="+15555555555"
 							field={field}
 						/>
 					)}

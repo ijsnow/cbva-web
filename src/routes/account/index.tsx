@@ -206,7 +206,7 @@ function RouteComponent() {
 										name="phoneNumber"
 										label="Phone"
 										type="tel"
-										placeholder="+1(555)555-5555"
+										placeholder="+15555555555"
 										field={field}
 									/>
 								)}
@@ -270,7 +270,7 @@ function RouteComponent() {
 															className="text-red-500"
 															size={16}
 														/>
-														Verify
+														Send verification code
 													</Button>
 												)}
 											</>
@@ -318,7 +318,14 @@ function RouteComponent() {
 								)}
 
 								{viewer?.phoneNumber && verifyPhoneSent && (
-									<VerifyPhoneForm phoneNumber={viewer.phoneNumber} />
+									<VerifyPhoneForm
+										phoneNumber={viewer.phoneNumber}
+										onSuccess={() => {
+											queryClient.invalidateQueries(viewerQueryOptions());
+
+											setVerifyPhoneSent(false);
+										}}
+									/>
 								)}
 							</div>
 						</>

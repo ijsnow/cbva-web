@@ -7,13 +7,24 @@ const schema = z.object({
 	code: z.string(),
 });
 
-export function VerifyPhoneForm({ phoneNumber }: { phoneNumber: string }) {
+export function VerifyPhoneForm({
+	phoneNumber,
+	onSuccess,
+}: {
+	phoneNumber: string;
+	onSuccess?: () => void;
+}) {
 	const { mutate } = useMutation({
 		mutationFn: async ({ code }: z.infer<typeof schema>) => {
-			await authClient.phoneNumber.verify({
-				phoneNumber,
-				code,
-			});
+			await authClient.phoneNumber.verify(
+				{
+					phoneNumber,
+					code,
+				},
+				{
+					onSuccess,
+				},
+			);
 		},
 	});
 
