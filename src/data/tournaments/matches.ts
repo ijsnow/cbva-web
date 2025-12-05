@@ -8,6 +8,7 @@ import { db } from "@/db/connection";
 import {
 	type MatchSet,
 	matchSets,
+	playoffMatches,
 	poolMatches,
 	selectMatchSetSchema,
 	selectTournamentDivisionSchema,
@@ -163,6 +164,20 @@ export const overrideScoreFn = createServerFn()
 	.inputValidator(overrideScoreSchema)
 	.handler(async ({ data: { id, teamAScore, teamBScore } }) => {
 		const matchSet = await db.query.matchSets.findFirst({
+			with: {
+				poolMatch: {
+					columns: {
+						teamAId: true,
+						teamBId: true,
+					},
+				},
+				playoffMatch: {
+					columns: {
+						teamAId: true,
+						teamBId: true,
+					},
+				},
+			},
 			where: (t, { eq }) => eq(t.id, id),
 		});
 
@@ -172,6 +187,11 @@ export const overrideScoreFn = createServerFn()
 
 		const isDone = isSetDone(teamAScore, teamBScore, matchSet.winScore);
 
+		const teamAId =
+			matchSet.poolMatch?.teamAId ?? matchSet.playoffMatch?.teamAId;
+		const teamBId =
+			matchSet.poolMatch?.teamBId ?? matchSet.playoffMatch?.teamBId;
+
 		const [{ playoffMatchId, poolMatchId, status }] = await db
 			.update(matchSets)
 			.set({
@@ -179,6 +199,7 @@ export const overrideScoreFn = createServerFn()
 				endedAt: isDone ? new Date() : sql`null`,
 				teamAScore,
 				teamBScore,
+				winnerId: isDone ? (teamAScore > teamBScore ? teamAId : teamBId) : null,
 			})
 			.where(eq(matchSets.id, id))
 			.returning({
@@ -189,31 +210,38 @@ export const overrideScoreFn = createServerFn()
 
 		if (status === "completed") {
 			if (poolMatchId) {
-				return await handleCompletedPoolMatch(poolMatchId);
+				return await handleCompletedPoolMatchSet(poolMatchId);
 			}
 
 			if (playoffMatchId) {
-				return await handleCompletedPlayoffMatch(playoffMatchId);
+				return await handleCompletedPlayoffMatchSet(playoffMatchId);
 			}
 		}
 	});
 
-const handleCompletedPoolMatch = createServerOnlyFn(
+const handleCompletedPoolMatchSet = createServerOnlyFn(
 	async (poolMatchId: number) => {
-		// ...
+		throw new Error("not yet implemented");
 	},
 );
 
-const handleCompletedPlayoffMatch = createServerOnlyFn(
+const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 	async (playoffMatchId: number) => {
-		const match = await db.query.playoffMatches.findFirst({
-			columns: {
-				allSetsCompleted: sql`todo: true if all sets for this match are status == completed`,
-			},
-			where: (t, { eq }) => eq(t.id, playoffMatchId),
-		});
+		const [{ allSetsCompleted }] = await db
+			.select({
+				allSetsCompleted: sql<boolean>`(
+      		SELECT COUNT(*) = COUNT(*) FILTER (WHERE status = 'completed')
+      		FROM ${matchSets}
+      		WHERE ${matchSets.playoffMatchId} = ${playoffMatchId}
+       	)`,
+			})
+			.from(playoffMatches);
 
-		// ...
+		if (!allSetsCompleted) {
+			return {
+				success: true,
+			};
+		}
 	},
 );
 
