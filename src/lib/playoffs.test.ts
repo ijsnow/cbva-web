@@ -232,10 +232,6 @@ describe("recursiveSnakeDraft", () => {
 		test(`round of ${size}`, () => {
 			const got = recursiveSnakeDraft(range(1, size + 1));
 
-			if (size === 64) {
-				console.log(JSON.stringify(got, null, 2));
-			}
-
 			expect(got).toStrictEqual(want);
 		});
 	}

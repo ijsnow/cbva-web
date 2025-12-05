@@ -8,7 +8,6 @@ import { db } from "@/db/connection";
 import {
 	type CreateMatchRefTeam,
 	type CreateMatchSet,
-	type MatchRefTeam,
 	matchRefTeams,
 	matchSets,
 	type PlayoffMatch,
@@ -34,6 +33,8 @@ export const createPlayoffsSchema = selectTournamentDivisionSchema
 		matchKind: z.enum<MatchKind[]>(["set-to-21", "set-to-28", "best-of-3"]),
 		overwrite: z.boolean(),
 	});
+
+export type CreatePlayoffsParams = z.infer<typeof createPlayoffsSchema>;
 
 export const createPlayoffsFn = createServerFn()
 	.middleware([

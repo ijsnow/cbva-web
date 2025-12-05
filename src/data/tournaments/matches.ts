@@ -1,5 +1,5 @@
 import { mutationOptions } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
+import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { eq, sql } from "drizzle-orm";
 import random from "lodash-es/random";
 import z from "zod";
@@ -154,7 +154,7 @@ const overrideScoreSchema = selectMatchSetSchema.pick({
 	teamBScore: true,
 });
 
-const overrideScoreFn = createServerFn()
+export const overrideScoreFn = createServerFn()
 	.middleware([
 		requirePermissions({
 			tournament: ["update"],
@@ -172,7 +172,7 @@ const overrideScoreFn = createServerFn()
 
 		const isDone = isSetDone(teamAScore, teamBScore, matchSet.winScore);
 
-		await db
+		const [{ playoffMatchId, poolMatchId, status }] = await db
 			.update(matchSets)
 			.set({
 				status: isDone ? "completed" : "in_progress",
@@ -180,8 +180,42 @@ const overrideScoreFn = createServerFn()
 				teamAScore,
 				teamBScore,
 			})
-			.where(eq(matchSets.id, id));
+			.where(eq(matchSets.id, id))
+			.returning({
+				playoffMatchId: matchSets.playoffMatchId,
+				poolMatchId: matchSets.poolMatchId,
+				status: matchSets.status,
+			});
+
+		if (status === "completed") {
+			if (poolMatchId) {
+				return await handleCompletedPoolMatch(poolMatchId);
+			}
+
+			if (playoffMatchId) {
+				return await handleCompletedPlayoffMatch(playoffMatchId);
+			}
+		}
 	});
+
+const handleCompletedPoolMatch = createServerOnlyFn(
+	async (poolMatchId: number) => {
+		// ...
+	},
+);
+
+const handleCompletedPlayoffMatch = createServerOnlyFn(
+	async (playoffMatchId: number) => {
+		const match = await db.query.playoffMatches.findFirst({
+			columns: {
+				allSetsCompleted: sql`todo: true if all sets for this match are status == completed`,
+			},
+			where: (t, { eq }) => eq(t.id, playoffMatchId),
+		});
+
+		// ...
+	},
+);
 
 export const overrideScoreMutationOptions = () =>
 	mutationOptions({

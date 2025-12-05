@@ -1,7 +1,17 @@
-import { describe, expect, test } from "vitest";
+import { eq } from "drizzle-orm";
+import { random } from "lodash-es";
+import { assert, describe, expect, test } from "vitest";
 import { db } from "@/db/connection";
+import {
+	type MatchSet,
+	matchSets,
+	playoffMatches,
+	type UpdateMatchSet,
+} from "@/db/schema";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
+import { dbg } from "@/utils/dbg";
 import { isNotNull } from "@/utils/types";
+import { overrideScoreFn, overrideScoreMutationOptions } from "./matches";
 import { createPlayoffsFn } from "./playoffs";
 
 describe("Generating playoffs", () => {
@@ -194,3 +204,59 @@ describe("Generating playoffs", () => {
 		expect(matches.filter((mat) => mat.nextMatchId === null)).toHaveLength(1);
 	});
 });
+
+describe("referee assignments", () => {
+	test("loser of a playoff match refs the next match", async () => {
+		const tournamentInfo = await bootstrapTournament(db, {
+			date: "2025-01-01",
+			startTime: "09:00:00",
+			divisions: [
+				{
+					division: "b",
+					gender: "male",
+					teams: 25,
+					pools: 5,
+				},
+			],
+			poolMatches: true,
+			simulatePoolMatches: true,
+			playoffConfig: {
+				teamCount: 10,
+				wildcardCount: 4,
+				matchKind: "set-to-28",
+				overwrite: false,
+				assignWildcards: true,
+			},
+		});
+
+		const divisionId = tournamentInfo.divisions[0];
+
+		const match = await db.query.playoffMatches.findFirst({
+			with: {
+				sets: true,
+			},
+			where: (t, { and, eq }) =>
+				and(eq(t.tournamentDivisionId, divisionId), eq(t.round, 0)),
+		});
+
+		assert(match, "couldn't find a match");
+
+		const teamAWins = random() === 1;
+
+		for (const set of match.sets) {
+			await overrideScoreFn({
+				data: {
+					id: set.id,
+					teamAScore: teamAWins ? set.winScore : 12,
+					teamBScore: teamAWins ? 12 : set.winScore,
+				},
+			});
+		}
+	});
+});
+
+// describe("double elimination brackets", () => {
+// 	test("in a double elim bracket, loser refs next match and is assigned game in loser bracket", () => {
+// 		// ...
+// 	});
+// });
