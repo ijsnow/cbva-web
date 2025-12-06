@@ -14,26 +14,25 @@ import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
-import { teamsQueryOptions } from "@/data/teams";
 import {
-	editDateMutationOptions,
-	editDateSchema,
+	editTournamentMutationOptions,
+	editTournamentSchema,
 	tournamentQueryOptions,
 } from "@/data/tournaments";
-import type { Division, TournamentDivision } from "@/db/schema";
+import { useVenueFilterOptions } from "@/data/venues";
 import { calendarDateSchema, timeSchema } from "@/lib/schemas";
 
-export type EditDateFormProps = {
+export type EditGeneralInfoFormProps = {
 	tournamentId: number;
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
 };
 
-export function EditDateForm({
+export function EditGeneralInfoForm({
 	tournamentId,
 	onOpenChange,
 	...props
-}: EditDateFormProps) {
+}: EditGeneralInfoFormProps) {
 	const { data: tournament } = useSuspenseQuery({
 		...tournamentQueryOptions(tournamentId),
 		select: (data) =>
@@ -41,6 +40,7 @@ export function EditDateForm({
 				? {
 						date: parseDate(data.date),
 						startTime: parseTime(data.startTime),
+						venueId: data.venueId,
 					}
 				: undefined,
 	});
@@ -48,7 +48,7 @@ export function EditDateForm({
 	const queryClient = useQueryClient();
 
 	const { mutate, failureReason } = useMutation({
-		...editDateMutationOptions(),
+		...editTournamentMutationOptions(),
 		onSuccess: () => {
 			queryClient.invalidateQueries(tournamentQueryOptions(tournamentId));
 
@@ -56,7 +56,7 @@ export function EditDateForm({
 		},
 	});
 
-	const schema = editDateSchema.pick({}).extend({
+	const schema = editTournamentSchema.pick({ venueId: true }).extend({
 		date: calendarDateSchema().refine((date) => {
 			return true;
 		}),
@@ -67,19 +67,23 @@ export function EditDateForm({
 		defaultValues: {
 			date: tournament?.date as CalendarDate,
 			startTime: tournament?.startTime as Time,
+			venueId: tournament?.venueId as number,
 		},
 		validators: {
 			onMount: schema,
 			onChange: schema,
 		},
-		onSubmit: ({ value: { date, startTime } }) => {
+		onSubmit: ({ value: { date, startTime, venueId } }) => {
 			mutate({
 				id: tournamentId,
 				date: date.toString(),
 				startTime: startTime.toString(),
+				venueId,
 			});
 		},
 	});
+
+	const venueOptions = useVenueFilterOptions();
 
 	return (
 		<Modal {...props} onOpenChange={onOpenChange}>
@@ -104,6 +108,20 @@ export function EditDateForm({
 							/>
 						</form.AppForm>
 					)}
+
+					<form.AppField
+						name="venueId"
+						children={(field) => (
+							<field.ComboBox
+								label="Location"
+								field={field}
+								options={venueOptions.map(({ display, value }) => ({
+									display,
+									value,
+								}))}
+							/>
+						)}
+					/>
 
 					<form.AppField
 						name="date"

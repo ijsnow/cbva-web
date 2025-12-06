@@ -9,7 +9,6 @@ import {
 	type ListBoxItemProps,
 	type ValidationResult,
 } from "react-aria-components";
-import { dbg } from "@/utils/dbg";
 import { isNotNullOrUndefined } from "@/utils/types";
 import { Button } from "./button";
 import { Description, FieldError, FieldGroup, Input, Label } from "./field";
@@ -48,7 +47,15 @@ export function ComboBox<T extends Key>({
 	selectedKeys?: Iterable<T>;
 }) {
 	const itemsMap = new Map(Array.from(items).map((item) => [item.value, item]));
-	const selectedKeysSet = new Set(selectedKeys);
+
+	const selectedKeysSet = new Set([
+		props.selectedKey,
+		...(selectedKeys ? Array.from(selectedKeys) : []),
+	]);
+
+	const selectedText = Array.from(items)
+		.filter(({ value }) => selectedKeysSet.has(value))
+		.map(({ display }) => display);
 
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -61,8 +68,14 @@ export function ComboBox<T extends Key>({
 			)}
 		>
 			{label && <Label>{label}</Label>}
+
 			<FieldGroup>
-				<Input placeholder={placeholder} ref={inputRef} />
+				<Input
+					placeholder={
+						selectedText.length ? selectedText.join(", ") : placeholder
+					}
+					ref={inputRef}
+				/>
 				<Button
 					variant="icon"
 					color="muted"
@@ -71,8 +84,11 @@ export function ComboBox<T extends Key>({
 					<ChevronDown aria-hidden className="w-4 h-4" />
 				</Button>
 			</FieldGroup>
+
 			{description && <Description>{description}</Description>}
+
 			<FieldError>{errorMessage}</FieldError>
+
 			{multi && selectedKeys && (
 				<div className="flex flex-row space-x-2 items-center px-2">
 					{Array.from(selectedKeys)
@@ -102,6 +118,7 @@ export function ComboBox<T extends Key>({
 						)}
 				</div>
 			)}
+
 			<Popover className="w-(--trigger-width)">
 				<ListBox
 					items={Array.from(items).filter(

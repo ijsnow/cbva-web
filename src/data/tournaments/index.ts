@@ -192,21 +192,22 @@ export const tournamentQueryOptions = (id?: number) =>
 		queryFn: () => (id ? getTournament({ data: { id: id as number } }) : null),
 	});
 
-export const editDateSchema = selectTournamentSchema.pick({
+export const editTournamentSchema = selectTournamentSchema.pick({
 	id: true,
 	date: true,
 	startTime: true,
+	venueId: true,
 });
 
-export type SetCapacityParams = z.infer<typeof editDateSchema>;
+export type EditTournamentParams = z.infer<typeof editTournamentSchema>;
 
-export const editDateFn = createServerFn({ method: "POST" })
+export const editTournamentFn = createServerFn({ method: "POST" })
 	.middleware([
 		requirePermissions({
 			tournament: ["update"],
 		}),
 	])
-	.inputValidator(editDateSchema)
+	.inputValidator(editTournamentSchema)
 	.handler(async ({ data: { id, date, startTime } }) => {
 		await db
 			.update(tournaments)
@@ -221,9 +222,9 @@ export const editDateFn = createServerFn({ method: "POST" })
 		};
 	});
 
-export const editDateMutationOptions = () =>
+export const editTournamentMutationOptions = () =>
 	mutationOptions({
-		mutationFn: async (data: SetCapacityParams) => {
-			return editDateFn({ data });
+		mutationFn: async (data: EditTournamentParams) => {
+			return editTournamentFn({ data });
 		},
 	});

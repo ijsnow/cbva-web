@@ -15,8 +15,8 @@ import { CreatePlayoffsForm } from "./create-playoffs";
 import { CreatePoolMatchesForm } from "./create-pool-matches";
 import { CreatePoolsForm } from "./create-pools";
 import { DuplicateForm } from "./duplicate";
-import { EditDateForm } from "./edit-date";
 import { EditDivisionsForm } from "./edit-divisions";
+import { EditGeneralInfoForm } from "./edit-general-info";
 import { FillTournamentForm } from "./fill-tournament";
 import { SimulateMatchesForm } from "./simulate-matches";
 
@@ -36,7 +36,7 @@ enum ModalKind {
 	CompletePools = 7,
 	FillTournament = 8,
 	EditDivisions = 9,
-	EditScheduling = 10,
+	EditGeneralInfo = 10,
 }
 
 export function TournamentControls({
@@ -80,9 +80,9 @@ export function TournamentControls({
 							Duplicate
 						</DropdownMenuItem>
 						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.EditScheduling)}
+							onPress={() => setActiveModal(ModalKind.EditGeneralInfo)}
 						>
-							Edit Scheduling
+							Edit General Info
 						</DropdownMenuItem>
 					</MenuSection>
 				)}
@@ -141,9 +141,9 @@ export function TournamentControls({
 				{...makeModalOpenProps(ModalKind.EditDivisions)}
 			/>
 
-			<EditDateForm
+			<EditGeneralInfoForm
 				tournamentId={tournamentId}
-				{...makeModalOpenProps(ModalKind.EditScheduling)}
+				{...makeModalOpenProps(ModalKind.EditGeneralInfo)}
 			/>
 
 			<DuplicateForm
