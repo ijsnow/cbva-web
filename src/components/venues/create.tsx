@@ -1,10 +1,9 @@
-import { z } from "zod/v4";
-
-import { useAppForm } from "@/components/form";
-import { useCreateVenue } from "@/hooks/venues";
-import { CreateVenueParams } from "@/generated/CreateVenueParams";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { z } from "zod/v4";
 import { button } from "@/components/button";
+import { useAppForm } from "@/components/form";
+import type { CreateVenueParams } from "@/generated/CreateVenueParams";
+import { useCreateVenue } from "@/hooks/venues";
 
 const schema = z.object({
 	name: z.string().nonempty({
@@ -141,7 +140,7 @@ export function CreateVenue() {
 			<form.AppForm>
 				<form.Footer>
 					<Link to="/venue" className={button()}>
-						Back to Venues
+						Back to Locations
 					</Link>
 					<form.SubmitButton>Create</form.SubmitButton>
 				</form.Footer>

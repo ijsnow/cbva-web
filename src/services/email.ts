@@ -4,14 +4,17 @@ if (!process.env.SENDGRID_API_KEY && process.env.LOG_EMAILS !== "true") {
 	throw new Error("SENDGRID_API_KEY not set");
 }
 
-if (process.env.SENDGRID_API_KEY) {
+if (
+	process.env.SENDGRID_API_KEY &&
+	process.env.SENDGRID_API_KEY !== "no-send"
+) {
 	sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
 export async function sendEmail(message: MailDataRequired) {
 	if (process.env.LOG_EMAILS === "true") {
 		console.log(message);
-	} else {
+	} else if (process.env.SENDGRID_API_KEY !== "no-send") {
 		console.log(`sendEmail(to: ${message.to}, subject: ${message.subject})`);
 
 		sgMail

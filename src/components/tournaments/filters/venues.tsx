@@ -37,12 +37,12 @@ export function FilterVenues({ values }: FilterVenuesProps) {
 
 	return (
 		<div>
-			<Label>Venues</Label>
+			<Label>Locations</Label>
 
 			<ComboBox
 				selectedKeys={values}
 				items={options}
-				placeholder="Venues"
+				placeholder="Locations"
 				multi={true}
 			>
 				{(item) => (
