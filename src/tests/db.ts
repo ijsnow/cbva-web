@@ -4,6 +4,7 @@ import {
 } from "@testcontainers/postgresql";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { range } from "lodash-es";
 import postgres from "postgres";
 import { relationships, tables } from "@/db/schema";
 import { seedDivisions, seedLevels } from "@/db/seed/divisions";
@@ -44,6 +45,17 @@ export async function getMockDb() {
 			status: "active",
 		},
 	]);
+
+	for (const i of range(10)) {
+		await createVenues(db, [
+			{
+				slug: `v${i}`,
+				name: `list venue ${i}`,
+				city: `city ${i}`,
+				status: "active",
+			},
+		]);
+	}
 
 	return {
 		db,
