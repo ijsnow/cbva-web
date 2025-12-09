@@ -14,8 +14,8 @@ export function getTournamentDivisionDisplay({
 	displayDivision,
 	division: { maxAge, name: divisionName, display: divisionDisplay },
 }: Pick<TournamentDivision, "name" | "teamSize" | "gender"> & {
-	displayGender?: boolean;
-	displayDivision?: boolean;
+	displayGender?: boolean | null;
+	displayDivision?: boolean | null;
 	division: Pick<Division, "maxAge" | "name" | "display">;
 }) {
 	let display = `${name ?? ""}`;

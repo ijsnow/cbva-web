@@ -10,7 +10,6 @@ import {
 	DisclosurePanel,
 } from "@/components/base/disclosure";
 import { useAppForm } from "@/components/base/form";
-import { Information } from "@/components/base/information";
 import { title } from "@/components/base/primitives";
 import { divisionsQueryOptions } from "@/data/divisions";
 import { tournamentQueryOptions } from "@/data/tournaments";
@@ -20,7 +19,6 @@ import {
 } from "@/data/tournaments/divisions";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { isNotNullOrUndefined } from "@/utils/types";
-import { InformationPanel } from "../../panels/information";
 
 export type DivisionFormProps = {
 	tournamentId: number;
@@ -94,6 +92,9 @@ export function DivisionForm({
 				waitlistCapacity,
 				autopromoteWaitlist,
 				teamSize,
+				requirements,
+				displayGender,
+				displayDivision,
 			},
 		}) => {
 			mutate({
@@ -106,6 +107,9 @@ export function DivisionForm({
 				waitlistCapacity,
 				autopromoteWaitlist,
 				teamSize,
+				displayGender,
+				displayDivision,
+				requirements,
 			});
 		},
 	});

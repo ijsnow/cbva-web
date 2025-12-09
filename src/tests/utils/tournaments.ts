@@ -67,8 +67,8 @@ export async function bootstrapTournament(
 			teams: number;
 			pools: number;
 		}[];
-		poolMatches: boolean;
-		simulatePoolMatches: boolean;
+		poolMatches?: boolean;
+		simulatePoolMatches?: boolean;
 		playoffConfig?: Omit<CreatePlayoffsParams, "id"> & {
 			assignWildcards: boolean;
 		};
