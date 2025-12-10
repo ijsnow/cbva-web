@@ -30,10 +30,10 @@ import {
 	Label,
 } from "./form/fields/shared";
 
-export type Option<Value extends Key, Link extends boolean = false> = {
+export type Option<Value extends Key> = {
 	value: Value;
 	display: string;
-	link: Link extends true ? LinkOptions : undefined;
+	link?: LinkOptions;
 	beforeDisplay?: ReactNode;
 };
 

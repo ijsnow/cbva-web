@@ -106,8 +106,6 @@ function RouteComponent() {
 			({ id }) => id.toString() === divisionId,
 		) ?? tournament.tournamentDivisions[0];
 
-	console.log(tournament.tournamentDivisions);
-
 	const { data: hasTeams } = useQuery({
 		...teamsQueryOptions({ tournamentDivisionId: activeDivision.id }),
 		select: (data) => data.length > 0,

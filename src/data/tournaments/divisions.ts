@@ -5,6 +5,7 @@ import z from "zod";
 import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
+	createTournamentDivisionRequirementSchema,
 	createTournamentDivisionSchema,
 	selectTournamentDivisionSchema,
 	tournamentDivisionRequirements,
@@ -157,4 +158,56 @@ export const removeTournamentDivisionMutationOptions = () =>
 	mutationOptions({
 		mutationFn: (data: z.infer<typeof removeTournamentDivisionSchema>) =>
 			removeTournamentDivisionFn({ data }),
+	});
+
+export const upsertRequirementsSchema = selectTournamentDivisionSchema
+	.pick({
+		name: true,
+		displayDivision: true,
+		displayGender: true,
+	})
+	.extend({
+		tournamentDivisionId: z.number(),
+		requirements: z.array(
+			createTournamentDivisionRequirementSchema.omit({
+				tournamentDivisionId: true,
+			}),
+		),
+	});
+
+export const upsertRequirementsFn = createServerFn()
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
+	.inputValidator(upsertRequirementsSchema)
+	.handler(
+		async ({
+			data: {
+				tournamentDivisionId,
+				requirements,
+				name,
+				displayGender,
+				displayDivision,
+			},
+		}) => {
+			console.log({
+				tournamentDivisionId,
+				requirements,
+				name,
+				displayGender,
+				displayDivision,
+			});
+
+			return {
+				success: true,
+			};
+		},
+	);
+
+export const upsertRequirementsMutationOptions = () =>
+	mutationOptions({
+		mutationFn: (data: z.infer<typeof upsertRequirementsSchema>) =>
+			upsertRequirementsFn({ data }),
 	});

@@ -3,6 +3,8 @@ import {
 	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
+import { pick } from "lodash-es";
+import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/base/button";
 import {
 	Disclosure,
@@ -314,6 +316,8 @@ export function DivisionForm({
 										({ value }) => value === req.qualifiedDivisionId,
 									);
 
+									console.log("1", selectedDivision);
+
 									return (
 										<>
 											<span className="font-semibold">
@@ -361,6 +365,32 @@ export function DivisionForm({
 										</>
 									);
 								})}
+								<form.Subscribe
+									selector={(state) =>
+										pick(state.values, ["requirements", "teamSize", "gender"])
+									}
+								>
+									{({ teamSize, requirements }) => (
+										<Button
+											color="primary"
+											size="sm"
+											isDisabled={
+												requirements ? requirements.length >= teamSize : false
+											}
+											onPress={() => {
+												field.handleChange((curr) =>
+													(curr ?? []).concat({
+														gender: null,
+														qualifiedDivisionId: null,
+														tournamentDivisionId: divisionId,
+													}),
+												);
+											}}
+										>
+											<PlusIcon /> Add requirement
+										</Button>
+									)}
+								</form.Subscribe>
 							</div>
 						</DisclosurePanel>
 					</Disclosure>

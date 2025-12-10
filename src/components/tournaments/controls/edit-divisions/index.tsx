@@ -22,6 +22,7 @@ import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { isNotNullOrUndefined } from "@/utils/types";
 import { DivisionForm } from "./division-form";
 import { RemoveDivisionForm } from "./remove";
+import { RequirementsForm } from "./requirements-form";
 
 export type EditDivisionsFormProps = {
 	tournamentId: number;
@@ -39,6 +40,10 @@ export function EditDivisionsForm({
 		...tournamentQueryOptions(tournamentId),
 		select: (data) => data?.tournamentDivisions,
 	});
+
+	const [editFormatDivisionId, setEditFormatDivisionId] = useState<
+		number | undefined
+	>();
 
 	const [addingOrEditId, setAddingOrEditId] = useState<
 		true | number | undefined
@@ -73,7 +78,22 @@ export function EditDivisionsForm({
 								<div className="flex flex-row gap-2">
 									<Button
 										size="sm"
-										isDisabled={addingOrEditId !== undefined}
+										isDisabled={
+											addingOrEditId !== undefined ||
+											editFormatDivisionId !== undefined
+										}
+										onPress={() => {
+											setEditFormatDivisionId(td.id);
+										}}
+									>
+										<EditIcon size={12} className="-mr" /> <span>Format</span>
+									</Button>
+									<Button
+										size="sm"
+										isDisabled={
+											addingOrEditId !== undefined ||
+											editFormatDivisionId !== undefined
+										}
 										onPress={() => {
 											setAddingOrEditId(td.id);
 										}}
@@ -82,7 +102,10 @@ export function EditDivisionsForm({
 									</Button>
 
 									<RemoveDivisionForm
-										isDisabled={addingOrEditId !== undefined}
+										isDisabled={
+											addingOrEditId !== undefined ||
+											editFormatDivisionId !== undefined
+										}
 										tournamentId={tournamentId}
 										divisionId={td.id}
 									/>
@@ -95,6 +118,17 @@ export function EditDivisionsForm({
 									tournamentId={tournamentId}
 									divisionId={addingOrEditId}
 									onCancel={() => setAddingOrEditId(undefined)}
+								/>
+							)}
+
+							{editFormatDivisionId === td.id && (
+								<RequirementsForm
+									tournamentDivisionId={editFormatDivisionId}
+									name={td.name}
+									displayGender={td.displayGender}
+									displayDivision={td.displayDivision}
+									teamSize={td.teamSize}
+									onCancel={() => setEditFormatDivisionId(undefined)}
 								/>
 							)}
 						</div>

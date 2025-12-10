@@ -18,5 +18,7 @@ describe("Generating playoffs", () => {
 		});
 
 		const tournamentDivisionId = tournamentInfo.divisions[0];
+
+		// ...
 	});
 });
