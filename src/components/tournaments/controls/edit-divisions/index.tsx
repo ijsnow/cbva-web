@@ -1,28 +1,20 @@
-import {
-	useMutation,
-	useQuery,
-	useQueryClient,
-	useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { EditIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/base/button";
 import { Modal, ModalHeading } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
-import { divisionsQueryOptions } from "@/data/divisions";
 import { tournamentQueryOptions } from "@/data/tournaments";
-import { removeTournamentDivisionMutationOptions } from "@/data/tournaments/divisions";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 // import { teamsQueryOptions } from "@/data/teams";
 // import {
 // 	editDivisionsMutationOptions,
 // 	editDivisionsSchema,
 // } from "@/data/tournaments/teams";
-import { isNotNullOrUndefined } from "@/utils/types";
 import { DivisionForm } from "./division-form";
 import { RemoveDivisionForm } from "./remove";
-import { RequirementsForm } from "./requirements-form";
+// import { RequirementsForm } from "./requirements-form";
 
 export type EditDivisionsFormProps = {
 	tournamentId: number;
@@ -41,9 +33,9 @@ export function EditDivisionsForm({
 		select: (data) => data?.tournamentDivisions,
 	});
 
-	const [editFormatDivisionId, setEditFormatDivisionId] = useState<
-		number | undefined
-	>();
+	// const [editFormatDivisionId, setEditFormatDivisionId] = useState<
+	// 	number | undefined
+	// >();
 
 	const [addingOrEditId, setAddingOrEditId] = useState<
 		true | number | undefined
@@ -52,6 +44,7 @@ export function EditDivisionsForm({
 	useEffect(() => {
 		if (!isOpen) {
 			setAddingOrEditId(undefined);
+			// setEditFormatDivisionId(undefined);
 		}
 	}, [isOpen]);
 
@@ -76,7 +69,7 @@ export function EditDivisionsForm({
 								</span>
 
 								<div className="flex flex-row gap-2">
-									<Button
+									{/*<Button
 										size="sm"
 										isDisabled={
 											addingOrEditId !== undefined ||
@@ -87,12 +80,11 @@ export function EditDivisionsForm({
 										}}
 									>
 										<EditIcon size={12} className="-mr" /> <span>Format</span>
-									</Button>
+									</Button>*/}
 									<Button
 										size="sm"
 										isDisabled={
-											addingOrEditId !== undefined ||
-											editFormatDivisionId !== undefined
+											addingOrEditId !== undefined // || editFormatDivisionId !== undefined
 										}
 										onPress={() => {
 											setAddingOrEditId(td.id);
@@ -103,8 +95,7 @@ export function EditDivisionsForm({
 
 									<RemoveDivisionForm
 										isDisabled={
-											addingOrEditId !== undefined ||
-											editFormatDivisionId !== undefined
+											addingOrEditId !== undefined // || editFormatDivisionId !== undefined
 										}
 										tournamentId={tournamentId}
 										divisionId={td.id}
@@ -121,16 +112,18 @@ export function EditDivisionsForm({
 								/>
 							)}
 
-							{editFormatDivisionId === td.id && (
+							{/*{editFormatDivisionId === td.id && (
 								<RequirementsForm
+									tournamentId={tournamentId}
 									tournamentDivisionId={editFormatDivisionId}
+									divisionId={td.divisionId}
 									name={td.name}
 									displayGender={td.displayGender}
 									displayDivision={td.displayDivision}
 									teamSize={td.teamSize}
 									onCancel={() => setEditFormatDivisionId(undefined)}
 								/>
-							)}
+							)}*/}
 						</div>
 					))}
 				</div>

@@ -163,6 +163,7 @@ export const removeTournamentDivisionMutationOptions = () =>
 export const upsertRequirementsSchema = selectTournamentDivisionSchema
 	.pick({
 		name: true,
+		divisionId: true,
 		displayDivision: true,
 		displayGender: true,
 	})
@@ -188,17 +189,22 @@ export const upsertRequirementsFn = createServerFn()
 				tournamentDivisionId,
 				requirements,
 				name,
+				divisionId,
 				displayGender,
 				displayDivision,
 			},
 		}) => {
-			console.log({
-				tournamentDivisionId,
-				requirements,
-				name,
-				displayGender,
-				displayDivision,
-			});
+			upsertRequirements(tournamentDivisionId, requirements);
+
+			await db
+				.update(tournamentDivisions)
+				.set({
+					name,
+					divisionId,
+					displayGender,
+					displayDivision,
+				})
+				.where(eq(tournamentDivisions.id, tournamentDivisionId));
 
 			return {
 				success: true,

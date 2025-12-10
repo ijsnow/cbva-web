@@ -1,13 +1,18 @@
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { pick } from "lodash-es";
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type z from "zod";
 
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { type Option, Select } from "@/components/base/select";
 import { divisionsQueryOptions } from "@/data/divisions";
+import { tournamentQueryOptions } from "@/data/tournaments";
 import {
 	upsertRequirementsMutationOptions,
 	upsertRequirementsSchema,
@@ -17,7 +22,9 @@ import type { Gender } from "@/db/schema/shared";
 import { isNotNullOrUndefined } from "@/utils/types";
 
 export type RequirementsFormProps = {
+	tournamentId: number;
 	tournamentDivisionId: number;
+	divisionId: number;
 	teamSize: number;
 	name?: string | null;
 	displayDivision?: boolean | null;
@@ -26,7 +33,9 @@ export type RequirementsFormProps = {
 };
 
 export function RequirementsForm({
+	tournamentId,
 	tournamentDivisionId,
+	divisionId,
 	name,
 	displayDivision,
 	displayGender,
@@ -189,9 +198,12 @@ export function RequirementsForm({
 
 	const schema = upsertRequirementsSchema.omit({
 		tournamentDivisionId: true,
+		divisionId: true,
 	});
 
-	const [format, setFormat] = useState<string | undefined | null>();
+	const [format, setFormat] = useState<string | undefined | null>(
+		name ? formats.find(({ display }) => name === display)?.value : undefined,
+	);
 
 	const selectedFormat = formats.find(({ value }) => value === format);
 
@@ -204,7 +216,17 @@ export function RequirementsForm({
 		}),
 	);
 
-	const { mutate } = useMutation({ ...upsertRequirementsMutationOptions() });
+	const queryClient = useQueryClient();
+
+	const { mutate } = useMutation({
+		...upsertRequirementsMutationOptions(),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries(tournamentQueryOptions(tournamentId));
+
+			onCancel();
+		},
+	});
 
 	const form = useAppForm({
 		defaultValues: {
@@ -227,11 +249,49 @@ export function RequirementsForm({
 				name,
 				tournamentDivisionId,
 				requirements,
+				divisionId: "", // derive from requirements based on format, pick most specific e.g. has max age
 				displayGender,
 				displayDivision,
 			});
 		},
 	});
+
+	useEffect(() => {
+		if (selectedFormat) {
+			for (const [i, requirement] of selectedFormat.requirements.entries()) {
+				form.setFieldValue(`requirements[${i}].gender`, requirement?.gender);
+
+				form.setFieldValue(
+					`requirements[${i}].qualifiedDivisionId`,
+					requirement?.defaultQualifiedDivisionId,
+				);
+
+				form.setFieldValue(
+					`requirements[${i}].minimum`,
+					requirement?.minimum ?? 1,
+				);
+			}
+
+			form.setFieldValue(
+				"name",
+				selectedFormat?.display === "Custom"
+					? ""
+					: (selectedFormat.display ?? name),
+			);
+
+			form.setFieldValue(
+				"displayDivision",
+				selectedFormat.displayDivision ?? displayDivision,
+			);
+
+			form.setFieldValue(
+				"displayGender",
+				selectedFormat.displayGender ?? displayGender,
+			);
+		} else {
+			form.reset();
+		}
+	}, [form, selectedFormat, name, displayDivision, displayGender]);
 
 	return (
 		<form
@@ -244,6 +304,7 @@ export function RequirementsForm({
 		>
 			<Select
 				label="Format"
+				value={format}
 				options={formats}
 				onChange={(value) => {
 					setFormat(value as string | null);
@@ -263,7 +324,7 @@ export function RequirementsForm({
 							return (
 								<>
 									<span className="font-semibold">
-										Player {i + 1} requirement
+										Player {i + 1} Requirement
 									</span>
 									<form.AppField name={`requirements[${i}].gender`}>
 										{(subField) => (
