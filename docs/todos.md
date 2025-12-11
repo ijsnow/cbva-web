@@ -5,12 +5,11 @@
   - Ability to create bracket when pools aren't done
 - Select wildcards
 
-- Assign refs on creation for pool matches
-- Assign refs after game completes for playoff matches
 - Ask td's for ref assignment scenarios
 
-# TODOs
-
+- tournaments that award bids
+- complete tournament
+- pg_cron
 - Migrate to Uppy for photo uploads
 
 # Considerations

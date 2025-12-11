@@ -7,7 +7,6 @@ import {
 } from "@/components/base/disclosure";
 import type { Tournament } from "@/db/schema";
 import { isDefined, isNotNull } from "@/utils/types";
-import { EditDivisionsForm } from "../controls/edit-divisions";
 import { DivisionsForm } from "./divisions";
 import { UpsertTournamentForm } from "./general-info";
 
