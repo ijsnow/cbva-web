@@ -5,13 +5,13 @@ import {
 } from "@tanstack/react-query";
 import { createServerFn, useServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
+import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
 	type CreateTournamentDirector,
 	createTournamentDirectorSchema,
 	tournamentDirectors,
 } from "@/db/schema";
-import { requirePermissions } from "@/auth/shared";
 
 async function readDirectors() {
 	return await db.query.directors.findMany({
@@ -89,6 +89,8 @@ export const deleteTournamentDirectorFn = createServerFn({ method: "POST" })
 			.select()
 			.from(tournamentDirectors)
 			.where(eq(tournamentDirectors.tournamentId, data.tournamentId));
+
+		console.log("here", remainingDirectors.length);
 
 		if (remainingDirectors.length <= 1) {
 			throw new Error(

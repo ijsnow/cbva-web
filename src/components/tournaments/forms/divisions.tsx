@@ -100,7 +100,7 @@ export function DivisionsForm({ tournamentId }: { tournamentId: number }) {
 					onPress={() => setAddingOrEditId(true)}
 					isDisabled={addingOrEditId !== undefined}
 				>
-					<PlusIcon size={12} /> Add Another
+					<PlusIcon size={12} /> Add division
 				</Button>
 			)}
 		</>

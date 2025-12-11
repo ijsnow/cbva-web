@@ -7,6 +7,7 @@ import {
 } from "@/components/base/disclosure";
 import type { Tournament } from "@/db/schema";
 import { isDefined, isNotNull } from "@/utils/types";
+import { DirectorsSection } from "./directors";
 import { DivisionsForm } from "./divisions";
 import { UpsertTournamentForm } from "./general-info";
 
@@ -14,7 +15,7 @@ export type TournamentFormsGroup = {
 	tournament?: Pick<
 		Tournament,
 		"id" | "name" | "date" | "startTime" | "venueId"
-	>;
+	> | null;
 };
 
 export function TournamentFormsGroup({ tournament }: TournamentFormsGroup) {
@@ -49,6 +50,14 @@ export function TournamentFormsGroup({ tournament }: TournamentFormsGroup) {
 				<DisclosurePanel>
 					<div className="flex flex-col w-full space-y-3">
 						{tournament && <DivisionsForm tournamentId={tournament.id} />}
+					</div>
+				</DisclosurePanel>
+			</Disclosure>
+			<Disclosure id="divisions" isDisabled={!isDefined(tournament?.id)}>
+				<DisclosureHeader>Directors</DisclosureHeader>
+				<DisclosurePanel>
+					<div className="flex flex-col w-full space-y-3">
+						{tournament && <DirectorsSection tournamentId={tournament.id} />}
 					</div>
 				</DisclosurePanel>
 			</Disclosure>

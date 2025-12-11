@@ -1,5 +1,5 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { roleHasPermission } from "@/auth/shared";
 import { tournamentQueryOptions } from "@/data/tournaments";
 
 export const Route = createFileRoute("/tournaments/$tournamentId/")({
@@ -15,24 +15,46 @@ export const Route = createFileRoute("/tournaments/$tournamentId/")({
 			courts: Array.isArray(search?.courts) ? search.courts : undefined,
 		};
 	},
-	loader: async ({ params: { tournamentId }, context: { queryClient } }) => {
+	loader: async ({
+		params: { tournamentId },
+		context: { queryClient, viewer },
+	}) => {
 		const tournament = await queryClient.ensureQueryData(
 			tournamentQueryOptions(Number.parseInt(tournamentId, 10)),
 		);
 
 		if (!tournament) {
-			throw new Error("not found");
+			throw notFound();
 		}
 
-		const activeDivision = tournament.tournamentDivisions[0];
+		if (tournament.tournamentDivisions.length) {
+			const activeDivision = tournament.tournamentDivisions[0];
 
-		throw redirect({
-			to: "/tournaments/$tournamentId/$divisionId/{-$tab}",
-			params: {
-				tournamentId,
-				divisionId: activeDivision.id.toString(),
-			},
-		});
+			throw redirect({
+				to: "/tournaments/$tournamentId/$divisionId/{-$tab}",
+				params: {
+					tournamentId,
+					divisionId: activeDivision.id.toString(),
+				},
+			});
+		}
+
+		const canEdit =
+			viewer &&
+			roleHasPermission(viewer.role, {
+				tournament: ["update"],
+			});
+
+		if (canEdit) {
+			throw redirect({
+				to: "/tournaments/$tournamentId/edit",
+				params: {
+					tournamentId,
+				},
+			});
+		}
+
+		throw notFound();
 	},
 });
 

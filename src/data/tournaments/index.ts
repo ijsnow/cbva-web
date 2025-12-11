@@ -136,42 +136,65 @@ export const tournamentsQueryOptions = (data: {
 		queryFn: () => getTournaments({ data }),
 	});
 
-async function readTournament({ id }: { id: number }) {
-	const res = await db.query.tournaments.findFirst({
-		where: (table, { eq }) => eq(table.id, id),
-		with: {
-			venue: true,
-			directors: {
-				with: {
-					director: {
-						with: {
-							profile: true,
-						},
-					},
-				},
-			},
-			tournamentDivisions: {
-				with: {
-					division: true,
-					requirements: true,
-				},
-			},
-		},
-	});
+// async function readTournament({ id }: { id: number }) {
+// 	const res = await db.query.tournaments.findFirst({
+// 		where: (table, { eq }) => eq(table.id, id),
+// 		with: {
+// 			venue: true,
+// 			directors: {
+// 				with: {
+// 					director: {
+// 						with: {
+// 							profile: true,
+// 						},
+// 					},
+// 				},
+// 			},
+// 			tournamentDivisions: {
+// 				with: {
+// 					division: true,
+// 					requirements: true,
+// 				},
+// 			},
+// 		},
+// 	});
 
-	return res;
-}
+// 	return res;
+// }
 
 export const getTournament = createServerFn({
 	method: "GET",
 })
-	.inputValidator(
-		(i) =>
-			i as {
-				id: number;
+	.inputValidator(selectTournamentSchema.pick({ id: true }))
+	.handler(async ({ data: { id } }) => {
+		const res = await db.query.tournaments.findFirst({
+			where: (table, { eq }) => eq(table.id, id),
+			with: {
+				venue: {
+					with: {
+						director: true,
+					},
+				},
+				directors: {
+					with: {
+						director: {
+							with: {
+								profile: true,
+							},
+						},
+					},
+				},
+				tournamentDivisions: {
+					with: {
+						division: true,
+						requirements: true,
+					},
+				},
 			},
-	)
-	.handler(({ data }) => readTournament(data));
+		});
+
+		return res;
+	});
 
 export const tournamentQueryOptions = (id?: number) =>
 	queryOptions({

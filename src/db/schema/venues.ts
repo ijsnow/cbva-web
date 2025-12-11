@@ -1,5 +1,7 @@
+import { relations } from "drizzle-orm";
 import {
 	index,
+	integer,
 	pgTable,
 	serial,
 	text,
@@ -8,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
 import { z } from "zod";
+import { users } from "./auth";
 import { richText, venueStatusEnum } from "./shared";
 
 const { createInsertSchema, createSelectSchema, createUpdateSchema } =
@@ -25,6 +28,8 @@ export const venues = pgTable(
 		mapUrl: text().notNull(),
 		status: venueStatusEnum().notNull(),
 		imageSource: text(),
+		// TODO: add check for confirming user has director role
+		directorId: text().references(() => users.id),
 		externalRef: uuid().unique(),
 	},
 	(table) => [
@@ -45,3 +50,10 @@ export const updateVenueSchema = createUpdateSchema(venues).pick({
 export type Venue = z.infer<typeof selectVenueSchema>;
 export type CreateVenue = z.infer<typeof createVenueSchema>;
 export type UpdateVenue = z.infer<typeof updateVenueSchema>;
+
+export const venueRelations = relations(venues, ({ one }) => ({
+	director: one(users, {
+		fields: [venues.directorId],
+		references: [users.id],
+	}),
+}));

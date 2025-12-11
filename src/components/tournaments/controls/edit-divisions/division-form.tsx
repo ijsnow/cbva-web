@@ -103,6 +103,8 @@ export function DivisionForm({
 				displayDivision,
 			},
 		}) => {
+			console.log("here");
+
 			mutate({
 				id,
 				tournamentId,
@@ -307,8 +309,8 @@ export function DivisionForm({
 				)}
 			/>
 
-			<Disclosure>
-				<DisclosureHeader>
+			<Disclosure className="col-span-full" card={false}>
+				<DisclosureHeader card={false}>
 					<span>Special Requirements</span>
 					<Information>
 						Add requirements to run special formats such as Mother/Daughter,
@@ -316,7 +318,7 @@ export function DivisionForm({
 					</Information>
 				</DisclosureHeader>
 
-				<DisclosurePanel>
+				<DisclosurePanel card={false}>
 					<form.AppField name="requirements" mode="array">
 						{(field) => (
 							<div className="col-span-full grid grid-cols-6 gap-3">
@@ -402,7 +404,7 @@ export function DivisionForm({
 													);
 												}}
 											>
-												<PlusIcon /> Add requirement
+												<PlusIcon size={16} /> Add requirement
 											</Button>
 										)}
 									</form.Subscribe>

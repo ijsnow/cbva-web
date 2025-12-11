@@ -8,7 +8,7 @@ function BaseLink(props: LinkProps) {
 			{...props}
 			className={composeTailwindRenderProps(
 				props.className,
-				"underline hover:no-underline",
+				"underline hover:no-underline aria-disabled:no-underline aria-disabled:text-gray-700 aria-disabled:cursor-not-allowed",
 			)}
 		/>
 	);

@@ -23,12 +23,15 @@ const getDivisions = createServerFn({
 export const divisionsQueryOptions = (includeJuniors?: boolean) =>
 	queryOptions({
 		queryKey: ["divisions", includeJuniors],
-		queryFn: () => getDivisions({ data: { includeJuniors } }),
+		queryFn: () => {
+			console.log("divisionsQueryOptions");
+			return getDivisions({ data: { includeJuniors } });
+		},
 	});
 
 export function useDivisionFilterOptions<Link extends boolean>(
 	link?: Link,
-): Option<number, Link>[] {
+): Option<number>[] {
 	const { location } = useRouterState();
 
 	const { data: divisions } = useSuspenseQuery({

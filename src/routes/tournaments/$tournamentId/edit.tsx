@@ -1,22 +1,22 @@
-import { parseDate, parseTime } from "@internationalized/date";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { roleHasPermission, viewerQueryOptions } from "@/auth/shared";
-import { card, title } from "@/components/base/primitives";
+import { roleHasPermission } from "@/auth/shared";
+import { Link } from "@/components/base/link";
+import { title } from "@/components/base/primitives";
 import { TournamentFormsGroup } from "@/components/tournaments/forms";
 import { tournamentQueryOptions } from "@/data/tournaments";
 import { DefaultLayout } from "@/layouts/default";
+import { isDefined } from "@/utils/types";
 
 export const Route = createFileRoute("/tournaments/$tournamentId/edit")({
-	loader: async ({ params: { tournamentId }, context: { queryClient } }) => {
-		const data = await queryClient.ensureQueryData(viewerQueryOptions());
-
-		console.log("viewer", data);
-
+	loader: async ({
+		params: { tournamentId },
+		context: { viewer, queryClient },
+	}) => {
 		const canCreate =
-			data &&
-			roleHasPermission(data.role, {
+			viewer &&
+			roleHasPermission(viewer.role, {
 				tournament: ["create"],
 			});
 
@@ -49,9 +49,20 @@ function RouteComponent() {
 			}}
 		>
 			<Suspense>
-				<h1 className={title({ class: "mx-auto text-center" })}>
-					Edit Tournament
-				</h1>
+				<div className="mx-auto text-center">
+					<h1 className={title({ class: "mx-auto mb-2" })}>Edit Tournament</h1>
+
+					{(tournament?.tournamentDivisions.length ?? 0) > 0 && (
+						<Link
+							className="mx-auto text-center"
+							to="/tournaments/$tournamentId"
+							params={{ tournamentId: tournamentId }}
+							isDisabled={!tournament?.tournamentDivisions.length}
+						>
+							View tournament page
+						</Link>
+					)}
+				</div>
 
 				<TournamentFormsGroup tournament={tournament} />
 			</Suspense>

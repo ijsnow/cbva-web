@@ -7,12 +7,13 @@ import {
 	directorsQueryOptions,
 	useInsertTournamentDirector,
 } from "@/data/directors";
-import { Button } from "../base/button";
+import { Button, type ButtonProps } from "../base/button";
 import { useAppForm } from "../base/form";
 import { Modal } from "../base/modal";
 import { title } from "../base/primitives";
 
 export type DirectorsModalProps = {
+	triggerProps?: ButtonProps;
 	tournamentId: number;
 	existingDirectorIds: number[];
 };
@@ -22,6 +23,13 @@ const schema = z.object({
 });
 
 export function AddDirector({
+	triggerProps = {
+		variant: "icon",
+		color: "alternate",
+		radius: "full",
+		className: "text-blue-500",
+		children: <EditIcon size={16} />,
+	},
 	tournamentId,
 	existingDirectorIds,
 }: DirectorsModalProps) {
@@ -67,14 +75,8 @@ export function AddDirector({
 
 	return (
 		<DialogTrigger isOpen={isOpen} onOpenChange={setOpen}>
-			<Button
-				variant="icon"
-				color="alternate"
-				radius="full"
-				className="text-blue-500"
-			>
-				<EditIcon size={16} />
-			</Button>
+			<Button {...triggerProps} />
+
 			<Modal isDismissable isOpen={isOpen} onOpenChange={setOpen}>
 				<div className="p-3 flex flex-col space-y-4 relative">
 					<Heading

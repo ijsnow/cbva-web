@@ -16,6 +16,7 @@ export function ComboBoxField<T extends Key>({
 	isDisabled,
 	disabledKeys,
 	onSelectionChange,
+	validationBehavior = "aria",
 	...props
 }: ComboBoxFieldProps<T>) {
 	const isMounted = useIsMounted();
@@ -23,6 +24,7 @@ export function ComboBoxField<T extends Key>({
 	return (
 		<ComboBox
 			{...props}
+			validationBehavior={validationBehavior}
 			name={field.name}
 			items={options || []}
 			disabledKeys={disabledKeys}

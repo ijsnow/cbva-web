@@ -31,7 +31,7 @@ import {
 	tournamentDivisions,
 } from "./tournament-divisions";
 import { tournamentRelations, tournaments } from "./tournaments";
-import { venues } from "./venues";
+import { venueRelations, venues } from "./venues";
 
 export * from "./auth";
 export * from "./blocks";
@@ -99,6 +99,7 @@ export const relationships = {
 	tournamentDivisionRequirementsRelations,
 	tournamentDivisionTeamsRelations,
 	tournamentRelations,
+	venueRelations,
 };
 
 const schema = {
