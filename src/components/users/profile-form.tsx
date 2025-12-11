@@ -1,8 +1,4 @@
-import {
-	type CalendarDate,
-	getLocalTimeZone,
-	today,
-} from "@internationalized/date";
+import { type CalendarDate, today } from "@internationalized/date";
 import z from "zod/v4";
 
 import { useAppForm } from "@/components/base/form";
@@ -39,7 +35,7 @@ const schema = z.object({
 					return true;
 				}
 
-				const todayDate = today(getLocalTimeZone());
+				const todayDate = today(getDefaultTimeZone());
 
 				return value < todayDate;
 			},

@@ -8,7 +8,11 @@ import type { Permissions, Role } from "./permissions";
 import { getViewer } from "./server";
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
+	console.log("hmmmmmm");
+
 	const { impersonatedBy, ...viewer } = await getViewer();
+
+	console.log("uuuuuh", viewer);
 
 	return await next({
 		context: {
@@ -27,6 +31,11 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 		},
 	});
 });
+// .client(async ({ next }) => {
+// // authClient.
+// 	const result = await next(); // <-- This will execute the next middleware in the chain and eventually, the RPC to the server
+// 	return result;
+// });
 
 export const getViewerId = createServerFn({ method: "GET" })
 	.middleware([authMiddleware])
@@ -62,8 +71,17 @@ export function useIsLoggedIn() {
 //   });
 
 export const getViewerFn = createServerFn({ method: "GET" })
-	.middleware([authMiddleware])
+	.middleware([
+		// async (next) => {
+		// 	console.log("what");
+
+		// 	return await next();
+		// },
+		authMiddleware,
+	])
 	.handler(async ({ context }) => {
+		console.log("eeep, ", context);
+
 		return context?.viewer ?? null;
 	});
 

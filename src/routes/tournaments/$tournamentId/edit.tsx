@@ -5,13 +5,14 @@ import { Suspense } from "react";
 import { roleHasPermission, viewerQueryOptions } from "@/auth/shared";
 import { card, title } from "@/components/base/primitives";
 import { TournamentFormsGroup } from "@/components/tournaments/forms";
-import { UpsertTournamentForm } from "@/components/tournaments/upsert-form";
 import { tournamentQueryOptions } from "@/data/tournaments";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/tournaments/$tournamentId/edit")({
 	loader: async ({ params: { tournamentId }, context: { queryClient } }) => {
 		const data = await queryClient.ensureQueryData(viewerQueryOptions());
+
+		console.log("viewer", data);
 
 		const canCreate =
 			data &&

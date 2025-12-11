@@ -48,6 +48,10 @@ export function RemoveDivisionForm({
 		defaultValues: {
 			id: divisionId,
 		},
+		validators: {
+			onMount: removeTournamentDivisionSchema,
+			onChange: removeTournamentDivisionSchema,
+		},
 		onSubmit: ({ value: { id } }) => {
 			if (!isDisabled) {
 				mutate({

@@ -1,4 +1,4 @@
-import { getLocalTimeZone, parseDate } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -89,7 +89,9 @@ function RouteComponent() {
 		select: (data) => ({
 			...data,
 			data: data.data.map(({ date, ...rest }) => ({
-				date: dateFormatter.format(parseDate(date).toDate(getLocalTimeZone())),
+				date: dateFormatter.format(
+					parseDate(date).toDate(getDefaultTimeZone()),
+				),
 				...rest,
 			})),
 		}),

@@ -1,8 +1,4 @@
-import {
-	DateFormatter,
-	getLocalTimeZone,
-	parseDate,
-} from "@internationalized/date";
+import { DateFormatter, parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, linkOptions, redirect } from "@tanstack/react-router";
@@ -28,6 +24,7 @@ import { teamsQueryOptions } from "@/data/teams";
 import { tournamentQueryOptions } from "@/data/tournaments";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { DefaultLayout } from "@/layouts/default";
+import { getDefaultTimeZone } from "@/lib/dates";
 
 const dateFormatter = new DateFormatter("EN-US", {
 	dateStyle: "short",
@@ -79,7 +76,7 @@ export const Route = createFileRoute(
 					{
 						title: [
 							dateFormatter.format(
-								parseDate(loaderData.date).toDate(getLocalTimeZone()),
+								parseDate(loaderData.date).toDate(getDefaultTimeZone()),
 							),
 							loaderData.name,
 							`${loaderData.venue.name}, ${loaderData.venue.city}`,
@@ -139,7 +136,7 @@ function RouteComponent() {
 	});
 
 	const formattedDate = dateFormatter.format(
-		parsedDate.toDate(getLocalTimeZone()),
+		parsedDate.toDate(getDefaultTimeZone()),
 	);
 
 	const { venueClassName, dateClassName } = match({

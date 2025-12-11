@@ -1,4 +1,4 @@
-import { getLocalTimeZone, parseDate } from "@internationalized/date";
+import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -20,6 +20,7 @@ import type {
 } from "@/db/schema";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { DefaultLayout } from "@/layouts/default";
+import { getDefaultTimeZone } from "@/lib/dates";
 
 export const Route = createFileRoute("/tournaments/")({
 	component: RouteComponent,
@@ -210,7 +211,7 @@ function TournamentListItem({
 								visible ? "text-gray-300" : "text-content-foreground",
 							)}
 						>
-							{dateFormatter.format(parsedDate.toDate(getLocalTimeZone()))}
+							{dateFormatter.format(parsedDate.toDate(getDefaultTimeZone()))}
 						</span>
 					</span>
 				</Link>

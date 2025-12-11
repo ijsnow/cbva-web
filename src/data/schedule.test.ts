@@ -1,4 +1,4 @@
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { today } from "@internationalized/date";
 import { assert, describe, expect, test } from "vitest";
 import { db } from "@/db/connection";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
@@ -48,7 +48,7 @@ describe("duplicateTournamentFn", () => {
 
 		const { id } = await bootstrapTournament(db, input);
 
-		const targetDate = today(getLocalTimeZone()).add({ days: 1 }).toString();
+		const targetDate = today(getDefaultTimeZone()).add({ days: 1 }).toString();
 
 		await duplicateTournamentFn({
 			data: { id, date: targetDate },

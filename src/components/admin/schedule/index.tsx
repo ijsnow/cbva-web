@@ -1,4 +1,6 @@
-import { Header } from "react-aria-components";
+import { PlusIcon } from "lucide-react";
+import { button } from "@/components/base/button";
+import { Link } from "@/components/base/link";
 import {
 	Disclosure,
 	DisclosureGroup,
@@ -12,7 +14,17 @@ import { DeleteScheduleForm } from "./delete";
 export function ScheduleDashboard() {
 	return (
 		<section className="flex flex-col space-y-8">
-			<Header className={title({ size: "sm" })}>Schedule</Header>
+			<h2
+				className={title({
+					size: "sm",
+					class: "flex flex-row justify-between items-center",
+				})}
+			>
+				<span>Schedule</span>
+				<Link to="/tournaments/create" className={button({ variant: "link" })}>
+					<PlusIcon size={16} /> Create Tournament
+				</Link>
+			</h2>
 
 			<DisclosureGroup>
 				<Disclosure className="bg-white">

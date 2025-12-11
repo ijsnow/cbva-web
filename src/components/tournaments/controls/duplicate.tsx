@@ -1,8 +1,4 @@
-import {
-	type CalendarDate,
-	getLocalTimeZone,
-	today,
-} from "@internationalized/date";
+import { type CalendarDate, today } from "@internationalized/date";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Heading } from "react-aria-components";
@@ -13,6 +9,7 @@ import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
 import { duplicateTournamentOptions } from "@/data/schedule";
+import { getDefaultTimeZone } from "@/lib/dates";
 
 export type DuplicateFormProps = {
 	tournamentId: number;
@@ -32,7 +29,7 @@ const schema = z.object({
 					return true;
 				}
 
-				const todayDate = today(getLocalTimeZone());
+				const todayDate = today(getDefaultTimeZone());
 
 				return value > todayDate;
 			},
@@ -65,7 +62,7 @@ export function DuplicateForm({
 
 	const form = useAppForm({
 		defaultValues: {
-			date: today(getLocalTimeZone()).add({ days: 1 }),
+			date: today(getDefaultTimeZone()).add({ days: 1 }),
 		},
 		validators: {
 			onMount: schema,
@@ -101,7 +98,7 @@ export function DuplicateForm({
 								className="col-span-3"
 								label="Date"
 								field={field}
-								minValue={today(getLocalTimeZone())}
+								minValue={today(getDefaultTimeZone())}
 							/>
 						)}
 					/>

@@ -1,4 +1,4 @@
-import { getLocalTimeZone, parseTime, today } from "@internationalized/date";
+import { parseTime, today } from "@internationalized/date";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import type z from "zod";
@@ -31,7 +31,7 @@ export function UpsertTournamentForm({
 	tournamentId,
 	defaultValues = {
 		name: "",
-		date: today(getLocalTimeZone()).add({ days: 1 }),
+		date: today(getDefaultTimeZone()).add({ days: 1 }),
 		startTime: parseTime("09:00:00"),
 		venueId: null,
 	} as unknown as z.infer<typeof schema>,
@@ -40,12 +40,15 @@ export function UpsertTournamentForm({
 
 	const venueOptions = useVenueFilterOptions();
 
+	const isEdit = isDefined(tournamentId);
+	const isCreate = !isDefined(tournamentId);
+
 	const queryClient = useQueryClient();
 
 	const { mutate } = useMutation({
 		...upsertTournamentMutationOptions(),
 		onSuccess: ({ data: { id } }) => {
-			if (isDefined(tournamentId)) {
+			if (isEdit) {
 				queryClient.invalidateQueries(tournamentQueryOptions(id));
 			} else {
 				navigate({
@@ -133,7 +136,9 @@ export function UpsertTournamentForm({
 
 			<form.AppForm>
 				<form.Footer className="col-span-full">
-					<form.SubmitButton>Submit</form.SubmitButton>
+					<form.SubmitButton>
+						{isCreate ? "Create" : "Submit"}
+					</form.SubmitButton>
 				</form.Footer>
 			</form.AppForm>
 		</form>

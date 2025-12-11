@@ -21,7 +21,10 @@ export function TournamentFormsGroup({ tournament }: TournamentFormsGroup) {
 	return (
 		<DisclosureGroup
 			className="w-full max-w-lg mx-auto bg-white"
-			defaultExpandedKeys={["general"].filter(isNotNull)}
+			allowsMultipleExpanded={true}
+			defaultExpandedKeys={["general", tournament ? "divisions" : null].filter(
+				isNotNull,
+			)}
 		>
 			<Disclosure id="general" defaultExpanded={true}>
 				<DisclosureHeader>General Info</DisclosureHeader>

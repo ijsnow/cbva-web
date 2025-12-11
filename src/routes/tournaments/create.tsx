@@ -1,13 +1,19 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Suspense } from "react";
-import { roleHasPermission, viewerQueryOptions } from "@/auth/shared";
-import { card, title } from "@/components/base/primitives";
+import { viewerQueryOptions } from "@/auth/shared";
+import { title } from "@/components/base/primitives";
 import { TournamentFormsGroup } from "@/components/tournaments/forms";
-import { tournamentQueryOptions } from "@/data/tournaments";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/tournaments/create")({
+	loader: async ({ context: { queryClient } }) => {
+		const viewer = await queryClient.ensureQueryData(viewerQueryOptions());
+
+		// Check if user is admin
+		if (!viewer || viewer.role !== "admin") {
+			throw redirect({ to: "/not-found" });
+		}
+	},
 	component: RouteComponent,
 });
 
@@ -22,9 +28,7 @@ function RouteComponent() {
 				<h1 className={title({ class: "mx-auto text-center" })}>
 					New Tournament
 				</h1>
-				<div className={card({ class: "w-full max-w-lg mx-auto" })}>
-					<TournamentFormsGroup />
-				</div>
+				<TournamentFormsGroup />
 			</Suspense>
 		</DefaultLayout>
 	);

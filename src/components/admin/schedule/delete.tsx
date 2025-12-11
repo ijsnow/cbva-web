@@ -1,7 +1,8 @@
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { today } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useMutation } from "@tanstack/react-query";
 import { deleteScheduleOptions, deleteScheduleSchema } from "@/data/schedule";
+import { getDefaultTimeZone } from "@/lib/dates";
 import { useAppForm } from "../../base/form";
 
 export function DeleteScheduleForm() {
@@ -9,10 +10,10 @@ export function DeleteScheduleForm() {
 
 	const form = useAppForm({
 		defaultValues: deleteScheduleSchema.parse({
-			startDate: today(getLocalTimeZone())
+			startDate: today(getDefaultTimeZone())
 				.set({ month: 1, day: 1 })
 				.add({ years: 1 }),
-			endDate: today(getLocalTimeZone())
+			endDate: today(getDefaultTimeZone())
 				.set({ month: 12, day: 31 })
 				.add({ years: 1 }),
 		}),
@@ -79,7 +80,7 @@ export function DeleteScheduleForm() {
 									<span className="font-semibold">Start date:</span>
 									<span>
 										{dateFormatter.format(
-											form.state.values.startDate.toDate(getLocalTimeZone()),
+											form.state.values.startDate.toDate(getDefaultTimeZone()),
 										)}
 									</span>
 								</div>
@@ -87,7 +88,7 @@ export function DeleteScheduleForm() {
 									<span className="font-semibold">End date:</span>
 									<span>
 										{dateFormatter.format(
-											form.state.values.endDate.toDate(getLocalTimeZone()),
+											form.state.values.endDate.toDate(getDefaultTimeZone()),
 										)}
 									</span>
 								</div>

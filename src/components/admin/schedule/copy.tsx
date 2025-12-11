@@ -1,4 +1,4 @@
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { today } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -6,14 +6,15 @@ import {
 	duplicateScheduleSchema,
 } from "@/data/schedule";
 import { useAppForm } from "../../base/form";
+import { getDefaultTimeZone } from "@/lib/dates";
 
 export function CopyScheduleForm() {
 	const { mutate } = useMutation(duplicateScheduleOptions());
 
 	const form = useAppForm({
 		defaultValues: {
-			startDate: today(getLocalTimeZone()).set({ month: 1, day: 1 }),
-			endDate: today(getLocalTimeZone()).set({ month: 12, day: 31 }),
+			startDate: today(getDefaultTimeZone()).set({ month: 1, day: 1 }),
+			endDate: today(getDefaultTimeZone()).set({ month: 12, day: 31 }),
 			addDays: 364,
 		},
 		validators: {
@@ -92,7 +93,7 @@ export function CopyScheduleForm() {
 									<span className="font-semibold">Start date:</span>
 									<span>
 										{dateFormatter.format(
-											form.state.values.startDate.toDate(getLocalTimeZone()),
+											form.state.values.startDate.toDate(getDefaultTimeZone()),
 										)}
 									</span>
 								</div>
@@ -100,7 +101,7 @@ export function CopyScheduleForm() {
 									<span className="font-semibold">End date:</span>
 									<span>
 										{dateFormatter.format(
-											form.state.values.endDate.toDate(getLocalTimeZone()),
+											form.state.values.endDate.toDate(getDefaultTimeZone()),
 										)}
 									</span>
 								</div>
