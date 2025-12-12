@@ -19,7 +19,6 @@ export function FilterVenues({ values }: FilterVenuesProps) {
 				value: id,
 				display: `${name}, ${city}`,
 				link: linkOptions({
-					to: "/tournaments",
 					search: (search) => {
 						const venues = search.venues ?? [];
 

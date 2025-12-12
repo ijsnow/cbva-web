@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import z from "zod";
 import { button } from "@/components/base/button";
 import { Checkbox } from "@/components/base/checkbox";
+import { UnderConstruction } from "@/components/under-construction";
 import { genderSchema } from "@/db/schema/shared";
 import { FilterDivisions } from "./divisions";
 import { FilterGender } from "./gender";
@@ -32,6 +33,7 @@ export function TournamentListFilters({
 
 	return (
 		<div className="max-w-xl mx-auto flex flex-col space-y-2 px-2">
+			<UnderConstruction description="I'll be adding more filters here. Date range, names, juniors only, etc. Let me know what you'd like to have." />
 			<FilterVenues values={new Set(venues)} />
 			<FilterDivisions values={new Set(divisions)} />
 			<FilterGender values={new Set(genders)} />

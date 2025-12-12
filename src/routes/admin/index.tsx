@@ -5,13 +5,8 @@ import { UsersList } from "@/components/admin/users-list";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/admin/")({
-	// server: {
-	// 	middleware: [authMiddleware],
-	// },
 	loader: async ({ context: { queryClient, ...context }, serverContext }) => {
-		console.log("heer", { context, serverContext });
-
-		const viewer = context.viewer ?? serverContext?.viewer;
+		const viewer = context.viewer;
 
 		// Check if user is admin
 		if (!viewer || viewer.role !== "admin") {

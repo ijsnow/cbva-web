@@ -1,4 +1,4 @@
-import { PlusIcon } from "lucide-react";
+import { CalendarIcon, PlusIcon } from "lucide-react";
 import { button } from "@/components/base/button";
 import { Link } from "@/components/base/link";
 import {
@@ -21,8 +21,8 @@ export function ScheduleDashboard() {
 				})}
 			>
 				<span>Schedule</span>
-				<Link to="/tournaments/create" className={button({ variant: "link" })}>
-					<PlusIcon size={16} /> Create Tournament
+				<Link to="/admin/schedule" className={button({ variant: "link" })}>
+					<CalendarIcon size={16} /> Edit Schedule
 				</Link>
 			</h2>
 

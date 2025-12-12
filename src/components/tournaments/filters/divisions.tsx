@@ -76,7 +76,6 @@ export function FilterDivisions({ values }: FilterDivisionsProps) {
 					{options?.map(({ value, display }) => (
 						<Link
 							key={value}
-							to="/tournaments"
 							search={(search) => {
 								const divisions = search.divisions ?? [];
 

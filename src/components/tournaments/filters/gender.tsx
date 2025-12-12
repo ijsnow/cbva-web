@@ -81,7 +81,6 @@ export function FilterGender({ values }: FilterGenderProps) {
 					{options?.map(({ value, display }) => (
 						<Link
 							key={value}
-							to="/tournaments"
 							search={(search) => {
 								const genders = search.genders ?? [];
 

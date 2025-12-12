@@ -49,7 +49,9 @@ export function BulkEditSchedule(props: BulkEditScheduleProps) {
 			<div className="py-8 bg-slate-300">
 				<TournamentListFilters {...props.params} />
 			</div>
-			<Suspense>
+			<Suspense
+				fallback={<div className="max-w-lg mx-auto py-12">Loading...</div>}
+			>
 				<div className="flex flex-col space-y-4 max-w-lg mx-auto py-12">
 					{tournaments?.data.map(
 						({ id, name, date, venue: { name: venueName, city } }) => {

@@ -11,6 +11,8 @@
 - complete tournament
 - pg_cron
 - Migrate to Uppy for photo uploads
+- Director's notes/directors should be changable for each tournament, not all tournaments at a venue
+- Modify permissions so that directors can't edit tournaments
 
 # Considerations
 
