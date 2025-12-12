@@ -147,20 +147,6 @@ export function DivisionForm({
 				</form.AppForm>
 			)}
 
-			<form.AppField
-				name="divisionId"
-				children={(field) => (
-					<field.Select
-						isRequired={true}
-						label="Division"
-						field={field}
-						options={divisionOptions}
-						placeholder="Select a division"
-						className="col-span-full"
-					/>
-				)}
-			/>
-
 			<form.Subscribe selector={(state) => [state.values.divisionId]}>
 				{([divisionId]) => {
 					const selectedDivision = divisionOptions.find(
@@ -176,17 +162,22 @@ export function DivisionForm({
 									label="Gender"
 									className="col-span-full sm:col-span-3"
 									field={field}
-									isDisabled={!selectedDivision}
 									options={[
 										{
 											value: "male",
-											display: selectedDivision?.hasMaxAge ? "Boy's" : "Men's",
+											display: selectedDivision
+												? selectedDivision.hasMaxAge
+													? "Boy's"
+													: "Men's"
+												: "Men's/Boy's",
 										},
 										{
 											value: "female",
-											display: selectedDivision?.hasMaxAge
-												? "Girl's"
-												: "Women's",
+											display: selectedDivision
+												? selectedDivision.hasMaxAge
+													? "Girl's"
+													: "Women's"
+												: "Women's/Girl's",
 										},
 									]}
 									placeholder="Select"
@@ -198,119 +189,146 @@ export function DivisionForm({
 			</form.Subscribe>
 
 			<form.AppField
-				name="teamSize"
+				name="divisionId"
 				children={(field) => (
-					<field.Number
+					<field.Select
 						isRequired={true}
-						label="Team Size"
-						className="col-span-full sm:col-span-3"
+						label="Division"
 						field={field}
-					/>
-				)}
-			/>
-
-			<form.Subscribe
-				selector={(state) => ({
-					values: state.values,
-				})}
-			>
-				{({ values: { name, gender, teamSize, divisionId, ...values } }) => {
-					const division = divisions.find(({ id }) => id === divisionId);
-
-					const placeholder =
-						division && gender && teamSize
-							? getTournamentDivisionDisplay({
-									division,
-									name: name ?? null,
-									gender,
-									teamSize,
-									...values,
-								})
-							: undefined;
-
-					return (
-						<>
-							<form.AppField
-								name="name"
-								children={(field) => (
-									<field.Text
-										label={
-											<>
-												Name: <span>{placeholder ?? "-"}</span>
-											</>
-										}
-										field={field}
-										placeholder={placeholder}
-										className="col-span-full"
-									/>
-								)}
-							/>
-							<div className="col-span-full flex flex-row space-x-2">
-								<form.AppField
-									name="displayGender"
-									children={(field) => (
-										<field.Checkbox
-											label={<>Display gender</>}
-											field={field}
-											className="col-span-3"
-											isDisabled={!name}
-										/>
-									)}
-								/>
-								<form.AppField
-									name="displayDivision"
-									children={(field) => (
-										<field.Checkbox
-											label={<>Display division</>}
-											field={field}
-											className="col-span-3"
-											isDisabled={!name}
-										/>
-									)}
-								/>
-							</div>
-						</>
-					);
-				}}
-			</form.Subscribe>
-
-			<form.AppField
-				name="capacity"
-				children={(field) => (
-					<field.Number
-						isRequired={true}
-						label="Capacity"
-						className="col-span-full sm:col-span-3"
-						field={field}
-					/>
-				)}
-			/>
-
-			<form.AppField
-				name="waitlistCapacity"
-				children={(field) => (
-					<field.Number
-						isRequired={true}
-						label="Waitlist Capacity"
-						className="col-span-full sm:col-span-3"
-						field={field}
-					/>
-				)}
-			/>
-
-			<form.AppField
-				name="autopromoteWaitlist"
-				children={(field) => (
-					<field.Checkbox
-						className="col-span-full"
-						label="Auto Promote from Waitlist"
-						field={field}
+						options={divisionOptions}
+						placeholder="Select a division"
+						className="col-span-3"
 					/>
 				)}
 			/>
 
 			<Disclosure className="col-span-full" card={false}>
+				<DisclosureHeader size="sm" card={false}>
+					<span>Extra Options</span>
+				</DisclosureHeader>
+
+				<DisclosurePanel
+					card={false}
+					contentClassName="col-span-full grid grid-cols-6 gap-3"
+				>
+					<form.Subscribe
+						selector={(state) => ({
+							values: state.values,
+						})}
+					>
+						{({
+							values: { name, gender, teamSize, divisionId, ...values },
+						}) => {
+							const division = divisions.find(({ id }) => id === divisionId);
+
+							const placeholder =
+								division && gender && teamSize
+									? getTournamentDivisionDisplay({
+											division,
+											name: name ?? null,
+											gender,
+											teamSize,
+											...values,
+										})
+									: undefined;
+
+							return (
+								<>
+									<form.AppField
+										name="name"
+										children={(field) => (
+											<field.Text
+												label={
+													<>
+														Name: <span>{placeholder ?? "-"}</span>
+													</>
+												}
+												field={field}
+												placeholder={placeholder}
+												className="col-span-4"
+											/>
+										)}
+									/>
+									<form.AppField
+										name="teamSize"
+										children={(field) => (
+											<field.Number
+												isRequired={true}
+												label="Team Size"
+												className="col-span-full sm:col-span-2"
+												field={field}
+											/>
+										)}
+									/>
+									<div className="col-span-full flex flex-row space-x-2">
+										<form.AppField
+											name="displayGender"
+											children={(field) => (
+												<field.Checkbox
+													label={<>Display gender</>}
+													field={field}
+													className="col-span-3"
+													isDisabled={!name}
+												/>
+											)}
+										/>
+										<form.AppField
+											name="displayDivision"
+											children={(field) => (
+												<field.Checkbox
+													label={<>Display division</>}
+													field={field}
+													className="col-span-3"
+													isDisabled={!name}
+												/>
+											)}
+										/>
+									</div>
+								</>
+							);
+						}}
+					</form.Subscribe>
+
+					<form.AppField
+						name="capacity"
+						children={(field) => (
+							<field.Number
+								isRequired={true}
+								label="Capacity"
+								className="col-span-full sm:col-span-3"
+								field={field}
+							/>
+						)}
+					/>
+
+					<form.AppField
+						name="waitlistCapacity"
+						children={(field) => (
+							<field.Number
+								isRequired={true}
+								label="Waitlist Capacity"
+								className="col-span-full sm:col-span-3"
+								field={field}
+							/>
+						)}
+					/>
+
+					<form.AppField
+						name="autopromoteWaitlist"
+						children={(field) => (
+							<field.Checkbox
+								className="col-span-full"
+								label="Auto Promote from Waitlist"
+								field={field}
+							/>
+						)}
+					/>
+				</DisclosurePanel>
+			</Disclosure>
+
+			<Disclosure className="col-span-full" card={false}>
 				<DisclosureHeader
+					size="sm"
 					card={false}
 					info={
 						<>
@@ -326,13 +344,6 @@ export function DivisionForm({
 					<form.AppField name="requirements" mode="array">
 						{(field) => (
 							<div className="col-span-full grid grid-cols-6 gap-3">
-								<Header className="col-span-full flex flex-row justify-start items-center space-x-2">
-									<span>Special Requirements</span>
-									<Information>
-										Add requirements to run special formats such as
-										Mother/Daughter, coed, etc.
-									</Information>
-								</Header>
 								<div className="col-span-full flex flex-col items-stretch space-y-2">
 									{field.state.value?.map((req, i) => {
 										const selectedDivision = divisionOptions.find(

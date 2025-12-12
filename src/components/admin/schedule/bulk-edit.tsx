@@ -1,7 +1,7 @@
 import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { DeleteIcon, SettingsIcon } from "lucide-react";
+import { DeleteIcon, EditIcon, SettingsIcon } from "lucide-react";
 import { Suspense, useState } from "react";
 import { Pressable } from "react-aria-components";
 import type z from "zod";
@@ -73,10 +73,17 @@ export function BulkEditSchedule(props: BulkEditScheduleProps) {
 											}}
 										>
 											<div className="p-2 bg-navbar-background text-navbar-foreground cursor-pointer hover:underline">
-												{name && <div className="text-lg">{name}</div>}
+												{name && (
+													<div className="text-lg flex flex-row space-x-2 items-center">
+														<EditIcon size={18} /> <span>{name}</span>
+													</div>
+												)}
 												<div className="flex flex-row justify-between">
-													<div>
-														{venueName}, {city}
+													<div className="flex flex-row items-center space-x-2">
+														{!name && <EditIcon size={18} />}
+														<span>
+															{venueName}, {city}
+														</span>
 													</div>
 													<div>
 														{dateFormatter.format(

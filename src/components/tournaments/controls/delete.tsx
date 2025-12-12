@@ -1,10 +1,9 @@
 import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AlertCircleIcon, AlertTriangleIcon } from "lucide-react";
+import { AlertTriangleIcon } from "lucide-react";
 import { Heading } from "react-aria-components";
 import z from "zod";
-import { Alert } from "@/components/base/alert";
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
@@ -14,7 +13,6 @@ import {
 	deleteTournamentSchema,
 	tournamentQueryOptions,
 } from "@/data/tournaments";
-import type { Division, TournamentDivision } from "@/db/schema";
 import { getDefaultTimeZone } from "@/lib/dates";
 
 export type DeleteTournamentFormProps = {

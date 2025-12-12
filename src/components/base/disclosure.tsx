@@ -160,11 +160,13 @@ export function DisclosureHeader({
 export interface DisclosurePanelProps extends AriaDisclosurePanelProps {
 	card?: boolean;
 	children: React.ReactNode;
+	contentClassName?: string;
 }
 
 export function DisclosurePanel({
 	card = true,
 	children,
+	contentClassName,
 	...props
 }: DisclosurePanelProps) {
 	return (
@@ -175,7 +177,9 @@ export function DisclosurePanel({
 				"h-(--disclosure-panel-height) motion-safe:transition-[height] overflow-clip",
 			)}
 		>
-			<div className={clsx("py-2", card ? "px-4" : "")}>{children}</div>
+			<div className={clsx("py-2", card ? "px-4" : "", contentClassName)}>
+				{children}
+			</div>
 		</AriaDisclosurePanel>
 	);
 }
