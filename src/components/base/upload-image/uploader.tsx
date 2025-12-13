@@ -13,9 +13,6 @@ import { requireAuthenticated } from "@/auth/shared";
 import { internalServerError } from "@/lib/responses";
 import { getSupabaseServerClient } from "@/supabase/server";
 
-console.log(process.env.VITE_SUPABASE_ANON_KEY);
-console.log(process.env.SUPABASE_ANON_KEY);
-
 const getSignedUploadTokenFn = createServerFn()
 	.middleware([requireAuthenticated])
 	.inputValidator(z.object({ filename: z.string() }))
@@ -24,8 +21,10 @@ const getSignedUploadTokenFn = createServerFn()
 
 		try {
 			const { data, error } = await supabase.storage
-				.from("uploads")
-				.createSignedUploadUrl(filename);
+				.from("venues")
+				.createSignedUploadUrl(filename, {
+					upsert: true,
+				});
 
 			if (error) {
 				throw internalServerError(error.message);
@@ -39,9 +38,6 @@ const getSignedUploadTokenFn = createServerFn()
 
 export function Uploader() {
 	const getSignedUploadToken = useServerFn(getSignedUploadTokenFn);
-
-	console.log(process.env.VITE_SUPABASE_ANON_KEY);
-	console.log(process.env.SUPABASE_ANON_KEY);
 
 	const [uppy] = useState(() => {
 		const uppyInstance = new Uppy({
@@ -79,9 +75,9 @@ export function Uploader() {
 		// supabase.co/storage/v1/upload/resumable
 		//
 		uppyInstance.use(Tus, {
-			endpoint: `${process.env.SUPABASE_STORAGE_URL}/storage/v1/upload/resumable/sign`,
+			endpoint: `${import.meta.env.VITE_SUPABASE_STORAGE_URL}/storage/v1/upload/resumable/sign`,
 			headers: {
-				apikey: process.env.SUPABASE_ANON_KEY,
+				apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
 			},
 			uploadDataDuringCreation: true,
 			chunkSize: 6 * 1024 * 1024,
@@ -133,6 +129,8 @@ export function Uploader() {
 			const { token } = await getSignedUploadToken({
 				data: { filename: file.name },
 			});
+
+			console.log({ token });
 
 			uppy.setFileState(file.id, {
 				tus: {

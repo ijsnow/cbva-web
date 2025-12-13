@@ -19,7 +19,9 @@ export function VenueImage({
 		<div className={twMerge("relative", className)}>
 			<div className="h-full overflow-hidden">
 				<img
-					src={imageSource}
+					src={
+						"https://inhtyrgzfnhfkgeizoec.supabase.co/storage/v1/object/public/venues/background.png"
+					}
 					alt={`${name}, ${city}`}
 					className="w-full h-full object-cover"
 					style={{ objectPosition: "50% 65%" }}
