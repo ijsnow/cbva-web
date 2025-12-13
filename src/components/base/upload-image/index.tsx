@@ -13,6 +13,7 @@ import { Modal, ModalHeading } from "../modal";
 import "@uppy/core/css/style.min.css";
 import "@uppy/dashboard/css/style.min.css";
 import { Dropzone } from "./dropzone";
+import { Uploader } from "./uploader";
 
 function createUppy() {
 	return new Uppy().use(Tus, { endpoint: "/api/upload" });
@@ -34,7 +35,7 @@ export function UploadImage() {
 
 						{/*<Dashboard uppy={uppy} />*/}
 						<div className="flex flex-col space-y-3">
-							<Dropzone />
+							<Uploader />
 						</div>
 					</div>
 				</UppyContextProvider>

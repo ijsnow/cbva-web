@@ -22,8 +22,6 @@ import { Modal } from "@/components/base/modal";
 import { subtitle } from "@/components/base/primitives";
 import { deleteFileServerFn, uploadFileServerFn } from "@/data/files";
 import { useIsMounted } from "@/lib/dom";
-// import { postFormData } from "@/hooks/api";
-// import { useDeleteFile } from "@/hooks/files";
 import { Errors, Label } from "./shared";
 
 const centerAspectCrop = (
@@ -160,8 +158,6 @@ export function ImageField({
 
 		field.handleBlur();
 	};
-
-	// const { mutate: deleteFile } = useDeleteFile();
 
 	const handleRemove = () => {
 		deleteFile({ data: { id: field.state.value } });
