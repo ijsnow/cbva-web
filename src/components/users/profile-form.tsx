@@ -76,8 +76,6 @@ export function ProfileForm({
 	const { mutate: insert } = useInsertPlayerProfile();
 	const { mutate: update } = useUpdatePlayerProfile();
 
-	console.log(initialValues);
-
 	const form = useAppForm({
 		defaultValues:
 			initialValues ??
@@ -365,8 +363,6 @@ export function ProfileForm({
 				/>
 
 				<form.AppForm>
-					<form.StateDebugger />
-
 					<form.Footer className="col-span-full">
 						{onCancel && (
 							<form.Button color="default" onClick={onCancel}>
