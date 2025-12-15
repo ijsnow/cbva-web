@@ -81,7 +81,7 @@ export function DivisionForm({
 			autopromoteWaitlist: editDivision?.autopromoteWaitlist ?? true,
 			teamSize: editDivision?.teamSize ?? 2,
 			displayGender: editDivision?.displayGender,
-			displayDivision: editDivision?.displayGender,
+			displayDivision: editDivision?.displayDivision,
 			requirements: editDivision?.requirements,
 		},
 		validators: {
