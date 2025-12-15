@@ -7,21 +7,6 @@ import { authClient } from "./client";
 import type { Permissions, Role } from "./permissions";
 import { getViewer } from "./server";
 
-export const maybeAuthMiddleware = createMiddleware()
-	.server(async ({ next, context }) => {
-		console.log("server", context);
-		return await next({
-			context: {
-				boop: 1,
-			},
-		});
-	})
-	.client(async ({ next, context }) => {
-		console.log("client", context);
-
-		return await next();
-	});
-
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
 	// console.log("hmmmmmm");
 

@@ -12,6 +12,7 @@ import { poolMatches, poolMatchRelations } from "./pool-matches";
 import { poolTeams, poolTeamsRelations } from "./pool-teams";
 import { poolRelations, pools } from "./pools";
 import { projects, todos } from "./projects";
+import { rateLimiterFlexibleSchema } from "./rate-limits";
 import { teamPlayerRelations, teamPlayers } from "./team-players";
 import { teamRelations, teams } from "./teams";
 import {
@@ -47,6 +48,7 @@ export * from "./pool-matches";
 export * from "./pool-teams";
 export * from "./pools";
 export * from "./projects";
+export * from "./rate-limits";
 export * from "./team-players";
 export * from "./teams";
 export * from "./tournament-directors";
@@ -83,6 +85,7 @@ export const tables = {
 	accounts,
 	venues,
 	venueDirectors,
+	rateLimiterFlexibleSchema,
 };
 
 export const relationships = {
