@@ -5,6 +5,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import clsx from "clsx";
 import { ConstructionIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 import { Pagination } from "@/components/base/pagination";
 import {
 	TournamentListFilters,
@@ -147,7 +148,7 @@ function TournamentListItem({
 					<span className="flex flex-row justify-between">
 						<span className="flex flex-row gap-2 items-center">
 							{!visible && !name && <ConstructionIcon size={18} />}
-							<span className="font-semibold">
+							<span className={twMerge("font-semibold", name && "font-bold")}>
 								{venue?.name}, {venue?.city}
 							</span>
 						</span>
