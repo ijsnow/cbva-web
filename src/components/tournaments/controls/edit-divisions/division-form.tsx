@@ -179,6 +179,10 @@ export function DivisionForm({
 													: "Women's"
 												: "Women's/Girl's",
 										},
+										{
+											value: "coed",
+											display: "Coed",
+										},
 									]}
 									placeholder="Select"
 								/>
