@@ -72,13 +72,23 @@ async function duplicateTournaments(
 		requirements: CreateTournamentDivisionRequirement[];
 	})[] = zipped.flatMap(({ id, template }) =>
 		template.tournamentDivisions.map(
-			({ divisionId, gender, name, teamSize, requirements }) => ({
+			({
+				divisionId,
+				gender,
+				name,
+				teamSize,
+				requirements,
+				displayDivision,
+				displayGender,
+			}) => ({
 				tournamentId: id,
 				divisionId,
 				gender,
 				name,
 				teamSize,
 				requirements: requirements.map(({ id, ...reqs }) => reqs),
+				displayDivision,
+				displayGender,
 			}),
 		),
 	);
