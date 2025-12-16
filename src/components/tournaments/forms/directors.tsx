@@ -1,8 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
-import { Heading } from "react-aria-components";
-import { useAppForm } from "@/components/base/form";
-import { title } from "@/components/base/primitives";
 import { AddDirector } from "@/components/directors/add";
 import { RemoveDirector } from "@/components/directors/remove";
 import { ProfileName } from "@/components/profiles/name";

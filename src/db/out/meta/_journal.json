@@ -50,6 +50,20 @@
       "when": 1765571063798,
       "tag": "0006_equal_firedrake",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1765824312349,
+      "tag": "0007_clammy_magik",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1765912726873,
+      "tag": "0008_melted_the_hunter",
+      "breakpoints": true
     }
   ]
 }

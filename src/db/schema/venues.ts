@@ -1,7 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
 	index,
-	integer,
 	pgTable,
 	serial,
 	text,
@@ -30,6 +29,8 @@ export const venues = pgTable(
 		mapUrl: text().notNull(),
 		status: venueStatusEnum().notNull(),
 		imageSource: text(),
+		headerImageSource: text(),
+		thumbnailImageSource: text(),
 		// TODO: add check for confirming user has director role
 		directorId: text().references(() => users.id),
 		externalRef: uuid().unique(),
@@ -47,6 +48,8 @@ export const createVenueSchema = createInsertSchema(venues).omit({
 export const updateVenueSchema = createUpdateSchema(venues).pick({
 	description: true,
 	directions: true,
+	headerImageSource: true,
+	thumbnailImageSource: true,
 });
 
 export type Venue = z.infer<typeof selectVenueSchema>;

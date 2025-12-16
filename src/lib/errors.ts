@@ -8,6 +8,7 @@ export enum ErrorKind {
 	FORBIDDEN = "FORBIDDEN",
 	NOT_FOUND = "NOT_FOUND",
 	BAD_REQUEST = "BAD_REQUEST",
+	TOO_MANY_REQUESTS = "TOO_MANY_REQUESTS",
 	INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
 }
 
@@ -43,6 +44,10 @@ export function isNotFound(error: unknown): boolean {
 
 export function isBadRequest(error: unknown): boolean {
 	return isErrorCode(error, ErrorKind.BAD_REQUEST);
+}
+
+export function isTooManyRequests(error: unknown): boolean {
+	return isErrorCode(error, ErrorKind.TOO_MANY_REQUESTS);
 }
 
 export function isInternalServerError(error: unknown): boolean {

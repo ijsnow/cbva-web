@@ -1,5 +1,8 @@
 import { notFound as notFoundResult } from "@tanstack/react-router";
-import { setResponseStatus } from "@tanstack/react-start/server";
+import {
+	setResponseHeader,
+	setResponseStatus,
+} from "@tanstack/react-start/server";
 import { ErrorKind, makeError } from "./errors";
 
 export function badRequest(message = "BAD_REQUEST") {
@@ -18,6 +21,16 @@ export function forbidden(message = "FORBIDDEN") {
 	setResponseStatus(403);
 
 	throw makeError(ErrorKind.FORBIDDEN, message);
+}
+
+export function tooManyRequests(
+	retryAfterSecs: number,
+	message = "TOO_MANY_REQUESTS",
+) {
+	setResponseStatus(429);
+	setResponseHeader("Retry-After", retryAfterSecs.toString());
+
+	throw makeError(ErrorKind.TOO_MANY_REQUESTS, message);
 }
 
 export function notFound() {
