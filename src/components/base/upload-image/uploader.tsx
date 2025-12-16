@@ -15,15 +15,13 @@ import { useServerFn } from "@tanstack/react-start";
 import Tus from "@uppy/tus";
 import { getSignedUploadTokenFn } from "@/data/storage";
 
-export function Uploader({
-	bucket,
-	prefix,
-	onUploadSuccess,
-}: {
+export type UploaderProps = {
 	bucket: string;
 	prefix: string;
 	onUploadSuccess: (source: string) => void;
-}) {
+};
+
+export function Uploader({ bucket, prefix, onUploadSuccess }: UploaderProps) {
 	const getSignedUploadToken = useServerFn(getSignedUploadTokenFn);
 
 	const [uppy] = useState(() => {

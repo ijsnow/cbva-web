@@ -73,7 +73,8 @@ export const updateVenueFnSchema = updateVenueSchema
 	.pick({
 		directions: true,
 		description: true,
-		imageSource: true,
+		headerImageSource: true,
+		thumbnailImageSource: true,
 	})
 	.extend({
 		id: z.number(),

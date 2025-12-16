@@ -8,20 +8,20 @@ import { EditVenueImage } from "./edit-image";
 
 const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_STORAGE_URL}/storage/v1/object/public`;
 
-export type VenueImageProps = Pick<
+export type VenueHeaderImageProps = Pick<
 	Venue,
-	"id" | "imageSource" | "name" | "city"
+	"id" | "headerImageSource" | "name" | "city"
 > & {
 	className?: string;
 };
 
 export function VenueHeaderImage({
 	id,
-	imageSource,
+	headerImageSource,
 	name,
 	city,
 	className,
-}: VenueImageProps) {
+}: VenueHeaderImageProps) {
 	const queryClient = useQueryClient();
 
 	const [updatedSource, setUpdatedSource] = useState<string | undefined>();
@@ -35,7 +35,7 @@ export function VenueHeaderImage({
 		},
 	});
 
-	const src = `${STORAGE_URL}/venues/${updatedSource ?? imageSource}`;
+	const src = `${STORAGE_URL}/venues/${updatedSource ?? headerImageSource}`;
 
 	return (
 		<div className={twMerge("relative", className)}>
@@ -61,7 +61,7 @@ export function VenueHeaderImage({
 					<Button
 						color="primary"
 						onPress={() => {
-							mutate({ id, imageSource: updatedSource });
+							mutate({ id, headerImageSource: updatedSource });
 						}}
 					>
 						Save
