@@ -7,7 +7,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { EditableImage } from "@/components/base/editable-image";
 import { subtitle, title } from "@/components/base/primitives";
 import { VenueDisplay } from "@/components/venues/display";
-import { VenueHeaderImage } from "@/components/venues/header-image";
 import { updateVenueMutationOptions, venueQueryOptions } from "@/data/venues";
 import { DefaultLayout } from "@/layouts/default";
 
@@ -38,9 +37,9 @@ function RouteComponent() {
 
 	return (
 		<DefaultLayout classNames={{ content: "bg-white" }}>
-			{/*<VenueHeaderImage {...venue} className="h-[25svh]" />*/}
 			<EditableImage
-				className="h-[25svh]"
+				className="h-[25svh] w-full object-cover"
+				alt={`${venue.name}, ${venue.city}`}
 				source={venue.headerImageSource ?? ""}
 				bucket="venues"
 				prefix="headers"
