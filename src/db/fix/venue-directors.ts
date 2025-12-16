@@ -1,7 +1,5 @@
-import { eq, inArray } from "drizzle-orm";
-import { dbg } from "@/utils/dbg";
 import { db } from "../connection";
-import { venueDirectors, venues } from "../schema";
+import { venueDirectors } from "../schema";
 
 async function main() {
 	const results = await db.query.venues.findMany({

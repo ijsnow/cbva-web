@@ -1,14 +1,16 @@
 import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { DeleteIcon, EditIcon, PlusIcon } from "lucide-react";
+import { CopyIcon, DeleteIcon, EditIcon, PlusIcon } from "lucide-react";
 import { Suspense, useState } from "react";
 import { Pressable } from "react-aria-components";
 import type z from "zod";
 import { Button, button } from "@/components/base/button";
 import { Link } from "@/components/base/link";
 import { Pagination } from "@/components/base/pagination";
+import { Toolbar } from "@/components/base/toolbar";
 import { DeleteTournamentForm } from "@/components/tournaments/controls/delete";
+import { DuplicateForm } from "@/components/tournaments/controls/duplicate";
 import { EditGeneralInfoForm } from "@/components/tournaments/controls/edit-general-info";
 import {
 	TournamentListFilters,
@@ -42,6 +44,7 @@ export function BulkEditSchedule(props: BulkEditScheduleProps) {
 	const dateFormatter = useDateFormatter();
 
 	const [editGeneralId, setEditGeneralId] = useState<number | undefined>();
+	const [copyId, setCopyId] = useState<number | undefined>();
 	const [deleteId, setDeleteId] = useState<number | undefined>();
 
 	return (
@@ -72,15 +75,28 @@ export function BulkEditSchedule(props: BulkEditScheduleProps) {
 
 							return (
 								<div key={id} className="relative">
-									<Button
-										className="absolute top-2 -right-2 translate-x-full text-red-500"
-										variant="icon"
-										onPress={() => {
-											setDeleteId(id);
-										}}
+									<Toolbar
+										orientation="vertical"
+										className="absolute top-2 -right-2 translate-x-full flex flex-col space-y"
 									>
-										<DeleteIcon />
-									</Button>
+										<Button
+											variant="icon"
+											onPress={() => {
+												setCopyId(id);
+											}}
+										>
+											<CopyIcon />
+										</Button>
+										<Button
+											className="text-red-500"
+											variant="icon"
+											onPress={() => {
+												setDeleteId(id);
+											}}
+										>
+											<DeleteIcon />
+										</Button>
+									</Toolbar>
 									<div className="rounded-lg bg-white overflow-hidden">
 										<Pressable
 											onPress={() => {
@@ -130,6 +146,17 @@ export function BulkEditSchedule(props: BulkEditScheduleProps) {
 											tournamentId={id}
 											isOpen={deleteId === id}
 											onOpenChange={() => setDeleteId(undefined)}
+											onSuccess={() => {
+												queryClient.invalidateQueries(queryProps);
+											}}
+										/>
+									)}
+
+									{copyId === id && (
+										<DuplicateForm
+											tournamentId={id}
+											isOpen={copyId === id}
+											onOpenChange={() => setCopyId(undefined)}
 											onSuccess={() => {
 												queryClient.invalidateQueries(queryProps);
 											}}

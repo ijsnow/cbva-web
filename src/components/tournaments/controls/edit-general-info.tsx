@@ -29,7 +29,7 @@ export type EditGeneralInfoFormProps = {
 	tournamentId: number;
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSuccess: () => void;
+	onSuccess?: () => void;
 };
 
 export function EditGeneralInfoForm({
