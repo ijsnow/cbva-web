@@ -16,7 +16,11 @@ export type UploadImageModalProps = Pick<
 export function UploadImageModal(props: UploadImageModalProps) {
 	return (
 		<DialogTrigger>
-			<Button variant="icon" className="absolute top-3 right-3">
+			<Button
+				variant="icon"
+				className="absolute top-3 right-3"
+				tooltip="Edit Image"
+			>
 				<EditIcon />
 			</Button>
 			<Modal>

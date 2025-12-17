@@ -18,6 +18,7 @@ import { InformationPanel } from "@/components/tournaments/panels/information";
 import { PlayoffsPanel } from "@/components/tournaments/panels/playoffs";
 import { PoolsPanel } from "@/components/tournaments/panels/pools";
 import { TeamsPanel } from "@/components/tournaments/panels/teams";
+import { VenueHeader } from "@/components/venues/header";
 import { playoffsQueryOptions } from "@/data/playoffs";
 import { poolsQueryOptions } from "@/data/pools";
 import { teamsQueryOptions } from "@/data/teams";
@@ -180,13 +181,15 @@ function RouteComponent() {
 		});
 
 	return (
-		<DefaultLayout classNames={{ content: "bg-white relative" }}>
-			<TournamentControls
-				tournamentId={Number.parseInt(tournamentId, 10)}
-				division={activeDivision}
-			/>
+		<DefaultLayout classNames={{ content: "bg-white" }}>
+			<VenueHeader {...venue} />
 
-			<div>
+			<div className="relative">
+				<TournamentControls
+					tournamentId={Number.parseInt(tournamentId, 10)}
+					division={activeDivision}
+				/>
+
 				<div className="py-12 max-w-lg mx-auto flex flex-col space-y-6">
 					<div className="text-center flex flex-col space-y-2">
 						{name && <h1 className={title()}>{name}</h1>}
