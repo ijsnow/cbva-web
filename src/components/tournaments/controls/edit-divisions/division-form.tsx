@@ -80,8 +80,8 @@ export function DivisionForm({
 			waitlistCapacity: editDivision?.waitlistCapacity ?? 5,
 			autopromoteWaitlist: editDivision?.autopromoteWaitlist ?? true,
 			teamSize: editDivision?.teamSize ?? 2,
-			displayGender: true,
-			displayDivision: true,
+			displayGender: editDivision?.displayGender,
+			displayDivision: editDivision?.displayDivision,
 			requirements: editDivision?.requirements,
 		},
 		validators: {

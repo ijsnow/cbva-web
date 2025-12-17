@@ -15,6 +15,7 @@ export type DuplicateFormProps = {
 	tournamentId: number;
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
+	onSuccess?: () => void;
 };
 
 const schema = z.object({
@@ -42,6 +43,7 @@ const schema = z.object({
 export function DuplicateForm({
 	tournamentId,
 	onOpenChange,
+	onSuccess,
 	...props
 }: DuplicateFormProps) {
 	const navigate = useNavigate();
@@ -51,12 +53,16 @@ export function DuplicateForm({
 		onSuccess: ({ data }) => {
 			onOpenChange(false);
 
-			navigate({
-				to: "/tournaments/$tournamentId",
-				params: {
-					tournamentId: data.id.toString(),
-				},
-			});
+			if (onSuccess) {
+				onSuccess();
+			} else {
+				navigate({
+					to: "/tournaments/$tournamentId",
+					params: {
+						tournamentId: data.id.toString(),
+					},
+				});
+			}
 		},
 	});
 

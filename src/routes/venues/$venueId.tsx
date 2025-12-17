@@ -1,5 +1,11 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useViewerHasPermission } from "@/auth/shared";
+import { EditableImage } from "@/components/base/editable-image";
 import { subtitle, title } from "@/components/base/primitives";
 import { VenueDisplay } from "@/components/venues/display";
 import { VenueHeader } from "@/components/venues/header";

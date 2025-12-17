@@ -5,6 +5,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { zodValidator } from "@tanstack/zod-adapter";
 import clsx from "clsx";
 import { ConstructionIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 import { Pagination } from "@/components/base/pagination";
 import {
 	TournamentListFilters,
@@ -133,21 +134,21 @@ function TournamentListItem({
 				)}
 			>
 				<Link
-					className="font-semibold hover:underline w-full flex flex-col"
+					className="hover:underline w-full flex flex-col"
 					to="/tournaments/$tournamentId/"
 					params={{ tournamentId: id.toString() }}
 				>
 					{name && (
-						<span className="font-semibold text-lg flex flex-row items-center space-x-2">
+						<span className="flex flex-row items-center space-x-2">
 							{!visible && <ConstructionIcon size={18} />}
 							<span>{name}</span>
 						</span>
 					)}
 
-					<span className="flex flex-row justify-between">
+					<span className="flex flex-row justify-between font-semibold">
 						<span className="flex flex-row gap-2 items-center">
 							{!visible && !name && <ConstructionIcon size={18} />}
-							<span className="font-semibold">
+							<span>
 								{venue?.name}, {venue?.city}
 							</span>
 						</span>

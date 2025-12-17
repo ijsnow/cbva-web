@@ -9,7 +9,17 @@ async function main() {
 			displayDivision: true,
 			displayGender: true,
 		})
-		.where(eq(tournamentDivisions.name, "Cal Cup Bid + AVP Bid Event"));
+		.where(
+			inArray(tournamentDivisions.name, [
+				"Cal Cup Bid + AVP Bid Event",
+				"Surf City Days",
+				"Surf City Days $2,000",
+				"Coed Junior Championships",
+				"CBVA Fall Championship Bid + AVP Bid Event",
+				"Mich Ultra Premier Tour: $2,000",
+				"Mich Ultra Premier Tour: $4,000 Gene Selznick",
+			]),
+		);
 
 	await db
 		.update(tournamentDivisions)
@@ -23,6 +33,8 @@ async function main() {
 				"Mother/Daughter",
 				"Father/Son",
 				"Father/Daughter",
+				"Mike Cook Marine Street Father/Daughter",
+				"Mike Cook Marine Street Mixed",
 			]),
 		);
 
