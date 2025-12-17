@@ -1,4 +1,4 @@
-import { omit, pick } from "lodash-es";
+import { pick } from "lodash-es";
 import { describe, expect, test } from "vitest";
 import { db } from "@/db/connection";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
@@ -15,6 +15,12 @@ describe("Edit general info", () => {
 			date: "2025-01-01",
 			startTime: "09:00:00",
 			divisions: [
+  			{
+  				division: "b",
+  				gender: "male",
+  				teams: 30,
+  				pools: 6,
+  			},
 				{
 					division: "a",
 					gender: "female",
@@ -35,6 +41,12 @@ describe("Edit general info", () => {
 					teams: 30,
 					pools: 6,
 				},
+				{
+					division: "aa",
+					gender: "male",
+					teams: 30,
+					pools: 6,
+				},
 			],
 		});
 
@@ -46,19 +58,25 @@ describe("Edit general info", () => {
 			where: (t, { inArray }) => inArray(t.tournamentId, [aId, bId]),
 		});
 
-		const a = divs.find(({ id }) => id === aId);
-		const b = divs.find(({ id }) => id === bId);
+		const aDivs = divs.filter(({ tournamentId }) => tournamentId === aId);
+		const bDivs = divs.filter(({ tournamentId }) => tournamentId === bId);
 
-		expect(a?.division.name).toBe("a");
-		expect(b?.division.name).toBe("b");
+		expect(aDivs).toHaveLength(2);
+		expect(bDivs).toHaveLength(2);
+		expect(aDivs.find(({ division }) => division.name === "a")).toBeDefined();
+		expect(aDivs.find(({ division }) => division.name === "b")).toBeDefined();
+		expect(bDivs.find(({ division }) => division.name === "b")).toBeDefined();
+		expect(bDivs.find(({ division }) => division.name === "aa")).toBeDefined();
+
+		const bTournament = bDivs[0].tournament;
 
 		await editTournamentFn({
 			data: {
 				id: bId,
 				venueId: aVenue.id,
-				name: b!.tournament.name,
-				date: b!.tournament.date,
-				startTime: b!.tournament.startTime,
+				name: bTournament.name,
+				date: bTournament.date,
+				startTime: bTournament.startTime,
 				mergeDivisions: true,
 			},
 		});
@@ -78,7 +96,7 @@ describe("Edit general info", () => {
 		});
 
 		expect(updated).toHaveLength(1);
-		expect(updated[0].tournamentDivisions).toHaveLength(2);
+		expect(updated[0].tournamentDivisions).toHaveLength(3);
 
 		expect(
 			pick(
@@ -95,6 +113,17 @@ describe("Edit general info", () => {
 			pick(
 				updated[0].tournamentDivisions.find(
 					({ division }) => division.name === "b",
+				),
+				["gender"],
+			),
+		).toStrictEqual({
+			gender: "male",
+		});
+
+		expect(
+			pick(
+				updated[0].tournamentDivisions.find(
+					({ division }) => division.name === "aa",
 				),
 				["gender"],
 			),

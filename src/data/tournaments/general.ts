@@ -400,11 +400,46 @@ export const editTournamentFn = createServerFn({ method: "POST" })
 					if (duplicates.length > 0) {
 						const [duplicate] = duplicates;
 
-						// Move all divisions from the duplicate tournament to this one
-						await txn
-							.update(tournamentDivisions)
-							.set({ tournamentId })
+						// Get existing divisions in the target tournament
+						const existingDivisions = await txn
+							.select({
+								divisionId: tournamentDivisions.divisionId,
+								gender: tournamentDivisions.gender,
+							})
+							.from(tournamentDivisions)
+							.where(eq(tournamentDivisions.tournamentId, tournamentId));
+
+						// Get divisions from the duplicate tournament
+						const duplicateDivisions = await txn
+							.select({
+								id: tournamentDivisions.id,
+								divisionId: tournamentDivisions.divisionId,
+								gender: tournamentDivisions.gender,
+							})
+							.from(tournamentDivisions)
 							.where(eq(tournamentDivisions.tournamentId, duplicate.id));
+
+						// Move divisions that don't conflict (different division or gender combination)
+						for (const div of duplicateDivisions) {
+							const hasConflict = existingDivisions.some(
+								(existing) =>
+									existing.divisionId === div.divisionId &&
+									existing.gender === div.gender,
+							);
+
+							if (hasConflict) {
+								// Delete conflicting division from duplicate tournament
+								await txn
+									.delete(tournamentDivisions)
+									.where(eq(tournamentDivisions.id, div.id));
+							} else {
+								// Move non-conflicting division to target tournament
+								await txn
+									.update(tournamentDivisions)
+									.set({ tournamentId })
+									.where(eq(tournamentDivisions.id, div.id));
+							}
+						}
 
 						// Delete the now-empty duplicate tournament
 						await txn

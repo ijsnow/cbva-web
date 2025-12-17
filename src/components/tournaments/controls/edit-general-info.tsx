@@ -80,18 +80,22 @@ export function EditGeneralInfoForm({
 			startTime: tournament?.startTime as Time,
 			venueId: tournament?.venueId as number,
 			name: (tournament?.name ?? null) as string | null,
+			mergeDivisions: true,
 		},
 		validators: {
 			onMount: schema,
 			onChange: schema,
 		},
-		onSubmit: ({ value: { date, startTime, venueId, name } }) => {
+		onSubmit: ({
+			value: { date, startTime, venueId, name, mergeDivisions },
+		}) => {
 			mutate({
 				id: tournamentId,
 				date: date.toString(),
 				startTime: startTime.toString(),
 				venueId,
 				name: name ?? null,
+				mergeDivisions,
 			});
 		},
 	});
@@ -159,6 +163,16 @@ export function EditGeneralInfoForm({
 					<form.AppField
 						name="name"
 						children={(field) => <field.Text label="Name" field={field} />}
+					/>
+
+					<form.AppField
+						name="mergeDivisions"
+						children={(field) => (
+							<field.Checkbox
+								label="Merge tournaments with same date and location."
+								field={field}
+							/>
+						)}
 					/>
 
 					<form.AppForm>
