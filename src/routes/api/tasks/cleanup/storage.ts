@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db, type schema } from "@/db/connection";
-import type { Database } from "@/db/schema";
+import { db } from "@/db/connection";
 import { internalServerError } from "@/lib/responses";
 import { getSupabaseServerClient } from "@/supabase/server";
 import { isNotNullOrUndefined } from "@/utils/types";
@@ -39,22 +38,21 @@ type TableNames = keyof typeof db.query;
 type Schema = NonNullable<typeof db._.schema>;
 
 type BucketLookupColumns = {
-	[bucket in TableNames]?: (keyof Schema[bucket]["columns"])[];
+	[TTableName in TableNames]?: (keyof Schema[TTableName]["columns"])[];
 };
 
-const bucketLookupColumns: BucketLookupColumns = {
+const bucketLookupColumns = {
 	venues: ["headerImageSource", "thumbnailImageSource"],
-};
+} as const satisfies BucketLookupColumns;
 
-async function cleanupBucket(
+type ConfiguredBuckets = keyof typeof bucketLookupColumns;
+
+async function cleanupBucket<TTableName extends ConfiguredBuckets>(
 	supabase: ReturnType<typeof getSupabaseServerClient>,
-	bucketName: keyof Database["query"],
+	bucketName: TTableName,
 	objects: { path: string; createdAt: string; updatedAt: string }[],
 ) {
 	const lookupColumns = bucketLookupColumns[bucketName];
-	if (!lookupColumns) {
-		throw internalServerError(`bucket name not accounted for: ${bucketName}`);
-	}
 
 	// TODO: dynamically search through tables with the same name as bucketName and check to see if values
 	// of columns named in lookupColumns reference object paths in the objects list.
