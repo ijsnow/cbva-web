@@ -163,8 +163,6 @@ export function EditGeneralInfoForm({
 					/>
 
 					<form.AppForm>
-						<form.StateDebugger className="col-span-full" />
-
 						<form.Footer>
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 

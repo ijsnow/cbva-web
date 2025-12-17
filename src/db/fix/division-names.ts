@@ -38,6 +38,18 @@ async function main() {
 			]),
 		);
 
+	await db
+		.update(tournamentDivisions)
+		.set({
+			name: "AVP Bid Event",
+		})
+		.where(
+			eq(
+				tournamentDivisions.name,
+				"CBVA Fall Championship Bid + AVP Bid Event",
+			),
+		);
+
 	process.exit(0);
 }
 
