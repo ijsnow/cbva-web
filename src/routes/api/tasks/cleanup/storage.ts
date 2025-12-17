@@ -94,10 +94,7 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 	server: {
 		handlers: {
 			POST: async () => {
-				// TODO:
-				// - read all objects in each bucket
-				// - check each location a file is stored to see if it is referenced
-				// - if not, delete the objects
+				console.log("START /api/tasks/cleanup/storage");
 
 				const supabase = getSupabaseServerClient();
 
@@ -120,6 +117,8 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 					);
 				}
 
+				console.log("STOP /api/tasks/cleanup/storage");
+
 				return new Response(JSON.stringify({ success: true }), {
 					headers: {
 						"Content-Type": "application/json",
@@ -129,5 +128,3 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 		},
 	},
 });
-
-// ---------------------------------
