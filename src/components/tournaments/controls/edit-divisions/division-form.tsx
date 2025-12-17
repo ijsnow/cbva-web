@@ -80,8 +80,12 @@ export function DivisionForm({
 			waitlistCapacity: editDivision?.waitlistCapacity ?? 5,
 			autopromoteWaitlist: editDivision?.autopromoteWaitlist ?? true,
 			teamSize: editDivision?.teamSize ?? 2,
-			displayGender: editDivision?.displayGender,
-			displayDivision: editDivision?.displayDivision,
+			displayGender: isNotNullOrUndefined(editDivision?.displayGender)
+				? editDivision.displayGender
+				: true,
+			displayDivision: isNotNullOrUndefined(editDivision?.displayDivision)
+				? editDivision.displayDivision
+				: true,
 			requirements: editDivision?.requirements,
 		},
 		validators: {
@@ -103,8 +107,6 @@ export function DivisionForm({
 				displayDivision,
 			},
 		}) => {
-			console.log("here");
-
 			mutate({
 				id,
 				tournamentId,
