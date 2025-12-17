@@ -42,6 +42,7 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AccountVerifySuccessRouteImport } from './routes/account/verify/success'
 import { Route as MatchesPoolMatchIdIndexRouteImport } from './routes/matches/pool/$matchId/index'
 import { Route as TournamentsTournamentIdDivisionIdChar123TabChar125RouteImport } from './routes/tournaments/$tournamentId/$divisionId.{-$tab}'
+import { Route as ApiTasksCleanupStorageRouteImport } from './routes/api/tasks/cleanup/storage'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -211,6 +212,11 @@ const TournamentsTournamentIdDivisionIdChar123TabChar125Route =
     path: '/tournaments/$tournamentId/$divisionId/{-$tab}',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiTasksCleanupStorageRoute = ApiTasksCleanupStorageRouteImport.update({
+  id: '/api/tasks/cleanup/storage',
+  path: '/api/tasks/cleanup/storage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -244,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/account/verify': typeof AccountVerifyIndexRoute
   '/profile/$profileId': typeof ProfileProfileIdIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
+  '/api/tasks/cleanup/storage': typeof ApiTasksCleanupStorageRoute
   '/tournaments/$tournamentId/$divisionId/{-$tab}': typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
   '/matches/pool/$matchId': typeof MatchesPoolMatchIdIndexRoute
 }
@@ -279,6 +286,7 @@ export interface FileRoutesByTo {
   '/account/verify': typeof AccountVerifyIndexRoute
   '/profile/$profileId': typeof ProfileProfileIdIndexRoute
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
+  '/api/tasks/cleanup/storage': typeof ApiTasksCleanupStorageRoute
   '/tournaments/$tournamentId/$divisionId/{-$tab}': typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
   '/matches/pool/$matchId': typeof MatchesPoolMatchIdIndexRoute
 }
@@ -315,6 +323,7 @@ export interface FileRoutesById {
   '/account/verify/': typeof AccountVerifyIndexRoute
   '/profile/$profileId/': typeof ProfileProfileIdIndexRoute
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
+  '/api/tasks/cleanup/storage': typeof ApiTasksCleanupStorageRoute
   '/tournaments/$tournamentId/$divisionId/{-$tab}': typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
   '/matches/pool/$matchId/': typeof MatchesPoolMatchIdIndexRoute
 }
@@ -352,6 +361,7 @@ export interface FileRouteTypes {
     | '/account/verify'
     | '/profile/$profileId'
     | '/tournaments/$tournamentId'
+    | '/api/tasks/cleanup/storage'
     | '/tournaments/$tournamentId/$divisionId/{-$tab}'
     | '/matches/pool/$matchId'
   fileRoutesByTo: FileRoutesByTo
@@ -387,6 +397,7 @@ export interface FileRouteTypes {
     | '/account/verify'
     | '/profile/$profileId'
     | '/tournaments/$tournamentId'
+    | '/api/tasks/cleanup/storage'
     | '/tournaments/$tournamentId/$divisionId/{-$tab}'
     | '/matches/pool/$matchId'
   id:
@@ -422,6 +433,7 @@ export interface FileRouteTypes {
     | '/account/verify/'
     | '/profile/$profileId/'
     | '/tournaments/$tournamentId/'
+    | '/api/tasks/cleanup/storage'
     | '/tournaments/$tournamentId/$divisionId/{-$tab}'
     | '/matches/pool/$matchId/'
   fileRoutesById: FileRoutesById
@@ -458,6 +470,7 @@ export interface RootRouteChildren {
   AccountVerifyIndexRoute: typeof AccountVerifyIndexRoute
   ProfileProfileIdIndexRoute: typeof ProfileProfileIdIndexRoute
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
+  ApiTasksCleanupStorageRoute: typeof ApiTasksCleanupStorageRoute
   TournamentsTournamentIdDivisionIdChar123TabChar125Route: typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
   MatchesPoolMatchIdIndexRoute: typeof MatchesPoolMatchIdIndexRoute
 }
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TournamentsTournamentIdDivisionIdChar123TabChar125RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/tasks/cleanup/storage': {
+      id: '/api/tasks/cleanup/storage'
+      path: '/api/tasks/cleanup/storage'
+      fullPath: '/api/tasks/cleanup/storage'
+      preLoaderRoute: typeof ApiTasksCleanupStorageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -730,6 +750,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountVerifyIndexRoute: AccountVerifyIndexRoute,
   ProfileProfileIdIndexRoute: ProfileProfileIdIndexRoute,
   TournamentsTournamentIdIndexRoute: TournamentsTournamentIdIndexRoute,
+  ApiTasksCleanupStorageRoute: ApiTasksCleanupStorageRoute,
   TournamentsTournamentIdDivisionIdChar123TabChar125Route:
     TournamentsTournamentIdDivisionIdChar123TabChar125Route,
   MatchesPoolMatchIdIndexRoute: MatchesPoolMatchIdIndexRoute,
