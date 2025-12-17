@@ -74,7 +74,7 @@ export function VenuesList() {
 								editable={canCreateVenue}
 								source={thumbnailImageSource ?? ""}
 								bucket="venues"
-								prefix="thumbnails"
+								prefix={`${id}/thumbnails`}
 								onUploadSuccess={(source) => {
 									queryClient.setQueriesData(venuesQueryOptions(), (data) => {
 										return data.map((venue) =>

@@ -37,7 +37,7 @@ export function VenueHeader({
 			alt={`${name}, ${city}`}
 			source={headerImageSource ?? ""}
 			bucket="venues"
-			prefix="headers"
+			prefix={`${id}/headers`}
 			onUploadSuccess={(source) => {
 				queryClient.setQueriesData(queryOptions, (data) => {
 					return {
