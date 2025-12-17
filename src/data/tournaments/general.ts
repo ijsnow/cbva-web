@@ -1,7 +1,7 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import z from "zod";
 import { authMiddleware, requirePermissions } from "@/auth/shared";
 import { tournamentListFilterSchema } from "@/components/tournaments/filters";
@@ -349,10 +349,6 @@ export const editTournamentFn = createServerFn({ method: "POST" })
 			const [current] = results;
 
 			await db.transaction(async (txn) => {
-				// TODO: if, after the edit, there are two tournaments at the same venue on the same date and mergeDivisions is true,
-				// combine the tournaments into one tournament by setting the tournamentId on the set of mergeDivisions
-				// from one tournament to the tournamentId of the other
-
 				await txn
 					.update(tournaments)
 					.set({
@@ -385,6 +381,35 @@ export const editTournamentFn = createServerFn({ method: "POST" })
 							.returning({
 								id: tournamentDirectors.id,
 							});
+					}
+				}
+
+				// If mergeDivisions is true, check for duplicate tournaments at same venue/date
+				if (mergeDivisions) {
+					const duplicates = await txn
+						.select({ id: tournaments.id })
+						.from(tournaments)
+						.where(
+							and(
+								eq(tournaments.venueId, venueId),
+								eq(tournaments.date, date),
+								ne(tournaments.id, tournamentId),
+							),
+						);
+
+					if (duplicates.length > 0) {
+						const [duplicate] = duplicates;
+
+						// Move all divisions from the duplicate tournament to this one
+						await txn
+							.update(tournamentDivisions)
+							.set({ tournamentId })
+							.where(eq(tournamentDivisions.tournamentId, duplicate.id));
+
+						// Delete the now-empty duplicate tournament
+						await txn
+							.delete(tournaments)
+							.where(eq(tournaments.id, duplicate.id));
 					}
 				}
 			});

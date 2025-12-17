@@ -1,3 +1,4 @@
+import { omit, pick } from "lodash-es";
 import { describe, expect, test } from "vitest";
 import { db } from "@/db/connection";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
@@ -16,7 +17,7 @@ describe("Edit general info", () => {
 			divisions: [
 				{
 					division: "a",
-					gender: "male",
+					gender: "female",
 					teams: 30,
 					pools: 6,
 				},
@@ -62,16 +63,43 @@ describe("Edit general info", () => {
 			},
 		});
 
-		const updated = await db.query.tournamentDivisions.findMany({
+		const updated = await db.query.tournaments.findMany({
 			columns: {
 				id: true,
 			},
 			with: {
-				division: true,
+				tournamentDivisions: {
+					with: {
+						division: true,
+					},
+				},
 			},
-			where: (t, { inArray }) => inArray(t.tournamentId, [aId, bId]),
+			where: (t, { inArray }) => inArray(t.id, [aId, bId]),
 		});
 
 		expect(updated).toHaveLength(1);
+		expect(updated[0].tournamentDivisions).toHaveLength(2);
+
+		expect(
+			pick(
+				updated[0].tournamentDivisions.find(
+					({ division }) => division.name === "a",
+				),
+				["gender"],
+			),
+		).toStrictEqual({
+			gender: "female",
+		});
+
+		expect(
+			pick(
+				updated[0].tournamentDivisions.find(
+					({ division }) => division.name === "b",
+				),
+				["gender"],
+			),
+		).toStrictEqual({
+			gender: "male",
+		});
 	});
 });
