@@ -21,9 +21,15 @@ export type UploaderProps = {
 	bucket: string;
 	prefix: string;
 	onUploadSuccess: (source: string) => void;
+	circular?: boolean;
 };
 
-export function Uploader({ bucket, prefix, onUploadSuccess }: UploaderProps) {
+export function Uploader({
+	bucket,
+	prefix,
+	onUploadSuccess,
+	circular,
+}: UploaderProps) {
 	const getSignedUploadToken = useServerFn(getSignedUploadTokenFn);
 
 	const [uppy] = useState(() => {
@@ -38,11 +44,8 @@ export function Uploader({ bucket, prefix, onUploadSuccess }: UploaderProps) {
 
 		uppyInstance.use(ImageEditor, {
 			cropperOptions: {
-				aspectRatio: 1,
+				aspectRatio: circular ? 1 : undefined,
 				viewMode: 1,
-				croppedCanvasOptions: {
-					rounded: true,
-				},
 			},
 			actions: {
 				revert: true,
@@ -164,7 +167,7 @@ export function Uploader({ bucket, prefix, onUploadSuccess }: UploaderProps) {
 
 	return (
 		<Dashboard
-			className="circle"
+			className={circular ? "circle" : undefined}
 			uppy={uppy}
 			autoOpen="imageEditor"
 			height={450}

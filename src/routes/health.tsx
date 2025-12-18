@@ -57,8 +57,6 @@ function RouteComponent() {
 	const { mutate: pingApi, data: pingApiData } = useMutation(
 		mutationOptions({
 			mutationFn: async (message: string) => {
-				console.log("calling");
-
 				const res = await fetch("/api/ping", {
 					body: JSON.stringify({ message }),
 					method: "POST",

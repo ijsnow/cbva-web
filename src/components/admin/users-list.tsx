@@ -47,7 +47,6 @@ export function UsersList() {
 							role={role as Role}
 							queryKey={searchOptions.queryKey}
 							refetch={() => {
-								console.log("refetch");
 								refetch();
 							}}
 						/>

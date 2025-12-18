@@ -8,11 +8,7 @@ import type { Permissions, Role } from "./permissions";
 import { getViewer } from "./server";
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
-	// console.log("hmmmmmm");
-
 	const { impersonatedBy, ...viewer } = await getViewer();
-
-	// console.log("uuuuuh", viewer);
 
 	return await next({
 		context: {
@@ -73,8 +69,6 @@ export function useIsLoggedIn() {
 export const getViewerFn = createServerFn({ method: "GET" })
 	.middleware([authMiddleware])
 	.handler(async ({ context }) => {
-		// console.log("eeep, ", context);
-
 		return context?.viewer ?? null;
 	});
 
@@ -115,8 +109,6 @@ export function useViewerHasPermission<P extends Permissions>(permissions: P) {
 export const getImpersonatorFn = createServerFn({ method: "GET" })
 	.middleware([authMiddleware])
 	.handler(async ({ context: { impersonatorId } }) => {
-		console.log(impersonatorId);
-
 		if (!impersonatorId) {
 			return null;
 		}

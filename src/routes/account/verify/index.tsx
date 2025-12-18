@@ -118,8 +118,6 @@ function RouteComponent() {
 								<Button
 									color="primary"
 									onClick={() => {
-										console.log("hello");
-
 										sendOtp();
 									}}
 								>
