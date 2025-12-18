@@ -57,6 +57,9 @@ export function Uploader({
 			cropperOptions: {
 				aspectRatio: circular ? 1 : undefined,
 				viewMode: 1,
+				croppedCanvasOptions: {
+					rounded: true,
+				},
 			},
 			actions: {
 				revert: true,
