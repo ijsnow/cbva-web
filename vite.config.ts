@@ -26,7 +26,6 @@ const config = defineConfig({
     //   template: "network",
     // }),
     nitro(), // { compatibilityDate: '2025-11-11', preset: "vercel" }),
-    // nitroV2Plugin({ compatibilityDate: '2025-11-11', preset: "vercel" }),
     sentryVitePlugin({
       authToken: process.env.SENTRY_AUTH_TOKEN,
       org: "isaac-snow",

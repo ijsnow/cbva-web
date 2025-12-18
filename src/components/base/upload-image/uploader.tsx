@@ -8,6 +8,8 @@ import ImageEditor from "@uppy/image-editor";
 import Dashboard from "@uppy/react/dashboard";
 import { useEffect, useState } from "react";
 
+import "./uploader.css";
+
 import "@uppy/react/css/style.css";
 import "@uppy/dashboard/css/style.min.css";
 import "@uppy/image-editor/css/style.min.css";
@@ -36,8 +38,11 @@ export function Uploader({ bucket, prefix, onUploadSuccess }: UploaderProps) {
 
 		uppyInstance.use(ImageEditor, {
 			cropperOptions: {
-				aspectRatio: undefined,
+				aspectRatio: 1,
 				viewMode: 1,
+				croppedCanvasOptions: {
+					rounded: true,
+				},
 			},
 			actions: {
 				revert: true,
@@ -159,7 +164,9 @@ export function Uploader({ bucket, prefix, onUploadSuccess }: UploaderProps) {
 
 	return (
 		<Dashboard
+			className="circle"
 			uppy={uppy}
+			autoOpen="imageEditor"
 			height={450}
 			note="Accepted file types: jpg, png."
 			proudlyDisplayPoweredByUppy={false}
