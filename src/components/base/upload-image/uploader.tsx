@@ -15,22 +15,27 @@ import "@uppy/dashboard/css/style.min.css";
 import "@uppy/image-editor/css/style.min.css";
 import { useServerFn } from "@tanstack/react-start";
 import Tus from "@uppy/tus";
-import { getSignedUploadTokenFn } from "@/data/storage";
+import { type BucketName, getSignedUploadTokenFn } from "@/data/storage";
+import { Button } from "../button";
 
 export type UploaderProps = {
-	bucket: string;
+	bucket: BucketName;
 	prefix: string;
-	onUploadSuccess: (source: string) => void;
 	circular?: boolean;
 	initialFiles?: File[];
+	onUploadSuccess: (source: string) => void;
+	onCancel?: () => void;
+	onCancelEdit?: <M extends Meta, B extends Body>(file: UppyFile<M, B>) => void;
 };
 
 export function Uploader({
 	bucket,
 	prefix,
-	onUploadSuccess,
 	circular,
 	initialFiles,
+	onUploadSuccess,
+	onCancelEdit,
+	onCancel,
 }: UploaderProps) {
 	const getSignedUploadToken = useServerFn(getSignedUploadTokenFn);
 
@@ -154,10 +159,9 @@ export function Uploader({
 		uppy.on("upload-error", errorHandler);
 		uppy.on("complete", completeHandler);
 
-		uppy.on("file-editor:cancel", (file) => {
-			// TODO: add setting to use for profile photos to completely reset and close modal
-			uppy.removeFile(file.id);
-		});
+		if (onCancelEdit) {
+			uppy.on("file-editor:cancel", onCancelEdit);
+		}
 
 		setMounted(true);
 
@@ -168,6 +172,10 @@ export function Uploader({
 			uppy.off("upload-success", successHandler);
 			uppy.off("upload-error", errorHandler);
 			uppy.off("complete", completeHandler);
+
+			if (onCancelEdit) {
+				uppy.off("file-editor:cancel", onCancelEdit);
+			}
 		};
 	}, [
 		uppy,
@@ -175,6 +183,7 @@ export function Uploader({
 		bucket,
 		prefix,
 		onUploadSuccess,
+		onCancelEdit,
 		storagePath,
 	]);
 
@@ -191,17 +200,24 @@ export function Uploader({
 	}, [uppy, filesToLoad, mounted]);
 
 	return (
-		<Dashboard
-			className={circular ? "circle" : undefined}
-			uppy={uppy}
-			autoOpen="imageEditor"
-			height={450}
-			note="Supported formats: jpg, png."
-			showLinkToFileUploadResult={false}
-			showRemoveButtonAfterComplete={false}
-			hideCancelButton={true}
-			hidePauseResumeButton={true}
-			proudlyDisplayPoweredByUppy={false}
-		/>
+		<div className="flex flex-col gap-2">
+			<Dashboard
+				className={circular ? "circle" : undefined}
+				uppy={uppy}
+				autoOpen="imageEditor"
+				height={450}
+				note="Supported formats: jpg, png."
+				showLinkToFileUploadResult={false}
+				showRemoveButtonAfterComplete={false}
+				hideCancelButton={true}
+				hidePauseResumeButton={true}
+				hideUploadButton={true}
+				proudlyDisplayPoweredByUppy={false}
+			/>
+			<div className="flex flex-row gap-2 justify-end">
+				<Button onPress={onCancel}>Cancel</Button>
+				<Button color="primary">Upload</Button>
+			</div>
+		</div>
 	);
 }

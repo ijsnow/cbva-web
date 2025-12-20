@@ -10,6 +10,9 @@ import { rateLimitMiddleware } from "@/lib/rate-limits";
 import { forbidden, internalServerError } from "@/lib/responses";
 import { getSupabaseServerClient } from "@/supabase/server";
 
+export const bucketSchema = z.enum(["users", "venues"]);
+export type BucketName = z.infer<typeof bucketSchema>;
+
 export const getSignedUploadTokenFn = createServerFn()
 	.middleware([
 		authMiddleware,
@@ -24,7 +27,7 @@ export const getSignedUploadTokenFn = createServerFn()
 	])
 	.inputValidator(
 		z.object({
-			bucket: z.enum(["venues", "users"]),
+			bucket: bucketSchema,
 			prefix: z.string(),
 			filename: z.string(),
 		}),

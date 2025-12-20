@@ -4,20 +4,23 @@ import { useViewer } from "@/auth/shared";
 import { DropZone } from "@/components/base/upload-image/dropzone";
 import { Modal, ModalHeading } from "../../modal";
 import { UploadImageModal } from "../../upload-image";
-import { Uploader } from "../../upload-image/uploader";
+import { Uploader, type UploaderProps } from "../../upload-image/uploader";
 
 export type ImageUploadFieldProps = {
 	className?: string;
 	label?: ReactNode;
 	isRequired?: boolean;
 	field: AnyFieldApi;
-};
+} & Pick<UploaderProps, "bucket" | "prefix" | "circular">;
 
 export function ImageUploadField({
 	className,
 	label,
 	isRequired,
 	field,
+	bucket,
+	prefix,
+	circular,
 }: ImageUploadFieldProps) {
 	const viewer = useViewer();
 
@@ -31,13 +34,15 @@ export function ImageUploadField({
 						<ModalHeading>Edit your profile photo</ModalHeading>
 
 						<Uploader
-							bucket="profiles"
-							prefix={`${viewer?.id}/photo`}
+							bucket={bucket}
+							prefix={prefix}
+							circular={circular}
 							initialFiles={files}
-							circular={true}
 							onUploadSuccess={(src) => {
 								console.log(src);
 							}}
+							onCancel={() => setFiles(undefined)}
+							onCancelEdit={() => setFiles(undefined)}
 						/>
 					</div>
 				</Modal>
