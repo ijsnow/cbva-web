@@ -34,6 +34,8 @@ export const getSignedUploadTokenFn = createServerFn()
 	)
 	.handler(
 		async ({ context: { viewer }, data: { bucket, prefix, filename } }) => {
+			// TODO: users can update users
+
 			const hasPermission = viewer
 				? roleHasPermission(viewer?.role, {
 						[bucket]: ["update"],
