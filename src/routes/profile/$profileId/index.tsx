@@ -223,7 +223,7 @@ function RouteComponent() {
 				</div>
 				{info.length > 0 && (
 					<div className="bg-content-background-alt">
-						<div className="max-w-5xl mx-auto px-4 py-16 grid grid-cols-9 gap-y-8 gap-4">
+						<div className="max-w-5xl mx-auto px-4 py-16 grid grid-cols-1 sm:grid-cols-9 gap-y-8 gap-4 text-center sm:text-left">
 							{info.map(
 								({ label, className = "col-span-3", value, transform }) => (
 									<div className={className} key={label}>
@@ -323,8 +323,8 @@ function RouteComponent() {
 														className="no-underline hover:underline"
 														to="/tournaments/$tournamentId/$divisionId/{-$tab}"
 														params={{
-															tournamentId,
-															divisionId: tournamentDivisionId,
+															tournamentId: tournamentId.toString(),
+															divisionId: tournamentDivisionId.toString(),
 														}}
 													>
 														{date}
@@ -335,8 +335,8 @@ function RouteComponent() {
 														className="no-underline hover:underline"
 														to="/tournaments/$tournamentId/$divisionId/{-$tab}"
 														params={{
-															tournamentId,
-															divisionId: tournamentDivisionId,
+															tournamentId: tournamentId.toString(),
+															divisionId: tournamentDivisionId.toString(),
 														}}
 													>
 														{event}

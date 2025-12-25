@@ -38,17 +38,7 @@ function RouteComponent() {
 
 	return (
 		<DefaultLayout classNames={{ content: "relative" }}>
-			<Link
-				className="absolute top-6 left-6 flex flex-row gap-2"
-				to="/profile/$profileId"
-				params={{
-					profileId,
-				}}
-			>
-				<ChevronLeftIcon /> <span>Back to profile</span>
-			</Link>
-
-			<div className="py-12 max-w-lg mx-auto flex flex-col space-y-16 relative">
+			<div className="py-16 md:py-12 max-w-lg mx-auto flex flex-col space-y-16 relative">
 				<h1 className={title({ className: "text-center" })}>Update Profile</h1>
 
 				<div className="rounded-lg bg-white p-8 max-w-lg mx-auto">
@@ -57,6 +47,15 @@ function RouteComponent() {
 					</Suspense>
 				</div>
 			</div>
+			<Link
+				className="absolute top-3 left-0 md:top-6 md:left-6 flex flex-row gap-2"
+				to="/profile/$profileId"
+				params={{
+					profileId,
+				}}
+			>
+				<ChevronLeftIcon /> <span>Back to profile</span>
+			</Link>
 		</DefaultLayout>
 	);
 }
