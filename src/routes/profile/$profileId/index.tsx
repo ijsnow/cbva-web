@@ -190,17 +190,17 @@ function RouteComponent() {
 			</div>
 
 			<Suspense>
-				<div className="px-4 pb-18 max-w-5xl mx-auto flex flex-row space-x-8">
+				<div className="px-4 pb-18 max-w-5xl mx-auto flex flex-col md:flex-row items-center md:space-x-8">
 					<div>
 						<ProfilePhoto
 							{...profile}
-							className="w-48 min-w-48 h-48 min-h-48"
+							className="w-48 min-w-48 h-48 min-h-48 mx-auto"
 						/>
 					</div>
 
 					<div className="flex flex-col space-y-4 w-full items-start sm:items-stretch">
-						<div className="py-2 flex flex-row space-x-6 items-center w-full">
-							<h1 className={title({ size: "sm" })}>
+						<div className="py-2 flex flex-col space-y-3 md:space-y-0 md:flex-row md:space-x-6 items-center w-full">
+							<h1 className={title({ size: "sm", class: "text-center" })}>
 								<ProfileName {...profile} link={false} />
 							</h1>
 
@@ -209,7 +209,7 @@ function RouteComponent() {
 							</span>
 						</div>
 
-						<div className="grid grid-cols-2 sm:flex sm:flex-row sm:justify-start gap-4 sm:gap-12 sm:w-full">
+						<div className="mx-auto md:mx-0 max-w-fit grid grid-cols-2 sm:flex sm:flex-row sm:justify-start gap-4 sm:gap-12 sm:w-full">
 							{accolades.map(({ label, value }) => (
 								<div key={label}>
 									<span className="font-semibold">{label}</span>
@@ -221,7 +221,7 @@ function RouteComponent() {
 						</div>
 					</div>
 				</div>
-				{info.length && (
+				{info.length > 0 && (
 					<div className="bg-content-background-alt">
 						<div className="max-w-5xl mx-auto px-4 py-16 grid grid-cols-9 gap-y-8 gap-4">
 							{info.map(
@@ -305,6 +305,8 @@ function RouteComponent() {
 								<TableBody items={resultData.data}>
 									{({
 										id,
+										tournamentId,
+										tournamentDivisionId,
 										date,
 										event,
 										venue,
@@ -316,8 +318,30 @@ function RouteComponent() {
 									}) => {
 										return (
 											<TableRow key={id}>
-												<TableCell>{date}</TableCell>
-												<TableCell>{event}</TableCell>
+												<TableCell>
+													<Link
+														className="no-underline hover:underline"
+														to="/tournaments/$tournamentId/$divisionId/{-$tab}"
+														params={{
+															tournamentId,
+															divisionId: tournamentDivisionId,
+														}}
+													>
+														{date}
+													</Link>
+												</TableCell>
+												<TableCell>
+													<Link
+														className="no-underline hover:underline"
+														to="/tournaments/$tournamentId/$divisionId/{-$tab}"
+														params={{
+															tournamentId,
+															divisionId: tournamentDivisionId,
+														}}
+													>
+														{event}
+													</Link>
+												</TableCell>
 												<TableCell>{venue}</TableCell>
 												<TableCell>{division}</TableCell>
 												<TableCell>

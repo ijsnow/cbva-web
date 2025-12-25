@@ -375,8 +375,9 @@ function BracketFlow({ matches }: BracketProps) {
 					// ]}
 					fitView={true}
 					fitViewOptions={{
-						padding: 1000,
+						padding: "70%",
 					}}
+					minZoom={0.2}
 					preventScrolling={false}
 					proOptions={{ hideAttribution: true }}
 					onNodeMouseEnter={() => {}}
@@ -384,7 +385,7 @@ function BracketFlow({ matches }: BracketProps) {
 					<Controls
 						position={"top-right"}
 						fitViewOptions={{
-							padding: 1200,
+							padding: "70%",
 						}}
 					/>
 				</ReactFlow>

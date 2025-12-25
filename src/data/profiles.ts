@@ -240,13 +240,16 @@ export async function getProfileResultsHandler({
 			teamId: tournamentDivisionTeams.teamId,
 			finish: tournamentDivisionTeams.finish,
 			pointsEarned: tournamentDivisionTeams.pointsEarned,
+			tournamentId: tournaments.id,
 			tournamentDate: tournaments.date,
 			tournamentName: tournaments.name,
+			tournamentDivisionId: tournamentDivisions.id,
 			tournamentDivisionName: tournamentDivisions.name,
 			tournamentDivisionGender: tournamentDivisions.gender,
 			tournamentDivisionTeamSize: tournamentDivisions.teamSize,
 			divisionId: divisions.id,
 			divisionName: divisions.name,
+			divisionDisplay: divisions.display,
 			divisionMaxAge: divisions.maxAge,
 			levelEarnedName: levels.name,
 			venueId: venues.id,
@@ -320,6 +323,7 @@ export async function getProfileResultsHandler({
 			gender: result.tournamentDivisionGender,
 			division: {
 				name: result.divisionName,
+				display: result.divisionDisplay,
 				maxAge: result.divisionMaxAge,
 			},
 			teamSize: result.tournamentDivisionTeamSize,
@@ -327,6 +331,8 @@ export async function getProfileResultsHandler({
 
 		return {
 			id: result.id,
+			tournamentId: result.tournamentId,
+			tournamentDivisionId: result.tournamentDivisionId,
 			date: result.tournamentDate,
 			event:
 				result.tournamentName ??
