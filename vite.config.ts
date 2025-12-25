@@ -1,4 +1,3 @@
-// import { nitroV2Plugin } from "@tanstack/nitro-v2-vite-plugin"
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
