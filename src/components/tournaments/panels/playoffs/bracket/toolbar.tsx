@@ -12,6 +12,13 @@ import {
 	ArrowRight,
 	ArrowUp,
 	ArrowUpLeft,
+	FullscreenIcon,
+	Maximize2Icon,
+	MaximizeIcon,
+	MinusIcon,
+	PlusIcon,
+	ZoomInIcon,
+	ZoomOutIcon,
 } from "lucide-react";
 import {
 	type ReactNode,
@@ -190,8 +197,51 @@ export function Toolbar({
 					</Button>
 				))}
 			</div>
-			<div className="relative w-full h-full">
+			<div className="flex-1 relative w-full h-full">
 				{children}
+				<div className="flex flex-row absolute right-0 top-0 bottom-0">
+					<div className="flex flex-col justify-start h-full space-y-3 p-3">
+						<Button
+							radius="full"
+							variant="icon"
+							className="drop-shadow-xl"
+							color="alternate"
+							onPress={() => {
+								controller.zoomIn({
+									duration: 250,
+								});
+							}}
+						>
+							<ZoomInIcon size={16} />
+						</Button>
+						<Button
+							radius="full"
+							variant="icon"
+							className="drop-shadow-xl"
+							color="alternate"
+							onPress={() => {
+								controller.zoomOut({
+									duration: 250,
+								});
+							}}
+						>
+							<ZoomOutIcon size={16} />
+						</Button>
+						<Button
+							radius="full"
+							variant="icon"
+							className="drop-shadow-xl"
+							color="alternate"
+							onPress={() => {
+								controller.fitView({
+									duration: 250,
+								});
+							}}
+						>
+							<FullscreenIcon size={16} />
+						</Button>
+					</div>
+				</div>
 				<div className="flex flex-row absolute left-0 top-0 bottom-0">
 					<div className="flex flex-col justify-start h-full space-y-3 p-3">
 						{centeredRound?.map((m, i) => (

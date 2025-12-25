@@ -356,7 +356,7 @@ function BracketFlow({ matches }: BracketProps) {
 	return (
 		<div
 			ref={containerRef}
-			className="h-screen w-screen bg-content-background overflow-hidden relative"
+			className="h-screen w-screen bg-content-background overflow-hidden relative flex flex-col"
 		>
 			<Toolbar rounds={rounds} container={containerRef}>
 				<ReactFlow
@@ -374,21 +374,11 @@ function BracketFlow({ matches }: BracketProps) {
 					// 	[bounds.maxX, bounds.maxY],
 					// ]}
 					fitView={true}
-					fitViewOptions={{
-						padding: "70%",
-					}}
 					minZoom={0.2}
 					preventScrolling={false}
 					proOptions={{ hideAttribution: true }}
 					onNodeMouseEnter={() => {}}
-				>
-					<Controls
-						position={"top-right"}
-						fitViewOptions={{
-							padding: "70%",
-						}}
-					/>
-				</ReactFlow>
+				/>
 			</Toolbar>
 		</div>
 	);
