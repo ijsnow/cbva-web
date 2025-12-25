@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { db } from "../connection";
 
 import { pages } from "../schema";

@@ -11,6 +11,7 @@ async function main() {
 		})
 		.where(
 			inArray(tournamentDivisions.name, [
+				"Halloween Classic",
 				"Cal Cup Bid + AVP Bid Event",
 				"Surf City Days",
 				"Surf City Days $2,000",

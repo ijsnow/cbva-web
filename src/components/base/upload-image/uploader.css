@@ -1,0 +1,7 @@
+.circle
+  .uppy-Dashboard--singleFile
+  .uppy-Dashboard-Item-preview
+  img.uppy-Dashboard-Item-previewImg,
+.circle .cropper-view-box {
+  border-radius: 100%;
+}

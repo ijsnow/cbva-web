@@ -3,7 +3,6 @@
 - Bracket for in progress tournament
   - Display for when teams aren't set
   - Ability to create bracket when pools aren't done
-- Select wildcards
 
 - Ask td's for ref assignment scenarios
 

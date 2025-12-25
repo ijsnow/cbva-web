@@ -76,6 +76,8 @@ export function DivisionForm({
 			waitlistCapacity: editDivision?.waitlistCapacity ?? 5,
 			autopromoteWaitlist: editDivision?.autopromoteWaitlist ?? true,
 			teamSize: editDivision?.teamSize ?? 2,
+			// TODO: Could you make it so that when I enter text into the “name” section, it defaults to the two boxes “Display gender” and “Display division” both become checked?
+			// TODO: these should be false unless name is set.
 			displayGender: isNotNullOrUndefined(editDivision?.displayGender)
 				? editDivision.displayGender
 				: true,

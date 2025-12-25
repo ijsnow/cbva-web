@@ -101,8 +101,6 @@ function RouteComponent() {
 			onChange: schema,
 		},
 		onSubmit: ({ value }) => {
-			console.log(viewer);
-
 			if (viewer) {
 				updateUser({
 					id: viewer.id,

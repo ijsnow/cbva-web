@@ -8,6 +8,7 @@ export const statement = {
 	venues: ["create", "update", "delete"],
 	content: ["update"],
 	files: ["create", "delete"],
+	profiles: ["create", "update"],
 	...defaultStatements,
 } as const;
 
@@ -26,6 +27,7 @@ export const admin = ac.newRole({
 	venues: ["create", "update", "delete"],
 	content: ["update"],
 	files: ["create", "delete"],
+	profiles: ["create", "update"],
 	...adminAc.statements,
 });
 
@@ -33,9 +35,11 @@ export const td = ac.newRole({
 	tournament: ["create", "update"],
 	venues: ["update"],
 	files: ["create", "delete"],
+	profiles: ["create", "update"],
 });
 
 export const user = ac.newRole({
 	tournament: [],
 	files: ["create", "delete"],
+	profiles: ["create", "update"],
 });

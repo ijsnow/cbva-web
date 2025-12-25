@@ -39,8 +39,6 @@ describe("ComboBox", () => {
 
 		let options = comboboxTester.options();
 
-		console.log(options);
-
 		expect(options).toHaveLength(10);
 
 		await comboboxTester.selectOption({ option: options[0] });
@@ -68,7 +66,6 @@ describe("ComboBox", () => {
 
 		// Get initial focus - should be on Item 1 (the selected item)
 		let focusedOption = comboboxTester.focusedOption;
-		console.log("Initial focus:", focusedOption?.textContent);
 		expect(focusedOption?.textContent).toBe("Item 1");
 
 		// Dispatch ArrowDown event directly to the listbox
@@ -89,7 +86,6 @@ describe("ComboBox", () => {
 		await new Promise((resolve) => setTimeout(resolve, 100));
 
 		focusedOption = comboboxTester.focusedOption;
-		console.log("After arrow down:", focusedOption?.textContent);
 
 		assert(focusedOption, "nothing focused after arrow down");
 
@@ -108,7 +104,6 @@ describe("ComboBox", () => {
 		await new Promise((resolve) => setTimeout(resolve, 100));
 
 		focusedOption = comboboxTester.focusedOption;
-		console.log("After second arrow down:", focusedOption?.textContent);
 
 		// Should have moved from Item 2 to Item 3 (not Item 4!)
 		expect(focusedOption?.textContent).toBe("Item 3");

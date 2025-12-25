@@ -1,6 +1,6 @@
 import { type CalendarDate, today } from "@internationalized/date";
 import z from "zod/v4";
-
+import { useViewer } from "@/auth/shared";
 import { useAppForm } from "@/components/base/form";
 import {
 	useInsertPlayerProfile,
@@ -73,6 +73,8 @@ export function ProfileForm({
 	onSuccess?: () => void;
 	onCancel?: () => void;
 }) {
+	const viewer = useViewer();
+
 	const { mutate: insert } = useInsertPlayerProfile();
 	const { mutate: update } = useUpdatePlayerProfile();
 
@@ -200,10 +202,13 @@ export function ProfileForm({
 				<form.AppField
 					name="imageSource"
 					children={(field) => (
-						<field.Image
+						<field.ImageUpload
 							className="col-span-full"
 							label="Profile Photo"
 							field={field}
+							bucket="profiles"
+							prefix="profile-photos"
+							circular={true}
 						/>
 					)}
 				/>

@@ -11,6 +11,7 @@ import { AsyncComboBoxField, ComboBoxField } from "./fields/combo-box";
 import { DateField } from "./fields/date";
 import { DatePickerField } from "./fields/date-picker";
 import { ImageField } from "./fields/image";
+import { ImageUploadField } from "./fields/image-upload";
 import { MultiSelectField } from "./fields/multi-select";
 import { NumberField } from "./fields/number";
 import { PasswordField } from "./fields/password";
@@ -197,6 +198,7 @@ export const { useAppForm } = createFormHook({
 		ComboBox: ComboBoxField,
 		AsyncComboBox: AsyncComboBoxField,
 		Image: ImageField,
+		ImageUpload: ImageUploadField,
 		Date: DateField,
 		DatePicker: DatePickerField,
 		Time: TimeField,

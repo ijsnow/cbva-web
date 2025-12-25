@@ -10,6 +10,9 @@ import { rateLimitMiddleware } from "@/lib/rate-limits";
 import { forbidden, internalServerError } from "@/lib/responses";
 import { getSupabaseServerClient } from "@/supabase/server";
 
+export const bucketSchema = z.enum(["profiles", "venues"]);
+export type BucketName = z.infer<typeof bucketSchema>;
+
 export const getSignedUploadTokenFn = createServerFn()
 	.middleware([
 		authMiddleware,
@@ -24,13 +27,15 @@ export const getSignedUploadTokenFn = createServerFn()
 	])
 	.inputValidator(
 		z.object({
-			bucket: z.enum(["venues"]),
+			bucket: bucketSchema,
 			prefix: z.string(),
 			filename: z.string(),
 		}),
 	)
 	.handler(
 		async ({ context: { viewer }, data: { bucket, prefix, filename } }) => {
+			// TODO: users can update users
+
 			const hasPermission = viewer
 				? roleHasPermission(viewer?.role, {
 						[bucket]: ["update"],
@@ -38,6 +43,8 @@ export const getSignedUploadTokenFn = createServerFn()
 				: false;
 
 			if (!hasPermission) {
+				console.log(viewer, bucket, hasPermission);
+
 				throw forbidden();
 			}
 
