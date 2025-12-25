@@ -6,7 +6,6 @@ import Uppy, {
 } from "@uppy/core";
 import ImageEditor from "@uppy/image-editor";
 import Dashboard from "@uppy/react/dashboard";
-import type { LocalUppyFile } from "@uppy/utils";
 import { useEffect, useState } from "react";
 
 import "./uploader.css";
@@ -17,8 +16,9 @@ import "@uppy/image-editor/css/style.min.css";
 import { useServerFn } from "@tanstack/react-start";
 import Tus from "@uppy/tus";
 import { type BucketName, getSignedUploadTokenFn } from "@/data/storage";
-import { dbg } from "@/utils/dbg";
 import { Button } from "../button";
+
+const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_STORAGE_URL}/storage/v1/object/public`;
 
 export type UploaderProps = {
 	bucket: BucketName;
@@ -79,7 +79,7 @@ export function Uploader({
 		});
 
 		uppyInstance.use(Tus, {
-			endpoint: `${dbg(import.meta.env.VITE_SUPABASE_STORAGE_URL)}/storage/v1/upload/resumable/sign`,
+			endpoint: `${import.meta.env.VITE_SUPABASE_STORAGE_URL}/storage/v1/upload/resumable/sign`,
 			headers: {
 				apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
 			},
@@ -103,23 +103,21 @@ export function Uploader({
 
 	// Step 3: Handle event listeners
 	useEffect(() => {
-		const successHandler = (file, response) => {
-			console.log("File uploaded successfully:", file.name);
-			console.log("Server response:", response);
-		};
+		// const successHandler = (file, response) => {
+		// 	console.log("File uploaded successfully:", file.name);
+		// 	console.log("Server response:", response);
+		// };
 
-		const errorHandler = (file, error) => {
-			console.error("Error uploading file:", file.name);
-			console.error("Error details:", error);
-		};
+		// const errorHandler = (file, error) => {
+		// 	console.error("Error uploading file:", file.name);
+		// 	console.error("Error details:", error);
+		// };
 
 		const completeHandler = <M extends Meta, B extends Body>(
 			result: UploadResult<M, B>,
 		) => {
-			console.log("Upload complete! Files:", result.successful, result);
-
 			if (result.successful?.length && storagePath) {
-				onUploadSuccess(storagePath);
+				onUploadSuccess(`${STORAGE_URL}/${bucket}/${storagePath}`);
 			}
 		};
 
@@ -155,7 +153,7 @@ export function Uploader({
 		};
 
 		const startHandler = <M extends Meta, B extends Body>(
-			files: UppyFile<M, B>[],
+			_: UppyFile<M, B>[],
 		) => {
 			setUploading(true);
 		};
@@ -166,14 +164,22 @@ export function Uploader({
 			setHasEdited(true);
 		};
 
+		const fileRemovedHandler = <M extends Meta, B extends Body>(
+			_: UppyFile<M, B>,
+		) => {
+			if (onCancel && uppy.getFiles().length === 0) {
+				onCancel();
+			}
+		};
+
 		// Add event listeners
 		uppy.on("file-added", fileAddedHandler);
+		uppy.on("file-removed", fileRemovedHandler);
 		uppy.on("upload-start", startHandler);
-		uppy.on("upload-success", successHandler);
-		uppy.on("upload-error", errorHandler);
-		uppy.on("complete", completeHandler);
-
+		// uppy.on("upload-success", successHandler);
+		// uppy.on("upload-error", errorHandler);
 		uppy.on("file-editor:complete", editCompleteHandler);
+		uppy.on("complete", completeHandler);
 
 		if (onCancelEdit) {
 			uppy.on("file-editor:cancel", onCancelEdit);
@@ -184,11 +190,12 @@ export function Uploader({
 		// Cleanup function to remove specific event listeners
 		return () => {
 			uppy.off("file-added", fileAddedHandler);
+			uppy.off("file-removed", fileRemovedHandler);
 			uppy.off("upload-start", startHandler);
-			uppy.off("upload-success", successHandler);
-			uppy.off("upload-error", errorHandler);
-			uppy.off("complete", completeHandler);
+			// uppy.off("upload-success", successHandler);
+			// uppy.off("upload-error", errorHandler);
 			uppy.off("file-editor:complete", editCompleteHandler);
+			uppy.off("complete", completeHandler);
 
 			if (onCancelEdit) {
 				uppy.off("file-editor:cancel", onCancelEdit);
@@ -200,6 +207,7 @@ export function Uploader({
 		bucket,
 		prefix,
 		onUploadSuccess,
+		onCancel,
 		onCancelEdit,
 		storagePath,
 	]);

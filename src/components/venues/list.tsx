@@ -61,7 +61,7 @@ export function VenuesList() {
 							>
 								<img
 									className="w-full min-h-80 max-h-80 object-cover"
-									src={getStorageUrl("venues", thumbnailImageSource ?? "")}
+									src={thumbnailImageSource ?? ""}
 									alt={`${name}, ${city}`}
 								/>
 

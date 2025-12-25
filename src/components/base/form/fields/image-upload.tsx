@@ -1,15 +1,12 @@
 import type { AnyFieldApi } from "@tanstack/react-form";
+import { XIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useViewer } from "@/auth/shared";
 import { DropZone } from "@/components/base/upload-image/dropzone";
-import { ProfilePhoto } from "@/components/profiles/photo";
+import { Button } from "../../button";
 import { Label } from "../../field";
 import { Modal, ModalHeading } from "../../modal";
-import { UploadImageModal } from "../../upload-image";
 import { Uploader, type UploaderProps } from "../../upload-image/uploader";
-
-const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_STORAGE_URL}/storage/v1/object/public`;
 
 export type ImageUploadFieldProps = {
 	className?: string;
@@ -30,25 +27,38 @@ export function ImageUploadField({
 	const [files, setFiles] = useState<File[] | undefined>(undefined);
 
 	// TODO: make better
-	// - preview should be clearable
-	// - preview should only be round if `circular === true`
-	// - consider constructing url after upload and saving that in the database
 
-	const src = field.state.value
-		? `${STORAGE_URL}/${bucket}/${field.state.value}`
-		: null;
+	const src = field.state.value;
+	// 	? `${STORAGE_URL}/${bucket}/${field.state.value}`
+	// 	: null;
 
 	return (
 		<div className={twMerge("flex flex-col gap-1", className)}>
 			{label && <Label isRequired={isRequired}>{label}</Label>}
 
 			{src ? (
-				<div className="max-w-50 w-36 h-36 rounded-full overflow-hidden border border-gray-300">
-					<img
-						src={src}
-						alt="Cropped profile preview"
-						className="w-full h-full object-cover"
-					/>
+				<div className="relative self-start">
+					<div
+						className={twMerge(
+							"max-w-50 overflow-hidden border border-gray-300",
+							circular && "rounded-full w-36 h-36",
+						)}
+					>
+						<img
+							src={src}
+							alt="Cropped profile preview"
+							className="w-full h-full object-cover"
+						/>
+					</div>
+
+					<Button
+						variant="icon"
+						radius="full"
+						className="absolute top-0 right-0"
+						onPress={() => field.handleChange(null)}
+					>
+						<XIcon />
+					</Button>
 				</div>
 			) : files ? (
 				<Modal isOpen={true} onOpenChange={() => setFiles(undefined)}>

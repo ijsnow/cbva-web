@@ -26,7 +26,7 @@ export function EditableImage({
 	const [originalSource, setOriginalSource] = useState<string>(source);
 	const [updatedSource, setUpdatedSource] = useState<string | undefined>();
 
-	const src = `${STORAGE_URL}/${uploaderProps.bucket}/${updatedSource ?? source}`;
+	const src = updatedSource ?? source;
 
 	return (
 		<>
