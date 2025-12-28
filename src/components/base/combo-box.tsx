@@ -92,7 +92,7 @@ export function ComboBox<T extends Key>({
 				<Button
 					variant="icon"
 					color="muted"
-					className="w-6 mr-1 rounded-xs outline-offset-0 border-l border-gray-700 rounded-l-none"
+					className="w-6 mr-1 p-0 rounded-xs outline-offset-0 border-l border-gray-700 rounded-l-none"
 				>
 					<ChevronDown aria-hidden className="w-4 h-4" />
 				</Button>
