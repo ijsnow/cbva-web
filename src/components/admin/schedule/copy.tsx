@@ -5,8 +5,8 @@ import {
 	duplicateScheduleOptions,
 	duplicateScheduleSchema,
 } from "@/data/schedule";
-import { useAppForm } from "../../base/form";
 import { getDefaultTimeZone } from "@/lib/dates";
+import { useAppForm } from "../../base/form";
 
 export function CopyScheduleForm() {
 	const { mutate } = useMutation(duplicateScheduleOptions());
@@ -85,40 +85,46 @@ export function CopyScheduleForm() {
 
 			<form.AppForm>
 				<form.Footer>
-					<form.ConfirmSubmitButton
-						requireChange={false}
-						description={
-							<div className="flex flex-col space-y">
-								<div className="flex flex-row space-x-2">
-									<span className="font-semibold">Start date:</span>
-									<span>
-										{dateFormatter.format(
-											form.state.values.startDate.toDate(getDefaultTimeZone()),
-										)}
-									</span>
-								</div>
-								<div className="flex flex-row space-x-2">
-									<span className="font-semibold">End date:</span>
-									<span>
-										{dateFormatter.format(
-											form.state.values.endDate.toDate(getDefaultTimeZone()),
-										)}
-									</span>
-								</div>
-								<div className="flex flex-row space-x-2">
-									<span className="font-semibold">Jump days:</span>
-									<span>{form.state.values.addDays}</span>
-								</div>
-								<p className="mt-2">
-									If you want to undo this action, use the{" "}
-									<span className="font-semibold italic">Delete Schedule</span>{" "}
-									form to delete the generated range.
-								</p>
-							</div>
-						}
-					>
-						Submit
-					</form.ConfirmSubmitButton>
+					<form.Subscribe selector={({ values }) => values}>
+						{(values) => (
+							<form.ConfirmSubmitButton
+								requireChange={false}
+								description={
+									<div className="flex flex-col space-y">
+										<div className="flex flex-row space-x-2">
+											<span className="font-semibold">Start date:</span>
+											<span>
+												{dateFormatter.format(
+													values.startDate.toDate(getDefaultTimeZone()),
+												)}
+											</span>
+										</div>
+										<div className="flex flex-row space-x-2">
+											<span className="font-semibold">End date:</span>
+											<span>
+												{dateFormatter.format(
+													values.endDate.toDate(getDefaultTimeZone()),
+												)}
+											</span>
+										</div>
+										<div className="flex flex-row space-x-2">
+											<span className="font-semibold">Jump days:</span>
+											<span>{values.addDays}</span>
+										</div>
+										<p className="mt-2">
+											If you want to undo this action, use the{" "}
+											<span className="font-semibold italic">
+												Delete Schedule
+											</span>{" "}
+											form to delete the generated range.
+										</p>
+									</div>
+								}
+							>
+								Submit
+							</form.ConfirmSubmitButton>
+						)}
+					</form.Subscribe>
 				</form.Footer>
 			</form.AppForm>
 		</form>

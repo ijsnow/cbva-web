@@ -50,104 +50,106 @@ async function duplicateTournaments(
 			date: getDate(parseDate(values.date)),
 		}));
 
-	const createdTournaments = await db
-		.insert(tournaments)
-		.values(values)
-		.returning({
-			id: tournaments.id,
-		});
-
-	if (createdTournaments.length !== templates.length) {
-		throw new Error(
-			"Received different length. Something went wrong with creation",
-		);
-	}
-
-	const zipped = createdTournaments.map(({ id }, i) => ({
-		id,
-		template: templates[i],
-	}));
-
-	const divisionValues: (CreateTournamentDivision & {
-		requirements: CreateTournamentDivisionRequirement[];
-	})[] = zipped.flatMap(({ id, template }) =>
-		template.tournamentDivisions.map(
-			({
-				divisionId,
-				gender,
-				name,
-				teamSize,
-				requirements,
-				displayDivision,
-				displayGender,
-			}) => ({
-				tournamentId: id,
-				divisionId,
-				gender,
-				name,
-				teamSize,
-				requirements: requirements.map(({ id, ...reqs }) => reqs),
-				displayDivision,
-				displayGender,
-			}),
-		),
-	);
-
-	const directorValues: CreateTournamentDirector[] = zipped.flatMap(
-		({ id, template }) =>
-			template.directors.map(({ directorId, order }) => ({
-				tournamentId: id,
-				directorId,
-				order,
-			})),
-	);
-
-	const [divisions, _] = await Promise.all([
-		db
-			.insert(tournamentDivisions)
-			.values(divisionValues.map(({ requirements, ...values }) => values))
+	return await db.transaction(async (txn) => {
+		const createdTournaments = await txn
+			.insert(tournaments)
+			.values(values)
 			.returning({
-				id: tournamentDivisions.id,
-				tournamentId: tournamentDivisions.tournamentId,
-				divisionId: tournamentDivisions.divisionId,
-			}),
-		db.insert(tournamentDirectors).values(directorValues),
-	]);
+				id: tournaments.id,
+			});
 
-	const divisionsMap = new Map(
-		divisions.map(({ id, tournamentId, divisionId }) => [
-			[tournamentId, divisionId].join(":"),
+		if (createdTournaments.length !== templates.length) {
+			throw new Error(
+				"Received different length. Something went wrong with creation",
+			);
+		}
+
+		const zipped = createdTournaments.map(({ id }, i) => ({
 			id,
-		]),
-	);
+			template: templates[i],
+		}));
 
-	// const divisionReqsMap = new Map(
-	// 	divisionValues.map(({ id, requirements }) => [id, requirements]),
-	// );
-
-	// const requirements = divisions
-	// 	.map(({ id, tournamentId, divisionId }) =>
-	// 		divisionValues.find(
-	// 			(v) => v.tournamentId === tournamentId && v.divisionId === divisionId,
-	// 		),
-	// 	)
-	// 	.filter(isNotNull).map(v => );
-
-	const requirements: CreateTournamentDivisionRequirement[] =
-		divisionValues.flatMap(({ tournamentId, divisionId, requirements }) =>
-			requirements.map((req) => ({
-				...req,
-				tournamentDivisionId: divisionsMap.get(
-					[tournamentId, divisionId].join(":"),
-				) as unknown as number,
-			})),
+		const divisionValues: (CreateTournamentDivision & {
+			requirements: CreateTournamentDivisionRequirement[];
+		})[] = zipped.flatMap(({ id, template }) =>
+			template.tournamentDivisions.map(
+				({
+					divisionId,
+					gender,
+					name,
+					teamSize,
+					requirements,
+					displayDivision,
+					displayGender,
+				}) => ({
+					tournamentId: id,
+					divisionId,
+					gender,
+					name,
+					teamSize,
+					requirements: requirements.map(({ id, ...reqs }) => reqs),
+					displayDivision,
+					displayGender,
+				}),
+			),
 		);
 
-	if (requirements.length) {
-		await db.insert(tournamentDivisionRequirements).values(requirements);
-	}
+		const directorValues: CreateTournamentDirector[] = zipped.flatMap(
+			({ id, template }) =>
+				template.directors.map(({ directorId, order }) => ({
+					tournamentId: id,
+					directorId,
+					order,
+				})),
+		);
 
-	return createdTournaments;
+		const [divisions, _] = await Promise.all([
+			txn
+				.insert(tournamentDivisions)
+				.values(divisionValues.map(({ requirements, ...values }) => values))
+				.returning({
+					id: tournamentDivisions.id,
+					tournamentId: tournamentDivisions.tournamentId,
+					divisionId: tournamentDivisions.divisionId,
+				}),
+			txn.insert(tournamentDirectors).values(directorValues),
+		]);
+
+		const divisionsMap = new Map(
+			divisions.map(({ id, tournamentId, divisionId }) => [
+				[tournamentId, divisionId].join(":"),
+				id,
+			]),
+		);
+
+		// const divisionReqsMap = new Map(
+		// 	divisionValues.map(({ id, requirements }) => [id, requirements]),
+		// );
+
+		// const requirements = divisions
+		// 	.map(({ id, tournamentId, divisionId }) =>
+		// 		divisionValues.find(
+		// 			(v) => v.tournamentId === tournamentId && v.divisionId === divisionId,
+		// 		),
+		// 	)
+		// 	.filter(isNotNull).map(v => );
+
+		const requirements: CreateTournamentDivisionRequirement[] =
+			divisionValues.flatMap(({ tournamentId, divisionId, requirements }) =>
+				requirements.map((req) => ({
+					...req,
+					tournamentDivisionId: divisionsMap.get(
+						[tournamentId, divisionId].join(":"),
+					) as unknown as number,
+				})),
+			);
+
+		if (requirements.length) {
+			await txn.insert(tournamentDivisionRequirements).values(requirements);
+		}
+
+		return createdTournaments;
+	});
 }
 
 const duplicateTournamentSchema = selectTournamentSchema.pick({
