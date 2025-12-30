@@ -9,14 +9,14 @@ import {
 
 describe("getFinishForRound", () => {
 	const cases = [
-		[2, 3],
-		[1, 5],
-		[0, 9],
+		[1, 3],
+		[2, 5],
+		[3, 9],
 	];
 
 	for (const [round, finish] of cases) {
 		test(`round ${round} finishes ${finish}`, () => {
-			expect(getFinishForRound(round, 3)).toBe(finish);
+			expect(getFinishForRound(round)).toBe(finish);
 		});
 	}
 });

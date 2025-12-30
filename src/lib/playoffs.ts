@@ -3,8 +3,15 @@ import range from "lodash-es/range";
 
 import { snakeDraft } from "./snake-draft";
 
-export function getFinishForRound(round: number, totalRounds: number) {
-	return 2 ** (totalRounds - round + 1);
+// Calculates the finish for a round. Each team that finishes in the same round tie.
+//
+// - Losers of round of 16 all tie for 9th because there are 8 teams that make it further than them
+// - Loser's of quarters tie for 5th because 4 teams make it further
+// - etc
+//
+// The math doesn't work for finals, those are set manually.
+export function getFinishForRound(round: number) {
+	return 2 ** round + 1;
 }
 
 const playoffSeedOrders = [

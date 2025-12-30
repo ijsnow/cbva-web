@@ -383,7 +383,11 @@ const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 			// - Higher rounds: finish = 2^(round+1)
 			// For example: Round 1 (semifinals) losers get 3rd-4th place
 			//              Round 2 (finals) loser gets 2nd place
-			const finish = getFinishForRound(match.round, totalRounds!);
+			const finish = getFinishForRound(totalRounds! - match.round);
+
+			console.log(
+				`${finish} = getFinishForRound(${totalRounds} - ${match.round})`,
+			);
 
 			await txn
 				.update(tournamentDivisionTeams)

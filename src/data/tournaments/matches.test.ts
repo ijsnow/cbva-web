@@ -21,7 +21,7 @@ describe("playoff match finish", () => {
 			simulatePoolMatches: true,
 			playoffConfig: {
 				teamCount: 10,
-				wildcardCount: 4,
+				wildcardCount: 2,
 				matchKind: "set-to-28",
 				overwrite: false,
 				assignWildcards: true,
@@ -66,6 +66,6 @@ describe("playoff match finish", () => {
 		const losingTeam = teams.find(({ id }) => id === losingTeamId);
 
 		expect(winningTeam?.finish).toBeNull();
-		expect(losingTeam?.finish).not.toBeNull();
+		expect(losingTeam?.finish).toBe(9);
 	});
 });
