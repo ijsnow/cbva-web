@@ -33,7 +33,9 @@ export const matchSets = pgTable(
 		teamAScore: integer().notNull().default(0),
 		teamBScore: integer().notNull().default(0),
 		winScore: integer().notNull().default(21),
-		winnerId: integer().references(() => tournamentDivisionTeams.id),
+		winnerId: integer().references(() => tournamentDivisionTeams.id, {
+			onDelete: "cascade",
+		}),
 		status: setStatusEnum().notNull().default("not_started"),
 		startedAt: timestamp(),
 		endedAt: timestamp(),

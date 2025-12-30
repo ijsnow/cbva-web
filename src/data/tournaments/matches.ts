@@ -1,6 +1,6 @@
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
-import { eq, sql } from "drizzle-orm";
+import { eq, max, sql } from "drizzle-orm";
 import random from "lodash-es/random";
 import z from "zod";
 import { requireAuthenticated, requirePermissions } from "@/auth/shared";
@@ -361,6 +361,12 @@ const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 
 		const loserId = winnerId === match.teamAId ? match.teamBId : match.teamAId;
 
+		const [{ totalRounds }] = await txn
+			.select({
+				totalRounds: max(playoffMatches.round),
+			})
+			.from(playoffMatches);
+
 		if (match.nextMatchId) {
 			await db
 				.delete(matchRefTeams)
@@ -377,7 +383,7 @@ const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 			// - Higher rounds: finish = 2^(round+1)
 			// For example: Round 1 (semifinals) losers get 3rd-4th place
 			//              Round 2 (finals) loser gets 2nd place
-			const finish = getFinishForRound(match.round);
+			const finish = getFinishForRound(match.round, totalRounds!);
 
 			await txn
 				.update(tournamentDivisionTeams)

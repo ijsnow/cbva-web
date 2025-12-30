@@ -36,6 +36,13 @@ async function resetTournamentSequences() {
 		resetSequence("tournament_directors"),
 		resetSequence("tournament_division_requirements"),
 		resetSequence("tournament_division_teams"),
+		resetSequence("teams"),
+		resetSequence("team_players"),
+		resetSequence("match_sets"),
+		resetSequence("playoff_matches"),
+		resetSequence("pool_matches"),
+		resetSequence("pools"),
+		resetSequence("pool_teams"),
 	]);
 }
 

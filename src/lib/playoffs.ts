@@ -3,8 +3,8 @@ import range from "lodash-es/range";
 
 import { snakeDraft } from "./snake-draft";
 
-export function getFinishForRound(round: number) {
-	return 2 ** (round + 1);
+export function getFinishForRound(round: number, totalRounds: number) {
+	return 2 ** (totalRounds - round + 1);
 }
 
 const playoffSeedOrders = [

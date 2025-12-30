@@ -64,6 +64,13 @@
       "when": 1765912726873,
       "tag": "0008_melted_the_hunter",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1767057761517,
+      "tag": "0009_nostalgic_enchantress",
+      "breakpoints": true
     }
   ]
 }
