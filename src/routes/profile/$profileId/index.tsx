@@ -101,7 +101,7 @@ function RouteComponent() {
 	const accolades = [
 		{
 			label: "Rating",
-			value: profile?.level?.name,
+			value: profile?.level?.display ?? profile?.level?.name,
 		},
 		{
 			label: "Rank",

@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { Handle, Position } from "@xyflow/react";
 import clsx from "clsx";
-import { CircleDot, EditIcon } from "lucide-react";
-import { useState } from "react";
+import { CircleDot } from "lucide-react";
 import { tv } from "tailwind-variants";
 import { useViewerHasPermission } from "@/auth/shared";
 import { Button } from "@/components/base/button";
+import { Link } from "@/components/base/link";
 import { TeamNames } from "@/components/teams/names";
 import { EditPlayoffMatchRefsForm } from "@/components/tournaments/controls/edit-playoff-match-refs";
 import { playoffsQueryOptions } from "@/data/playoffs";
@@ -147,15 +147,23 @@ export function MatchNode({
 							sets.length > 1 ? "col-span-3" : "col-span-5",
 						)}
 					>
-						{court ? (
-							<span className="whitespace-nowrap text-ellipsis">
-								Court {court}
-							</span>
-						) : (
-							<span className="whitespace-nowrap text-ellipsis">
-								{sets.length > 1 ? "Match" : "Game"} {matchNumber}
-							</span>
-						)}
+						<Link
+							to="/matches/playoff/$matchId"
+							params={{
+								matchId: data.id.toString(),
+							}}
+							variant="alt"
+						>
+							{court ? (
+								<span className="whitespace-nowrap text-ellipsis">
+									Court {court}
+								</span>
+							) : (
+								<span className="whitespace-nowrap text-ellipsis">
+									{sets.length > 1 ? "Match" : "Game"} {matchNumber}
+								</span>
+							)}
+						</Link>
 
 						{sets.some(({ status }) => status === "in_progress") ? (
 							<Button

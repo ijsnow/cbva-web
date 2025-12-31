@@ -119,3 +119,68 @@ export const poolMatchSetQueryOptions = (id: number) =>
 		queryKey: ["pool_match_set", id],
 		queryFn: () => getPoolMatchSet({ data: { id } }),
 	});
+
+export const getPlayoffMatch = createServerFn({
+	method: "GET",
+})
+	.inputValidator((input: { id: number }) => input)
+	.handler(async ({ data: { id } }) => {
+		return await db.query.playoffMatches.findFirst({
+			where: (t, { eq }) => eq(t.id, id),
+			with: {
+				sets: true,
+				tournamentDivision: {
+					columns: { id: true, tournamentId: true },
+				},
+				teamA: {
+					with: {
+						team: {
+							with: {
+								players: {
+									with: {
+										profile: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				teamB: {
+					with: {
+						team: {
+							with: {
+								players: {
+									with: {
+										profile: true,
+									},
+								},
+							},
+						},
+					},
+				},
+				refTeams: {
+					with: {
+						team: {
+							with: {
+								team: {
+									with: {
+										players: {
+											with: {
+												profile: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+	});
+
+export const playoffMatchQueryOptions = (id: number) =>
+	queryOptions({
+		queryKey: ["playoff_match", id],
+		queryFn: () => getPlayoffMatch({ data: { id } }),
+	});

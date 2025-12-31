@@ -41,6 +41,7 @@ import { Route as ProfileProfileIdEditRouteImport } from './routes/profile/$prof
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AccountVerifySuccessRouteImport } from './routes/account/verify/success'
 import { Route as MatchesPoolMatchIdIndexRouteImport } from './routes/matches/pool/$matchId/index'
+import { Route as MatchesPlayoffMatchIdIndexRouteImport } from './routes/matches/playoff/$matchId/index'
 import { Route as TournamentsTournamentIdDivisionIdChar123TabChar125RouteImport } from './routes/tournaments/$tournamentId/$divisionId.{-$tab}'
 import { Route as ApiTasksCleanupStorageRouteImport } from './routes/api/tasks/cleanup/storage'
 
@@ -206,6 +207,12 @@ const MatchesPoolMatchIdIndexRoute = MatchesPoolMatchIdIndexRouteImport.update({
   path: '/matches/pool/$matchId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchesPlayoffMatchIdIndexRoute =
+  MatchesPlayoffMatchIdIndexRouteImport.update({
+    id: '/matches/playoff/$matchId/',
+    path: '/matches/playoff/$matchId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TournamentsTournamentIdDivisionIdChar123TabChar125Route =
   TournamentsTournamentIdDivisionIdChar123TabChar125RouteImport.update({
     id: '/tournaments/$tournamentId/$divisionId/{-$tab}',
@@ -252,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/api/tasks/cleanup/storage': typeof ApiTasksCleanupStorageRoute
   '/tournaments/$tournamentId/$divisionId/{-$tab}': typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
+  '/matches/playoff/$matchId': typeof MatchesPlayoffMatchIdIndexRoute
   '/matches/pool/$matchId': typeof MatchesPoolMatchIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -288,6 +296,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId': typeof TournamentsTournamentIdIndexRoute
   '/api/tasks/cleanup/storage': typeof ApiTasksCleanupStorageRoute
   '/tournaments/$tournamentId/$divisionId/{-$tab}': typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
+  '/matches/playoff/$matchId': typeof MatchesPlayoffMatchIdIndexRoute
   '/matches/pool/$matchId': typeof MatchesPoolMatchIdIndexRoute
 }
 export interface FileRoutesById {
@@ -325,6 +334,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/': typeof TournamentsTournamentIdIndexRoute
   '/api/tasks/cleanup/storage': typeof ApiTasksCleanupStorageRoute
   '/tournaments/$tournamentId/$divisionId/{-$tab}': typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
+  '/matches/playoff/$matchId/': typeof MatchesPlayoffMatchIdIndexRoute
   '/matches/pool/$matchId/': typeof MatchesPoolMatchIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -363,6 +373,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId'
     | '/api/tasks/cleanup/storage'
     | '/tournaments/$tournamentId/$divisionId/{-$tab}'
+    | '/matches/playoff/$matchId'
     | '/matches/pool/$matchId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId'
     | '/api/tasks/cleanup/storage'
     | '/tournaments/$tournamentId/$divisionId/{-$tab}'
+    | '/matches/playoff/$matchId'
     | '/matches/pool/$matchId'
   id:
     | '__root__'
@@ -435,6 +447,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/'
     | '/api/tasks/cleanup/storage'
     | '/tournaments/$tournamentId/$divisionId/{-$tab}'
+    | '/matches/playoff/$matchId/'
     | '/matches/pool/$matchId/'
   fileRoutesById: FileRoutesById
 }
@@ -472,6 +485,7 @@ export interface RootRouteChildren {
   TournamentsTournamentIdIndexRoute: typeof TournamentsTournamentIdIndexRoute
   ApiTasksCleanupStorageRoute: typeof ApiTasksCleanupStorageRoute
   TournamentsTournamentIdDivisionIdChar123TabChar125Route: typeof TournamentsTournamentIdDivisionIdChar123TabChar125Route
+  MatchesPlayoffMatchIdIndexRoute: typeof MatchesPlayoffMatchIdIndexRoute
   MatchesPoolMatchIdIndexRoute: typeof MatchesPoolMatchIdIndexRoute
 }
 
@@ -701,6 +715,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MatchesPoolMatchIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/matches/playoff/$matchId/': {
+      id: '/matches/playoff/$matchId/'
+      path: '/matches/playoff/$matchId'
+      fullPath: '/matches/playoff/$matchId'
+      preLoaderRoute: typeof MatchesPlayoffMatchIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tournaments/$tournamentId/$divisionId/{-$tab}': {
       id: '/tournaments/$tournamentId/$divisionId/{-$tab}'
       path: '/tournaments/$tournamentId/$divisionId/{-$tab}'
@@ -753,6 +774,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTasksCleanupStorageRoute: ApiTasksCleanupStorageRoute,
   TournamentsTournamentIdDivisionIdChar123TabChar125Route:
     TournamentsTournamentIdDivisionIdChar123TabChar125Route,
+  MatchesPlayoffMatchIdIndexRoute: MatchesPlayoffMatchIdIndexRoute,
   MatchesPoolMatchIdIndexRoute: MatchesPoolMatchIdIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -80,6 +80,10 @@ export type UpdatePlayoffMatch = z.infer<typeof updatePlayoffMatchSchema>;
 export const playoffMatchRelations = relations(
 	playoffMatches,
 	({ one, many }) => ({
+		tournamentDivision: one(tournamentDivisions, {
+			fields: [playoffMatches.tournamentDivisionId],
+			references: [tournamentDivisions.id],
+		}),
 		sets: many(matchSets),
 		teamA: one(tournamentDivisionTeams, {
 			fields: [playoffMatches.teamAId],

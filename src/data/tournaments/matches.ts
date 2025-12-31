@@ -22,6 +22,7 @@ import {
 import { isSetDone } from "@/lib/matches";
 import { getFinishForRound } from "@/lib/playoffs";
 import { internalServerError, notFound } from "@/lib/responses";
+import { dbg } from "@/utils/dbg";
 
 const findMatchSetSchema = selectMatchSetSchema.pick({
 	id: true,
@@ -75,7 +76,23 @@ const updateScoreFn = createServerFn()
 
 		const next = applyMatchSetAction({ id, teamA, action }, matchSet);
 
-		await db.update(matchSets).set(next).where(eq(matchSets.id, id));
+		const { playoffMatchId, poolMatchId } = matchSet;
+
+		await db.transaction(async (txn) => {
+			await txn.update(matchSets).set(next).where(eq(matchSets.id, id));
+
+			console.log("-->", next, poolMatchId, playoffMatchId);
+
+			if (next.status === "completed") {
+				if (poolMatchId) {
+					return await handleCompletedPoolMatchSet(txn, poolMatchId);
+				}
+
+				if (playoffMatchId) {
+					return await handleCompletedPlayoffMatchSet(txn, playoffMatchId);
+				}
+			}
+		});
 	});
 
 export const updateScoreMutationOptions = () =>
@@ -240,13 +257,13 @@ function getWinnerId(
 ) {
 	const { winnerId } = sets.reduce(
 		(memo, set) => {
-			if (set.winnerId === teamAId) {
+			if (set.teamAScore > set.teamBScore) {
 				memo.aWins += 1;
 
 				if (memo.aWins > Math.floor(sets.length / 2)) {
 					memo.winnerId = teamAId;
 				}
-			} else if (set.winnerId === teamBId) {
+			} else if (set.teamAScore < set.teamBScore) {
 				memo.bWins += 1;
 
 				if (memo.bWins > Math.floor(sets.length / 2)) {
@@ -393,6 +410,8 @@ const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 				.update(tournamentDivisionTeams)
 				.set({ finish })
 				.where(eq(tournamentDivisionTeams.id, loserId));
+
+			// TODO: set team with winnerId as the team in the correct slot for match.nextMatchId
 		} else {
 			// This is the finals match - set finish for both teams
 			// Winner gets 1st place, loser gets 2nd place

@@ -10,6 +10,7 @@ export const levels = pgTable("levels", {
 	name: text().notNull().unique(),
 	abbreviated: text(),
 	order: integer().notNull(),
+	// TODO: display
 });
 
 export const selectLevelSchema = createSelectSchema(levels);
