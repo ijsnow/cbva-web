@@ -19,6 +19,7 @@ import type {
 	TournamentDivisionTeam,
 } from "@/db/schema";
 import { formatOrdinals } from "@/lib/numbers";
+import { dbg } from "@/utils/dbg";
 import { isNotNullOrUndefined } from "@/utils/types";
 import type { MatchTeam } from "../../games/pool-match-grid";
 import { useActiveTeam, useSetActiveTeam, useSetNodeIdToCenter } from ".";
@@ -257,7 +258,7 @@ export function MatchNode({
 									)}
 									title={`Seed ${team.playoffsSeed ?? "?"} in playoffs`}
 								>
-									{team.playoffsSeed ?? (team.wildcard ? "WC" : null)}
+									{dbg(team).playoffsSeed ?? (team.wildcard ? "WC" : null)}
 								</span>
 							)}
 

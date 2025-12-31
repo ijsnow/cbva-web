@@ -364,9 +364,13 @@ const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 			matchUpdates.push({
 				id: match.nextMatch.id,
 				teamAId:
-					match.teamAPreviousMatchId === playoffMatchId ? winnerId : null,
+					match.nextMatch.teamAPreviousMatchId === playoffMatchId
+						? winnerId
+						: undefined,
 				teamBId:
-					match.teamBPreviousMatchId === playoffMatchId ? winnerId : null,
+					match.nextMatch.teamBPreviousMatchId === playoffMatchId
+						? winnerId
+						: undefined,
 			});
 		}
 
@@ -410,8 +414,6 @@ const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 				.update(tournamentDivisionTeams)
 				.set({ finish })
 				.where(eq(tournamentDivisionTeams.id, loserId));
-
-			// TODO: set team with winnerId as the team in the correct slot for match.nextMatchId
 		} else {
 			// This is the finals match - set finish for both teams
 			// Winner gets 1st place, loser gets 2nd place

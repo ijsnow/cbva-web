@@ -371,13 +371,23 @@ export const assignWildcardFn = createServerFn()
 
 		const [{ teamAId, teamBId }] = matches;
 
-		await db
-			.update(playoffMatches)
-			.set({
-				teamAId: teamAId === null ? teamId : undefined,
-				teamBId: teamBId === null ? teamId : undefined,
-			})
-			.where(eq(playoffMatches.id, matchId));
+		await db.transaction((txn) =>
+			Promise.all([
+				txn
+					.update(tournamentDivisionTeams)
+					.set({
+						wildcard: true,
+					})
+					.where(eq(tournamentDivisionTeams.id, teamId)),
+				txn
+					.update(playoffMatches)
+					.set({
+						teamAId: teamAId === null ? teamId : undefined,
+						teamBId: teamBId === null ? teamId : undefined,
+					})
+					.where(eq(playoffMatches.id, matchId)),
+			]),
+		);
 
 		return {
 			success: true,

@@ -5,7 +5,7 @@ import { bootstrapTournament } from "@/tests/utils/tournaments";
 import { overrideScoreFn } from "./matches";
 
 describe("playoff match finish", () => {
-	test("assign finish", async () => {
+	test("assign loser's finish and advance winner", async () => {
 		const tournamentInfo = await bootstrapTournament(db, {
 			date: "2025-01-01",
 			startTime: "09:00:00",
@@ -67,5 +67,21 @@ describe("playoff match finish", () => {
 
 		expect(winningTeam?.finish).toBeNull();
 		expect(losingTeam?.finish).toBe(9);
+
+		const nextMatch = await db.query.playoffMatches.findFirst({
+			where: (t, { eq }) => eq(t.id, match.nextMatchId!),
+		});
+
+		assert(nextMatch, "next match not found");
+
+		if (nextMatch.teamAPreviousMatchId === match.id) {
+			expect(nextMatch.teamAId).toBe(winningTeamId);
+			expect(nextMatch.teamBId).toBeDefined();
+		} else if (nextMatch.teamBPreviousMatchId === match.id) {
+			expect(nextMatch.teamBId).toBe(winningTeamId);
+			expect(nextMatch.teamAId).toBeDefined();
+		} else {
+			throw new Error("unexpected error finding winning team in next match");
+		}
 	});
 });
