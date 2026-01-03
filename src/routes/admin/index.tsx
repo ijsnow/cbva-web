@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { ScheduleDashboard } from "@/components/admin/schedule";
 import { UsersList } from "@/components/admin/users-list";
-import { SideNav } from "@/components/base/side-nav";
 import { DefaultLayout } from "@/layouts/default";
 
 export const Route = createFileRoute("/admin/")({

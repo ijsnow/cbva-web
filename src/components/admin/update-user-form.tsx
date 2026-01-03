@@ -9,6 +9,7 @@ import {
 	adminUpdateUserSchema,
 } from "@/data/users";
 import type { User } from "@/db/schema";
+import { ImpersonateButton } from "../impersonator/impersonate-button";
 
 export type UpdateUserFormProps = Pick<User, "id" | "name" | "role"> & {
 	refetch: () => void;
@@ -78,6 +79,12 @@ export function UpdateUserForm({
 			<div className="col-span-8 flex flex-row items-center justify-between">
 				<div>
 					<span>{name}</span>
+					<ImpersonateButton
+						className="ml-2"
+						variant="icon"
+						color="default"
+						userId={id}
+					/>
 				</div>
 
 				<form.AppForm>

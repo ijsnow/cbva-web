@@ -14,7 +14,11 @@ import { Suspense, useState } from "react";
 import { TooltipTrigger } from "react-aria-components";
 import z from "zod/v4";
 import { authClient } from "@/auth/client";
-import { useViewer, viewerQueryOptions } from "@/auth/shared";
+import {
+	useViewer,
+	useViewerHasPermission,
+	viewerQueryOptions,
+} from "@/auth/shared";
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Link } from "@/components/base/link";
@@ -113,6 +117,10 @@ function RouteComponent() {
 
 	const [isEdit, setEdit] = useState(false);
 
+	const canDirectTournaments = useViewerHasPermission({
+		tournament: ["update"],
+	});
+
 	return (
 		<DefaultLayout
 			classNames={{
@@ -122,6 +130,10 @@ function RouteComponent() {
 				viewer?.role === "admin" && {
 					title: "Admin Dashboard",
 					to: "/admin" as const,
+				},
+				canDirectTournaments && {
+					title: "TD Dashboard",
+					to: "/td" as const,
 				},
 				{
 					title: "Log Out",

@@ -6,9 +6,16 @@ import {
 	useViewerHasPermission,
 	viewerQueryOptions,
 } from "@/auth/shared";
-import { Button } from "../base/button";
+import { Button, type ButtonProps } from "../base/button";
 
-export function ImpersonateButton({ userId }: { userId?: string | null }) {
+export function ImpersonateButton({
+	userId,
+	variant,
+	color = "secondary",
+	...props
+}: {
+	userId?: string | null;
+} & Omit<ButtonProps, "children" | "onPress">) {
 	const canImpersonate = useViewerHasPermission({
 		user: ["impersonate"],
 	});
@@ -38,9 +45,14 @@ export function ImpersonateButton({ userId }: { userId?: string | null }) {
 	}
 
 	return (
-		<Button color="secondary" onPress={() => impersonate(userId)}>
+		<Button
+			{...props}
+			color={color}
+			variant={variant}
+			onPress={() => impersonate(userId)}
+		>
 			<HatGlasses size={14} className="-ml" />
-			Impersonate
+			{variant !== "icon" && "Impersonate"}
 		</Button>
 	);
 }

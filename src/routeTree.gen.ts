@@ -20,6 +20,7 @@ import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as HealthRouteImport } from './routes/health'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TournamentsIndexRouteImport } from './routes/tournaments/index'
+import { Route as TdIndexRouteImport } from './routes/td/index'
 import { Route as JuniorsIndexRouteImport } from './routes/juniors/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AccountIndexRouteImport } from './routes/account/index'
@@ -98,6 +99,11 @@ const IndexRoute = IndexRouteImport.update({
 const TournamentsIndexRoute = TournamentsIndexRouteImport.update({
   id: '/tournaments/',
   path: '/tournaments/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TdIndexRoute = TdIndexRouteImport.update({
+  id: '/td/',
+  path: '/td/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JuniorsIndexRoute = JuniorsIndexRouteImport.update({
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/juniors': typeof JuniorsIndexRoute
+  '/td': typeof TdIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/account/verify/success': typeof AccountVerifySuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -286,6 +293,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/juniors': typeof JuniorsIndexRoute
+  '/td': typeof TdIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/account/verify/success': typeof AccountVerifySuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -324,6 +332,7 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/juniors/': typeof JuniorsIndexRoute
+  '/td/': typeof TdIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
   '/account/verify/success': typeof AccountVerifySuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -363,6 +372,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/juniors'
+    | '/td'
     | '/tournaments'
     | '/account/verify/success'
     | '/api/auth/$'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/juniors'
+    | '/td'
     | '/tournaments'
     | '/account/verify/success'
     | '/api/auth/$'
@@ -437,6 +448,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/juniors/'
+    | '/td/'
     | '/tournaments/'
     | '/account/verify/success'
     | '/api/auth/$'
@@ -475,6 +487,7 @@ export interface RootRouteChildren {
   AccountIndexRoute: typeof AccountIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   JuniorsIndexRoute: typeof JuniorsIndexRoute
+  TdIndexRoute: typeof TdIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   AccountVerifySuccessRoute: typeof AccountVerifySuccessRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -566,6 +579,13 @@ declare module '@tanstack/react-router' {
       path: '/tournaments'
       fullPath: '/tournaments'
       preLoaderRoute: typeof TournamentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/td/': {
+      id: '/td/'
+      path: '/td'
+      fullPath: '/td'
+      preLoaderRoute: typeof TdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/juniors/': {
@@ -763,6 +783,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountIndexRoute: AccountIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   JuniorsIndexRoute: JuniorsIndexRoute,
+  TdIndexRoute: TdIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
   AccountVerifySuccessRoute: AccountVerifySuccessRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
