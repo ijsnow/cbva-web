@@ -137,9 +137,6 @@ importers:
       file-type:
         specifier: ^21.1.1
         version: 21.1.1
-      gel:
-        specifier: ^2.1.1
-        version: 2.1.1
       lexical:
         specifier: ^0.38.2
         version: 0.38.2
@@ -282,6 +279,9 @@ importers:
       drizzle-kit:
         specifier: ^0.31.5
         version: 0.31.6
+      gel:
+        specifier: ^2.1.1
+        version: 2.1.1
       globals:
         specifier: ^16.4.0
         version: 16.4.0
