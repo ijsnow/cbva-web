@@ -37,8 +37,6 @@ export const getTournaments = createServerFn({
 			data: { page, pageSize, divisions, venues, genders, past },
 			context: { viewer },
 		}) => {
-			console.log({ page, pageSize, divisions, venues, genders, past });
-
 			const data = await findPaged("tournaments", {
 				paging: { page, size: pageSize },
 				config: {

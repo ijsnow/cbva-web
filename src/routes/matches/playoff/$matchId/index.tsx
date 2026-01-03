@@ -126,8 +126,6 @@ function RouteComponent() {
 
 	const { data, isLoading } = useSuspenseQuery(poolMatchQuery);
 
-	console.log(data);
-
 	const [activeTabKey, setActiveTabKey] = useState<number | undefined>(
 		data?.sets[0]?.id,
 	);

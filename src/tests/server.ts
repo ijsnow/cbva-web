@@ -6,8 +6,6 @@ import { GenericContainer } from "testcontainers";
 export async function startApp(databaseUrl: string) {
 	process.env.DATABASE_URL = databaseUrl;
 
-	console.log(databaseUrl);
-
 	// appProcess = spawn("pnpm", ["vite", "dev", "--port", "5174"], {
 	// 	env: {
 	// 		...process.env,

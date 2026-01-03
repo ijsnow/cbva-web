@@ -43,8 +43,6 @@ export const getSignedUploadTokenFn = createServerFn()
 				: false;
 
 			if (!hasPermission) {
-				console.log(viewer, bucket, hasPermission);
-
 				throw forbidden();
 			}
 

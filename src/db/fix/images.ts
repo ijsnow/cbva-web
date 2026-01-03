@@ -1,7 +1,5 @@
 import "dotenv/config";
 
-import { readFileSync, readSync } from "node:fs";
-import { createClient } from "@supabase/supabase-js";
 import { eq, sql } from "drizzle-orm";
 import { db } from "../connection";
 import { venues } from "../schema";
@@ -9,7 +7,6 @@ import { venues } from "../schema";
 const STORAGE_URL = `${process.env.VITE_SUPABASE_STORAGE_URL}/storage/v1/object/public`;
 
 async function main() {
-	console.log(process.env.DATABASE_URL);
 	const res = await db
 		.select({
 			id: venues.id,

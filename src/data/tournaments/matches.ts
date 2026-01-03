@@ -81,8 +81,6 @@ const updateScoreFn = createServerFn()
 		await db.transaction(async (txn) => {
 			await txn.update(matchSets).set(next).where(eq(matchSets.id, id));
 
-			console.log("-->", next, poolMatchId, playoffMatchId);
-
 			if (next.status === "completed") {
 				if (poolMatchId) {
 					return await handleCompletedPoolMatchSet(txn, poolMatchId);
