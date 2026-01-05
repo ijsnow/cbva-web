@@ -5,7 +5,18 @@ import { isEmpty } from "lodash-es";
 import { db } from "@/db/connection";
 import { authClient } from "./client";
 import type { Permissions, Role } from "./permissions";
-import { getViewer } from "./server";
+import { getViewer, type Viewer } from "./server";
+
+export type SessionViewer = Pick<
+	Viewer,
+	| "id"
+	| "name"
+	| "role"
+	| "email"
+	| "emailVerified"
+	| "phoneNumber"
+	| "phoneNumberVerified"
+>;
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
 	const { impersonatedBy, ...viewer } = await getViewer();

@@ -72,6 +72,8 @@ export async function bootstrapTournament(
 		playoffConfig?: Omit<CreatePlayoffsParams, "id"> & {
 			assignWildcards: boolean;
 		};
+		demo?: boolean;
+		visible?: boolean;
 	},
 ) {
 	const venueId = config.venue ?? (await getDefaultVenue(db)).id;
@@ -82,6 +84,8 @@ export async function bootstrapTournament(
 			date: "2025-01-01",
 			startTime: "09:00:00",
 			venueId,
+			visible: config.visible ?? true,
+			demo: config.demo,
 		})
 		.returning({
 			tournamentId: tournaments.id,
