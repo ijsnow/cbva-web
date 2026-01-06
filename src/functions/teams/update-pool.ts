@@ -6,7 +6,7 @@ import { isNotNullOrUndefined } from "@/utils/types";
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { eq, max } from "drizzle-orm";
-import { range } from "lodash-es";
+import { orderBy, range } from "lodash-es";
 import z from "zod";
 import { editSeedTransaction } from "./edit-seed";
 
@@ -65,6 +65,7 @@ export const updatePool = createServerFn()
 					.where(eq(poolTeams.teamId, tournamentDivisionTeamId));
 
 				if (isNotNullOrUndefined(desiredSeed)) {
+					// Manually setting seed
 					await editSeedTransaction(
 						txn,
 						{
@@ -77,6 +78,25 @@ export const updatePool = createServerFn()
 						},
 						desiredSeed,
 						"pool",
+					);
+				} else {
+					// recalculating pool seeds based on division seeds
+					const teams = await txn.query.poolTeams.findMany({
+						with: {
+							team: true,
+						},
+						where: (table, { eq }) => eq(table.poolId, poolId),
+					});
+
+					await Promise.all(
+						orderBy(teams, [(t) => t.team.seed], ["asc"]).map(({ id }, idx) =>
+							txn
+								.update(poolTeams)
+								.set({
+									seed: idx + 1,
+								})
+								.where(eq(poolTeams.id, id)),
+						),
 					);
 				}
 
