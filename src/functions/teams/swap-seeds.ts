@@ -18,6 +18,11 @@ export const swapSeedsSchema = selectTournamentDivisionTeamSchema
 	});
 
 export const swapSeeds = createServerFn()
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
 	.inputValidator(swapSeedsSchema)
 	.handler(async ({ data: { id: tournamentDivisionTeamId, seed } }) => {
 		const targetTeam = await db.query.tournamentDivisionTeams.findFirst({

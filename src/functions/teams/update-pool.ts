@@ -1,12 +1,10 @@
+import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
-import {
-	selectTournamentDivisionTeamSchema,
-	tournamentDivisionTeams,
-} from "@/db/schema";
-import { badRequest, notFound } from "@/lib/responses";
+import { poolTeams, selectTournamentDivisionTeamSchema } from "@/db/schema";
+import { notFound } from "@/lib/responses";
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { eq, max } from "drizzle-orm";
 import z from "zod";
 
 export const updatePoolSchema = selectTournamentDivisionTeamSchema
@@ -18,8 +16,13 @@ export const updatePoolSchema = selectTournamentDivisionTeamSchema
 	});
 
 export const updatePool = createServerFn()
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
 	.inputValidator(updatePoolSchema)
-	.handler(async ({ data: { id: tournamentDivisionTeamId, seed } }) => {
+	.handler(async ({ data: { id: tournamentDivisionTeamId, poolId } }) => {
 		const targetTeam = await db.query.tournamentDivisionTeams.findFirst({
 			where: (table, { eq }) => eq(table.id, tournamentDivisionTeamId),
 		});
@@ -28,8 +31,20 @@ export const updatePool = createServerFn()
 			throw notFound();
 		}
 
-		// TODO: update poolId for targetTeam
-		// TODO: set the team's pool seed to the last seed in the pool
+		const maxSeedResult = await db
+			.select({ maxSeed: max(poolTeams.seed) })
+			.from(poolTeams)
+			.where(eq(poolTeams.poolId, poolId));
+
+		const nextSeed = (maxSeedResult[0]?.maxSeed ?? 0) + 1;
+
+		await db
+			.update(poolTeams)
+			.set({
+				poolId,
+				seed: nextSeed,
+			})
+			.where(eq(poolTeams.teamId, tournamentDivisionTeamId));
 
 		return {
 			success: true,
