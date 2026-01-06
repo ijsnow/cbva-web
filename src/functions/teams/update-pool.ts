@@ -5,6 +5,7 @@ import { notFound } from "@/lib/responses";
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { eq, max } from "drizzle-orm";
+import { range } from "lodash-es";
 import z from "zod";
 
 export const updatePoolSchema = selectTournamentDivisionTeamSchema
@@ -13,6 +14,8 @@ export const updatePoolSchema = selectTournamentDivisionTeamSchema
 	})
 	.extend({
 		poolId: z.number(),
+		// TODO: set desired seed in new pool if this exsits, otherwise recalculate pool seeds
+		seed: z.number().nullable().optional(),
 	});
 
 export const updatePool = createServerFn()
@@ -61,13 +64,14 @@ export const updatePool = createServerFn()
 					orderBy: (table, { asc }) => [asc(table.seed)],
 				});
 
-				// Update each team's seed to be consecutive starting from 1
-				for (let i = 0; i < remainingTeams.length; i++) {
-					await txn
-						.update(poolTeams)
-						.set({ seed: i + 1 })
-						.where(eq(poolTeams.id, remainingTeams[i].id));
-				}
+				await Promise.all(
+					range(0, remainingTeams.length).map((i) =>
+						txn
+							.update(poolTeams)
+							.set({ seed: i + 1 })
+							.where(eq(poolTeams.id, remainingTeams[i].id)),
+					),
+				);
 			}
 		});
 

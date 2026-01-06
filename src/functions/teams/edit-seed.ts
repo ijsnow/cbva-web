@@ -36,8 +36,6 @@ export const editSeed = createServerFn()
 		const currentSeed =
 			target === "division" ? targetTeam.seed : targetTeam.poolTeam.seed;
 
-		console.log({ id, seed, target, currentSeed });
-
 		await db.transaction(async (txn) => {
 			const groupFilter =
 				target === "division"

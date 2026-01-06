@@ -116,15 +116,12 @@ export function TeamsPanel({
 									</TableCell>
 									<TableCell className="uppercase">
 										<div className="flex flex-row items-center gap-4">
-											{edit && poolTeam?.pool.name ? (
+											<span>{poolTeam?.pool.name ?? "-"}</span>
+											{edit && poolTeam?.pool.name && (
 												<EditPoolForm
 													tournamentDivisionTeamId={id}
 													poolId={poolTeam.poolId}
-													isUpDisabled={seed === 1}
-													isDownDisabled={seed === lastSeed}
 												/>
-											) : (
-												<span>{poolTeam?.pool.name ?? "-"}</span>
 											)}
 										</div>
 									</TableCell>
