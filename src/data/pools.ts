@@ -1,13 +1,7 @@
-import { mutationOptions, queryOptions } from "@tanstack/react-query";
-import { notFound } from "@tanstack/react-router";
+import { queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
-import orderBy from "lodash-es/orderBy";
-import sum from "lodash-es/sum";
-import z from "zod";
 
 import { db } from "@/db/connection";
-import { selectTournamentSchema, tournamentDivisionTeams } from "@/db/schema";
 
 async function readPools({
 	tournamentDivisionId,
@@ -104,6 +98,7 @@ async function readPools({
 						},
 					},
 				},
+				orderBy: (t, { asc }) => asc(t.seed),
 			},
 		},
 		where: (t, { eq, and, inArray }) =>
@@ -113,7 +108,7 @@ async function readPools({
 					ids ? inArray(t.id, ids) : undefined,
 				].filter(Boolean),
 			),
-		orderBy: (t, { asc }) => asc(t.name),
+		orderBy: (t, { asc }) => [asc(t.name)],
 	});
 }
 

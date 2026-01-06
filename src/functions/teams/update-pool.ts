@@ -31,6 +31,13 @@ export const updatePool = createServerFn()
 			throw notFound();
 		}
 
+		// Get the current pool team record to find the previous pool
+		const currentPoolTeam = await db.query.poolTeams.findFirst({
+			where: (table, { eq }) => eq(table.teamId, tournamentDivisionTeamId),
+		});
+
+		const previousPoolId = currentPoolTeam?.poolId;
+
 		const maxSeedResult = await db
 			.select({ maxSeed: max(poolTeams.seed) })
 			.from(poolTeams)
@@ -38,13 +45,31 @@ export const updatePool = createServerFn()
 
 		const nextSeed = (maxSeedResult[0]?.maxSeed ?? 0) + 1;
 
-		await db
-			.update(poolTeams)
-			.set({
-				poolId,
-				seed: nextSeed,
-			})
-			.where(eq(poolTeams.teamId, tournamentDivisionTeamId));
+		await db.transaction(async (txn) => {
+			await txn
+				.update(poolTeams)
+				.set({
+					poolId,
+					seed: nextSeed,
+				})
+				.where(eq(poolTeams.teamId, tournamentDivisionTeamId));
+
+			// If the team was in a different pool, resequence the seeds in the previous pool
+			if (previousPoolId && previousPoolId !== poolId) {
+				const remainingTeams = await txn.query.poolTeams.findMany({
+					where: (table, { eq }) => eq(table.poolId, previousPoolId),
+					orderBy: (table, { asc }) => [asc(table.seed)],
+				});
+
+				// Update each team's seed to be consecutive starting from 1
+				for (let i = 0; i < remainingTeams.length; i++) {
+					await txn
+						.update(poolTeams)
+						.set({ seed: i + 1 })
+						.where(eq(poolTeams.id, remainingTeams[i].id));
+				}
+			}
+		});
 
 		return {
 			success: true,

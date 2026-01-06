@@ -4,6 +4,7 @@ import { bootstrapTournament } from "@/tests/utils/tournaments";
 import { updatePool } from "./update-pool";
 import { poolTeams } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { range } from "lodash-es";
 
 describe("updatePool", () => {
 	test("adds a team to a pool when it wasn't in any pool before", async () => {
@@ -334,5 +335,14 @@ describe("updatePool", () => {
 		});
 
 		expect(teamInNewPool).toBeDefined();
+
+		const pool1Teams = await db.query.poolTeams.findMany({
+			where: (pt, { eq }) => eq(pt.poolId, pools[0].id),
+			orderBy: (t, { asc }) => asc(t.seed),
+		});
+
+		expect(pool1Teams.map(({ seed }) => seed)).toStrictEqual(
+			range(1, pool1Teams.length + 1),
+		);
 	});
 });

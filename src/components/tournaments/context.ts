@@ -43,6 +43,14 @@ export function useActiveDivisionId() {
 	return Number.parseInt(divisionId, 10);
 }
 
+export function usePoolsQueryOptions() {
+	const tournamentDivisionId = useActiveDivisionId();
+
+	return poolsQueryOptions({
+		tournamentDivisionId,
+	});
+}
+
 export function useTeamsQueryOptions() {
 	const tournamentDivisionId = useActiveDivisionId();
 

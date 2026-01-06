@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { subtitle, title } from "@/components/base/primitives";
 import {
 	Table,
@@ -15,6 +15,13 @@ import { poolsQueryOptions } from "@/data/pools";
 import type { Tournament, TournamentDivision } from "@/db/schema";
 import { getPoolStats } from "@/hooks/matches";
 import { SetCourtForm } from "../controls/set-court";
+import { EditSeedForm } from "@/components/teams/controls/edit-seed";
+import { Toolbar } from "@/components/base/toolbar";
+import { Group } from "react-aria-components";
+import { Button } from "@/components/base/button";
+import { CheckIcon, EditIcon } from "lucide-react";
+import { useViewerHasPermission } from "@/auth/shared";
+import { isNotNullOrUndefined } from "@/utils/types";
 
 export function PoolsPanel({
 	id,
@@ -22,6 +29,12 @@ export function PoolsPanel({
 }: Pick<Tournament, "id"> & {
 	tournamentDivisionId: TournamentDivision["id"];
 }) {
+	const canEdit = useViewerHasPermission({
+		tournament: ["update"],
+	});
+
+	const [editPoolId, setEditPoolId] = useState<number | undefined>(undefined);
+
 	const { data } = useSuspenseQuery(
 		poolsQueryOptions({ tournamentDivisionId }),
 	);
@@ -68,72 +81,109 @@ export function PoolsPanel({
 								</h3>
 							</div>
 
-							<Table aria-label={`Pool ${pool.name.toUpperCase()}`}>
-								<TableHeader className="bg-navbar-background">
-									<TableColumn id="finish" allowsSorting minWidth={100}>
-										Finish
-									</TableColumn>
-									<TableColumn
-										id="seed"
-										isRowHeader
-										allowsSorting
-										minWidth={100}
+							<div className="flex flex-col space-y-2 items-end">
+								{canEdit && (
+									<Toolbar
+										aria-label="Text formatting"
+										className="flex gap-4 w-fit"
 									>
-										Seed
-									</TableColumn>
-									<TableColumn id="team" isRowHeader minWidth={90}>
-										Team
-									</TableColumn>
-									<TableColumn id="wins" isRowHeader minWidth={90}>
-										Wins
-									</TableColumn>
-									<TableColumn id="losses" isRowHeader minWidth={90}>
-										Losses
-									</TableColumn>
-								</TableHeader>
-								<TableBody items={orderedTeams}>
-									{({
-										id,
-										seed,
-										team: {
-											id: teamId,
-											team: { players },
-										},
-										finish,
-									}) => {
-										const teamStats = stats?.[teamId];
+										<Group aria-label="Clipboard" className="flex gap-2">
+											<Button
+												variant="icon"
+												onPress={() =>
+													setEditPoolId((curr) =>
+														isNotNullOrUndefined(curr) ? undefined : pool.id,
+													)
+												}
+											>
+												{editPoolId === pool.id ? (
+													<CheckIcon size={12} />
+												) : (
+													<EditIcon size={12} />
+												)}
+											</Button>
+										</Group>
+									</Toolbar>
+								)}
 
-										const wins = teamStats?.wins.size;
-										const losses = teamStats?.losses.size;
+								<Table aria-label={`Pool ${pool.name.toUpperCase()}`}>
+									<TableHeader className="bg-navbar-background">
+										<TableColumn id="finish" allowsSorting minWidth={100}>
+											Finish
+										</TableColumn>
+										<TableColumn
+											id="seed"
+											isRowHeader
+											allowsSorting
+											minWidth={100}
+										>
+											Seed
+										</TableColumn>
+										<TableColumn id="team" isRowHeader minWidth={90}>
+											Team
+										</TableColumn>
+										<TableColumn id="wins" isRowHeader minWidth={90}>
+											Wins
+										</TableColumn>
+										<TableColumn id="losses" isRowHeader minWidth={90}>
+											Losses
+										</TableColumn>
+									</TableHeader>
+									<TableBody items={orderedTeams} key={editPoolId}>
+										{({
+											id,
+											seed,
+											team: {
+												id: teamId,
+												team: { players },
+											},
+											finish,
+										}) => {
+											const teamStats = stats?.[teamId];
 
-										return (
-											<TableRow key={id}>
-												<TableCell>
-													{finish ?? stats?.[teamId]?.rank ?? "-"}
-												</TableCell>
-												<TableCell>{seed ?? "-"}</TableCell>
-												<TableCell>
-													<span className="flex flex-col md:flex-row gap-1">
-														{players.map(({ profile }, i) => (
-															<span key={profile.id}>
-																<ProfileName {...profile} />{" "}
-																{i === players.length - 1 ? null : (
-																	<span className="hidden md:inline-block">
-																		{" "}
-																		&{" "}
-																	</span>
-																)}
-															</span>
-														))}
-													</span>
-												</TableCell>
-												<TableCell>{wins ?? "-"}</TableCell>
-												<TableCell>{losses ?? "-"}</TableCell>
-											</TableRow>
-										);
-									}}
-								</TableBody>
-							</Table>
+											const wins = teamStats?.wins.size;
+											const losses = teamStats?.losses.size;
+
+											return (
+												<TableRow key={id}>
+													<TableCell>
+														{finish ?? stats?.[teamId]?.rank ?? "-"}
+													</TableCell>
+													<TableCell>
+														<div className="flex flex-row items-center gap-4">
+															<span>{seed ?? "-"}</span>
+															{editPoolId === pool.id && seed && (
+																<EditSeedForm
+																	tournamentDivisionTeamId={teamId}
+																	seed={seed}
+																	target="pool"
+																/>
+															)}
+														</div>
+													</TableCell>
+													<TableCell>
+														<span className="flex flex-col md:flex-row gap-1">
+															{players.map(({ profile }, i) => (
+																<span key={profile.id}>
+																	<ProfileName {...profile} />{" "}
+																	{i === players.length - 1 ? null : (
+																		<span className="hidden md:inline-block">
+																			{" "}
+																			&{" "}
+																		</span>
+																	)}
+																</span>
+															))}
+														</span>
+													</TableCell>
+													<TableCell>{wins ?? "-"}</TableCell>
+													<TableCell>{losses ?? "-"}</TableCell>
+												</TableRow>
+											);
+										}}
+									</TableBody>
+								</Table>
+							</div>
 						</div>
 					);
 				})}

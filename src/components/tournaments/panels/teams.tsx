@@ -109,6 +109,7 @@ export function TeamsPanel({
 												<EditSeedForm
 													tournamentDivisionTeamId={id}
 													seed={seed}
+													target="division"
 												/>
 											)}
 										</div>

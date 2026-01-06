@@ -1,7 +1,10 @@
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Popover } from "@/components/base/popover";
-import { useTeamsQueryOptions } from "@/components/tournaments/context";
+import {
+	usePoolsQueryOptions,
+	useTeamsQueryOptions,
+} from "@/components/tournaments/context";
 import { editSeedMutationOptions } from "@/functions/teams/edit-seed";
 import {
 	useMutation,
@@ -15,16 +18,19 @@ import { Dialog } from "react-aria-components";
 export type EditSeedFormProps = {
 	tournamentDivisionTeamId: number;
 	seed: number;
+	target: "division" | "pool";
 };
 
 export function EditSeedForm({
 	tournamentDivisionTeamId,
 	seed,
+	target,
 }: EditSeedFormProps) {
 	const [isOpen, setOpen] = useState(false);
 	const triggerRef = useRef(null);
 
 	const teamsQueryOptions = useTeamsQueryOptions();
+	const poolsQueryOptions = usePoolsQueryOptions();
 
 	const { data: teams } = useSuspenseQuery(teamsQueryOptions);
 
@@ -35,11 +41,16 @@ export function EditSeedForm({
 	// const [showForm, setShowForm] = useState(false);
 	const queryClient = useQueryClient();
 
-	const { mutate } = useMutation({
+	const { mutate, failureReason } = useMutation({
 		...editSeedMutationOptions(),
 		onSuccess: () => {
 			setOpen(false);
-			queryClient.invalidateQueries(teamsQueryOptions);
+
+			if (target === "division") {
+				queryClient.invalidateQueries(teamsQueryOptions);
+			} else {
+				queryClient.invalidateQueries(poolsQueryOptions);
+			}
 		},
 	});
 
@@ -54,6 +65,7 @@ export function EditSeedForm({
 			mutate({
 				id: tournamentDivisionTeamId,
 				seed,
+				target,
 			});
 		},
 	});
@@ -78,14 +90,14 @@ export function EditSeedForm({
 							form.handleSubmit();
 						}}
 					>
-						{/* {failureReason && ( */}
-						{/* 	<form.AppForm> */}
-						{/* 		<form.Alert */}
-						{/* 			title={"Unable to create pools"} */}
-						{/* 			description={failureReason.message} */}
-						{/* 		/> */}
-						{/* 	</form.AppForm> */}
-						{/* )} */}
+						{failureReason && (
+							<form.AppForm>
+								<form.Alert
+									title={"Unable to update seed"}
+									description={failureReason.message}
+								/>
+							</form.AppForm>
+						)}
 
 						<form.AppField name="seed">
 							{(field) => (
