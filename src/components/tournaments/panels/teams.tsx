@@ -15,8 +15,9 @@ import { teamsQueryOptions } from "@/data/teams";
 import type { TournamentDivision } from "@/db/schema";
 import { getLevelDisplay } from "@/hooks/tournament";
 import { playerName } from "@/utils/profiles";
-import { EditSeedForm } from "@/components/teams/controls/edit-seed";
+import { SwapSeedsForm } from "@/components/teams/controls/swap-seeds";
 import { EditPoolForm } from "@/components/teams/controls/edit-pool";
+import { EditSeedForm } from "@/components/teams/controls/edit-seed";
 
 export function TeamsPanel({
 	tournamentDivisionId,
@@ -103,15 +104,13 @@ export function TeamsPanel({
 									<TableCell>{finish ?? "-"}</TableCell>
 									<TableCell>
 										<div className="flex flex-row items-center gap-4">
+											<span>{seed ?? "-"}</span>
 											{edit && seed && (
 												<EditSeedForm
 													tournamentDivisionTeamId={id}
 													seed={seed}
-													isUpDisabled={seed === 1}
-													isDownDisabled={seed === lastSeed}
 												/>
 											)}
-											<span>{seed ?? "-"}</span>
 										</div>
 									</TableCell>
 									<TableCell className="uppercase">

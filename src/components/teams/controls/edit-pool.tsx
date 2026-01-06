@@ -5,6 +5,7 @@ import { useParams } from "@tanstack/react-router";
 import { usePools } from "@/components/tournaments/context";
 import { Select } from "@/components/base/select";
 import { poolsQueryOptions } from "@/data/pools";
+import { updatePoolMutationOptions } from "@/functions/teams/update-pool";
 
 export type EditPoolFormProps = {
 	tournamentDivisionTeamId: number;
@@ -24,10 +25,10 @@ export function EditPoolForm({
 	const queryClient = useQueryClient();
 
 	const { mutate } = useMutation({
-		...swapSeedsMutationOptions(),
+		...updatePoolMutationOptions(),
 		onSuccess: () => {
 			queryClient.invalidateQueries(
-				poolsQueryOptions({
+				teamsQueryOptions({
 					tournamentDivisionId: Number.parseInt(divisionId, 10),
 				}),
 			);
@@ -43,8 +44,8 @@ export function EditPoolForm({
 				value: id,
 				display: name.toUpperCase(),
 			}))}
-			onChange={(id) => {
-				console.log(id);
+			onChange={(newPoolId) => {
+				mutate({ id: tournamentDivisionTeamId, poolId: newPoolId as number });
 			}}
 		/>
 	);

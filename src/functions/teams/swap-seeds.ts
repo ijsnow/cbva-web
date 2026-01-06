@@ -1,3 +1,4 @@
+import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
 	selectTournamentDivisionTeamSchema,

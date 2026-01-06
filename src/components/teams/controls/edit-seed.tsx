@@ -1,68 +1,68 @@
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 import { Button } from "@/components/base/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { swapSeedsMutationOptions } from "@/functions/teams/swap-seeds";
-import { teamsQueryOptions } from "@/data/teams";
-import { useParams } from "@tanstack/react-router";
+import { useAppForm } from "@/components/base/form";
+import { editSeedMutationOptions } from "@/functions/teams/edit-seed";
+import { useMutation } from "@tanstack/react-query";
+import { CheckIcon, EditIcon, XIcon } from "lucide-react";
+import { useState } from "react";
 
 export type EditSeedFormProps = {
 	tournamentDivisionTeamId: number;
 	seed: number;
-	isUpDisabled: boolean;
-	isDownDisabled: boolean;
 };
 
 export function EditSeedForm({
 	tournamentDivisionTeamId,
 	seed,
-	isUpDisabled,
-	isDownDisabled,
 }: EditSeedFormProps) {
-	const { divisionId } = useParams({
-		from: "/tournaments/$tournamentId/$divisionId/{-$tab}",
-	});
-
-	const queryClient = useQueryClient();
+	const [showForm, setShowForm] = useState(false);
 
 	const { mutate } = useMutation({
-		...swapSeedsMutationOptions(),
-		onSuccess: () => {
-			queryClient.invalidateQueries(
-				teamsQueryOptions({
-					tournamentDivisionId: Number.parseInt(divisionId, 10),
-				}),
-			);
+		...editSeedMutationOptions(),
+	});
+
+	const form = useAppForm({
+		defaultValues: {
+			seed,
+		},
+		validators: {
+			// ...
+		},
+		onSubmit: ({ value: { seed } }) => {
+			mutate({
+				id: tournamentDivisionTeamId,
+				seed,
+			});
 		},
 	});
 
+	if (!showForm) {
+		return (
+			<Button variant="icon" size="sm" onPress={() => setShowForm(true)}>
+				<EditIcon />
+			</Button>
+		);
+	}
+
 	return (
-		<div className="flex flex-row gap-2">
-			<Button
-				variant="icon"
-				size="sm"
-				isDisabled={isUpDisabled}
-				onPress={() => {
-					mutate({
-						id: tournamentDivisionTeamId,
-						seed: seed - 1,
-					});
-				}}
-			>
-				<ArrowUpIcon size={16} />
-			</Button>
-			<Button
-				variant="icon"
-				size="sm"
-				isDisabled={isDownDisabled}
-				onPress={() => {
-					mutate({
-						id: tournamentDivisionTeamId,
-						seed: seed + 1,
-					});
-				}}
-			>
-				<ArrowDownIcon size={16} />
-			</Button>
-		</div>
+		<form
+			className="flex flex-row gap-2 max-w-18"
+			onSubmit={(event) => {
+				event.preventDefault();
+
+				form.handleSubmit();
+			}}
+		>
+			<form.AppField name="seed">
+				{(field) => <field.Number field={field} name="seed" />}
+			</form.AppField>
+			<form.AppForm>
+				<Button variant="icon" onPress={() => setShowForm(false)}>
+					<XIcon size={16} />
+				</Button>
+				<form.SubmitButton variant="icon">
+					<CheckIcon />
+				</form.SubmitButton>
+			</form.AppForm>
+		</form>
 	);
 }
