@@ -38,6 +38,7 @@ export function EditSeedForm({
 	const { mutate } = useMutation({
 		...editSeedMutationOptions(),
 		onSuccess: () => {
+			setOpen(false);
 			queryClient.invalidateQueries(teamsQueryOptions);
 		},
 	});
