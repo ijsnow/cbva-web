@@ -18,6 +18,9 @@ import { playerName } from "@/utils/profiles";
 import { SwapSeedsForm } from "@/components/teams/controls/swap-seeds";
 import { EditPoolForm } from "@/components/teams/controls/edit-pool";
 import { EditSeedForm } from "@/components/teams/controls/edit-seed";
+import { useViewerHasPermission } from "@/auth/shared";
+import { Button } from "@/components/base/button";
+import { TeamControlsDropdown } from "@/components/teams/controls/dropdown";
 
 export function TeamsPanel({
 	tournamentDivisionId,
@@ -26,6 +29,10 @@ export function TeamsPanel({
 	tournamentDivisionId: TournamentDivision["id"];
 	teamSize: TournamentDivision["teamSize"];
 }) {
+	const canEdit = useViewerHasPermission({
+		tournament: ["update"],
+	});
+
 	const { data } = useSuspenseQuery(
 		teamsQueryOptions({ tournamentDivisionId }),
 	);
@@ -97,6 +104,11 @@ export function TeamsPanel({
 									Player {i + 1}
 								</TableColumn>
 							))}
+							{canEdit && (
+								<TableColumn id="actions" isRowHeader width={50}>
+									Actions
+								</TableColumn>
+							)}
 						</TableHeader>
 						<TableBody key={edit ? "edit" : "not-edit"} items={data || []}>
 							{({ id, team: { players }, finish, seed, poolTeam }) => (
@@ -135,6 +147,14 @@ export function TeamsPanel({
 												{getLevelDisplay(level)})
 											</TableCell>
 										),
+									)}
+
+									{canEdit && (
+										<TableCell>
+											<div className="flex flex-row flex-wrap">
+												<TeamControlsDropdown />
+											</div>
+										</TableCell>
 									)}
 								</TableRow>
 							)}

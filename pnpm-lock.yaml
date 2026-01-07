@@ -85,7 +85,7 @@ importers:
         version: 1.141.1(@tanstack/react-router@1.141.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(vite@7.1.12(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0))
       '@tanstack/zod-adapter':
         specifier: ^1.141.1
-        version: 1.141.1(@tanstack/react-router@1.141.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(zod@4.1.12)
+        version: 1.141.1(@tanstack/react-router@1.141.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(zod@4.3.5)
       '@trpc/client':
         specifier: ^11.7.0
         version: 11.7.1(@trpc/server@11.7.1(typescript@5.9.3))(typescript@5.9.3)
@@ -133,7 +133,7 @@ importers:
         version: 0.44.7(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(gel@2.1.1)(kysely@0.28.8)(pg@8.16.3)(postgres@3.4.7)
       drizzle-zod:
         specifier: ^0.8.3
-        version: 0.8.3(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(gel@2.1.1)(kysely@0.28.8)(pg@8.16.3)(postgres@3.4.7))(zod@4.1.12)
+        version: 0.8.3(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(gel@2.1.1)(kysely@0.28.8)(pg@8.16.3)(postgres@3.4.7))(zod@4.3.5)
       file-type:
         specifier: ^21.1.1
         version: 21.1.1
@@ -207,8 +207,8 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.1.12(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0))
       zod:
-        specifier: ^4.1.12
-        version: 4.1.12
+        specifier: ^4.3.5
+        version: 4.3.5
     devDependencies:
       '@biomejs/biome':
         specifier: 2.3.4
@@ -6095,8 +6095,8 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
-  zod@4.1.12:
-    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
+  zod@4.3.5:
+    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
@@ -6362,20 +6362,20 @@ snapshots:
 
   '@balena/dockerignore@1.0.2': {}
 
-  '@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
+  '@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.3.5))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)':
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       '@standard-schema/spec': 1.0.0
-      better-call: 1.1.4(zod@4.1.12)
+      better-call: 1.1.4(zod@4.3.5)
       jose: 6.1.0
       kysely: 0.28.8
       nanostores: 1.0.1
-      zod: 4.1.12
+      zod: 4.3.5
 
-  '@better-auth/telemetry@1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))':
+  '@better-auth/telemetry@1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.3.5))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))':
     dependencies:
-      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.3.5))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
 
@@ -9263,10 +9263,10 @@ snapshots:
 
   '@tanstack/virtual-file-routes@1.141.0': {}
 
-  '@tanstack/zod-adapter@1.141.1(@tanstack/react-router@1.141.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(zod@4.1.12)':
+  '@tanstack/zod-adapter@1.141.1(@tanstack/react-router@1.141.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(zod@4.3.5)':
     dependencies:
       '@tanstack/react-router': 1.141.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
-      zod: 4.1.12
+      zod: 4.3.5
 
   '@testcontainers/postgresql@11.8.1':
     dependencies:
@@ -9939,33 +9939,33 @@ snapshots:
 
   better-auth@1.4.5(@tanstack/react-start@1.141.1(crossws@0.4.1(srvx@0.9.7))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(vite@7.1.12(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0)))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(solid-js@1.9.7):
     dependencies:
-      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
-      '@better-auth/telemetry': 1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.1.12))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))
+      '@better-auth/core': 1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.3.5))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1)
+      '@better-auth/telemetry': 1.4.5(@better-auth/core@1.4.5(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.18)(better-call@1.1.4(zod@4.3.5))(jose@6.1.0)(kysely@0.28.8)(nanostores@1.0.1))
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       '@noble/ciphers': 2.0.1
       '@noble/hashes': 2.0.1
-      better-call: 1.1.4(zod@4.1.12)
+      better-call: 1.1.4(zod@4.3.5)
       defu: 6.1.4
       jose: 6.1.0
       kysely: 0.28.8
       ms: 4.0.0-nightly.202508271359
       nanostores: 1.0.1
-      zod: 4.1.12
+      zod: 4.3.5
     optionalDependencies:
       '@tanstack/react-start': 1.141.1(crossws@0.4.1(srvx@0.9.7))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(vite@7.1.12(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0))
       react: 19.2.1
       react-dom: 19.2.1(react@19.2.1)
       solid-js: 1.9.7
 
-  better-call@1.1.4(zod@4.1.12):
+  better-call@1.1.4(zod@4.3.5):
     dependencies:
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.18
       rou3: 0.7.10
       set-cookie-parser: 2.7.1
     optionalDependencies:
-      zod: 4.1.12
+      zod: 4.3.5
 
   bidi-js@1.0.3:
     dependencies:
@@ -10357,10 +10357,10 @@ snapshots:
       pg: 8.16.3
       postgres: 3.4.7
 
-  drizzle-zod@0.8.3(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(gel@2.1.1)(kysely@0.28.8)(pg@8.16.3)(postgres@3.4.7))(zod@4.1.12):
+  drizzle-zod@0.8.3(drizzle-orm@0.44.7(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(gel@2.1.1)(kysely@0.28.8)(pg@8.16.3)(postgres@3.4.7))(zod@4.3.5):
     dependencies:
       drizzle-orm: 0.44.7(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(gel@2.1.1)(kysely@0.28.8)(pg@8.16.3)(postgres@3.4.7)
-      zod: 4.1.12
+      zod: 4.3.5
 
   dunder-proto@1.0.1:
     dependencies:
@@ -12462,7 +12462,7 @@ snapshots:
 
   zod@3.25.76: {}
 
-  zod@4.1.12: {}
+  zod@4.3.5: {}
 
   zustand@4.5.7(@types/react@19.2.2)(react@19.2.1):
     dependencies:

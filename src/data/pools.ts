@@ -75,6 +75,8 @@ async function readPools({
 								},
 							},
 						},
+						where: (t, { or, isNull, eq }) =>
+							or(isNull(t.abandoned), eq(t.abandoned, false)),
 					},
 				},
 			},

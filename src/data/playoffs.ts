@@ -70,6 +70,8 @@ async function readPlayoffs({
 						},
 					},
 				},
+				where: (t, { or, isNull, eq }) =>
+					or(isNull(t.abandoned), eq(t.abandoned, false)),
 			},
 		},
 		where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),

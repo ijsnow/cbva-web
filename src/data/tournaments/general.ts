@@ -1,22 +1,18 @@
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import z from "zod";
-import { authMiddleware, requirePermissions } from "@/auth/shared";
-import { tournamentListFilterSchema } from "@/components/tournaments/filters";
+import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
-import { findPaged } from "@/db/pagination";
 import {
 	selectTournamentSchema,
-	type TournamentDivision,
 	tournamentDirectors,
 	tournamentDivisions,
 	tournaments,
 	venueDirectors,
-	venues,
 } from "@/db/schema";
-import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
+import { isNotNullOrUndefined } from "@/utils/types";
 
 export const getTournament = createServerFn({
 	method: "GET",

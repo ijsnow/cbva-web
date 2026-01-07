@@ -7,7 +7,7 @@ import { useViewerHasPermission } from "@/auth/shared";
 import { Button } from "@/components/base/button";
 import { Link } from "@/components/base/link";
 import { TeamNames } from "@/components/teams/names";
-import { EditPlayoffMatchRefsForm } from "@/components/tournaments/controls/edit-playoff-match-refs";
+import { EditMatchRefsForm } from "@/components/tournaments/controls/edit-playoff-match-refs";
 import { SimulateMatchModal } from "@/components/tournaments/controls/simulate-match";
 import { playoffsQueryOptions } from "@/data/playoffs";
 import type {
@@ -25,6 +25,7 @@ import type { MatchTeam } from "../../games/pool-match-grid";
 import { useActiveTeam, useSetActiveTeam, useSetNodeIdToCenter } from ".";
 import { Wildcard } from "./wildcard";
 import { useIsDemoTournament } from "@/components/tournaments/context";
+import { RefTeamsList } from "@/components/refs/ref-teams-list";
 
 export const scoreTextStyles = tv({
 	base: "p-3 text-center flex flex-col justify-center col-span-1 text-xl font-light border-gray-300",
@@ -61,7 +62,12 @@ export function MatchNode({
 		refTeams: (MatchRefTeam & {
 			team: Pick<TournamentDivisionTeam, "id"> & {
 				team: Pick<Team, "id"> & {
-					players: (TeamPlayer & { profile: PlayerProfile })[];
+					players: (TeamPlayer & {
+						profile: Pick<
+							PlayerProfile,
+							"id" | "preferredName" | "firstName" | "lastName"
+						>;
+					})[];
 				};
 			};
 		})[];
@@ -122,23 +128,12 @@ export function MatchNode({
 	return (
 		<div>
 			<div className="p-3 flex flex-row space-x-2 items-center">
-				{refTeams.length ? (
-					<div className="whitespace-nowrap text-ellipsis">
-						Refs:{" "}
-						{refTeams.map((team) => (
-							<TeamNames key={team.id} {...team.team.team} />
-						))}
-					</div>
-				) : (
-					<div>Self Ref</div>
-				)}
-
-				{canUpdate && data.status !== "completed" && (
-					<EditPlayoffMatchRefsForm
-						tournamentDivisionId={tournamentDivisionId}
-						matchId={data.id}
-					/>
-				)}
+				<RefTeamsList
+					tournamentDivisionId={tournamentDivisionId}
+					playoffMatchId={data.id}
+					matchStatus={data.status}
+					refTeams={refTeams}
+				/>
 
 				{canUpdate &&
 					isDemo &&

@@ -1,5 +1,12 @@
 import { relations, sql } from "drizzle-orm";
-import { check, index, integer, pgTable, serial } from "drizzle-orm/pg-core";
+import {
+	check,
+	index,
+	integer,
+	pgTable,
+	serial,
+	boolean,
+} from "drizzle-orm/pg-core";
 import { createSchemaFactory } from "drizzle-zod";
 import z from "zod";
 import { playoffMatches } from "./playoff-matches";
@@ -24,6 +31,7 @@ export const matchRefTeams = pgTable(
 			.references(() => tournamentDivisionTeams.id, {
 				onDelete: "cascade",
 			}),
+		abandoned: boolean(),
 	},
 	(table) => [
 		check(

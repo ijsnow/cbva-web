@@ -21,13 +21,22 @@ import type { MatchTeam } from "../panels/games/pool-match-grid";
 
 export type EditPlayoffMatchRefsFormProps = {
 	tournamentDivisionId: number;
-	matchId: number;
 	opponent?: MatchTeam | null;
-};
+} & (
+	| {
+			playoffMatchId: number;
+			poolMatchId: never;
+	  }
+	| {
+			playoffMatchId: never;
+			poolMatchId: number;
+	  }
+);
 
-export function EditPlayoffMatchRefsForm({
+export function EditMatchRefsForm({
 	tournamentDivisionId,
-	matchId,
+	playoffMatchId,
+	poolMatchId,
 	opponent,
 	...props
 }: EditPlayoffMatchRefsFormProps) {
@@ -64,7 +73,8 @@ export function EditPlayoffMatchRefsForm({
 		},
 		onSubmit: ({ value: { teamId } }) => {
 			mutate({
-				id: matchId,
+				poolMatchId,
+				playoffMatchId,
 				teamId,
 			});
 		},

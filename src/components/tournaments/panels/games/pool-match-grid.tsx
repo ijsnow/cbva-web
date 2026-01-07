@@ -4,7 +4,6 @@ import { CircleDot } from "lucide-react";
 import { tv } from "tailwind-variants";
 import { Button } from "@/components/base/button";
 import { ProfileName } from "@/components/profiles/name";
-import { TeamNames } from "@/components/teams/names";
 import type {
 	MatchRefTeam,
 	MatchSet,
@@ -17,6 +16,8 @@ import type {
 	TournamentDivisionTeam,
 } from "@/db/schema";
 import { isNotNull } from "@/utils/types";
+import { RefTeamsList } from "@/components/refs/ref-teams-list";
+import { useActiveDivisionId } from "../../context";
 
 export const scoreTextStyles = tv({
 	base: "p-3 text-center flex flex-col justify-center col-span-2 md:col-span-1 text-xl font-light border-gray-300",
@@ -80,19 +81,21 @@ export function PoolMatchGrid({
 	teamA: MatchTeam | null;
 	teamB: MatchTeam | null;
 	refTeams: (MatchRefTeam & {
-		team: TournamentDivisionTeam & {
+		team: Pick<TournamentDivisionTeam, "id"> & {
 			team: Pick<Team, "id"> & {
-				players: {
+				players: (TeamPlayer & {
 					profile: Pick<
 						PlayerProfile,
 						"id" | "preferredName" | "firstName" | "lastName"
 					>;
-				}[];
+				})[];
 			};
 		};
 	})[];
 	refetch: () => void;
 }) {
+	const tournamentDivisionId = useActiveDivisionId();
+
 	return (
 		<div className="rounded-md overflow-hidden w-full border border-gray-300">
 			<div className="grid grid-cols-10 items-center bg-navbar-background text-navbar-foreground">
@@ -111,6 +114,7 @@ export function PoolMatchGrid({
 					>
 						{sets.length > 1 ? "Match" : "Game"} {matchNumber}
 					</Link>
+
 					{sets.some(({ status }) => status === "in_progress") ? (
 						<Button
 							size="sm"
@@ -123,17 +127,13 @@ export function PoolMatchGrid({
 							Live
 						</Button>
 					) : null}
-					<div>
-						Refs:{" "}
-						{refTeams.map((refs) => (
-							<TeamNames
-								key={refs.id}
-								showFirst={false}
-								separator="/"
-								players={refs.team.team.players}
-							/>
-						))}
-					</div>
+
+					<RefTeamsList
+						tournamentDivisionId={tournamentDivisionId}
+						poolMatchId={id}
+						matchStatus={status}
+						refTeams={refTeams}
+					/>
 				</div>
 				{sets.map((s) => (
 					<div
