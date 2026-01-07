@@ -24,6 +24,47 @@ export const editMatchRefTeamSchema = z
 		},
 	);
 
+export async function editMatchRefTeamHandler({
+	data,
+}: {
+	data: z.infer<typeof editMatchRefTeamSchema>;
+}) {
+	const { teamId, playoffMatchId, poolMatchId } = data;
+
+	const match = playoffMatchId
+		? await db.query.playoffMatches.findFirst({
+				where: (t, { eq }) => eq(t.id, playoffMatchId),
+			})
+		: poolMatchId
+			? await db.query.poolMatches.findFirst({
+					where: (t, { eq }) => eq(t.id, poolMatchId),
+				})
+			: undefined;
+
+	if (!match) {
+		throw notFound();
+	}
+
+	const filters = [
+		playoffMatchId ? eq(matchRefTeams.playoffMatchId, playoffMatchId) : null,
+		poolMatchId ? eq(matchRefTeams.poolMatchId, poolMatchId) : null,
+	].filter(isNotNull);
+
+	await db.delete(matchRefTeams).where(and(...filters));
+
+	if (teamId) {
+		await db.insert(matchRefTeams).values({
+			playoffMatchId,
+			poolMatchId,
+			teamId,
+		});
+	}
+
+	return {
+		success: true,
+	};
+}
+
 export const editMatchRefTeamFn = createServerFn()
 	.middleware([
 		requirePermissions({
@@ -31,38 +72,7 @@ export const editMatchRefTeamFn = createServerFn()
 		}),
 	])
 	.inputValidator(editMatchRefTeamSchema)
-	.handler(async ({ data: { teamId, playoffMatchId, poolMatchId } }) => {
-		const match = playoffMatchId
-			? await db.query.playoffMatches.findFirst({
-					where: (t, { eq }) => eq(t.id, playoffMatchId),
-				})
-			: poolMatchId
-				? await db.query.poolMatches.findFirst({
-						where: (t, { eq }) => eq(t.id, poolMatchId),
-					})
-				: undefined;
-
-		if (!match) {
-			throw notFound();
-		}
-
-		const filters = [
-			playoffMatchId ? eq(matchRefTeams.playoffMatchId, playoffMatchId) : null,
-			poolMatchId ? eq(matchRefTeams.poolMatchId, poolMatchId) : null,
-		].filter(isNotNull);
-
-		await db.delete(matchRefTeams).where(and(...filters));
-
-		await db.insert(matchRefTeams).values({
-			playoffMatchId,
-			poolMatchId,
-			teamId,
-		});
-
-		return {
-			success: true,
-		};
-	});
+	.handler(editMatchRefTeamHandler);
 
 export const editMatchRefTeamMutationOptions = () =>
 	mutationOptions({
