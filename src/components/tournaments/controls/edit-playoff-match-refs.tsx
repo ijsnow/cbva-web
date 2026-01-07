@@ -11,27 +11,22 @@ import { TeamNames } from "@/components/teams/names";
 import { playoffsQueryOptions } from "@/data/playoffs";
 import { poolsQueryOptions } from "@/data/pools";
 import { teamsQueryOptions } from "@/data/teams";
-import {
-	editPlayoffMatchRefTeamMutationOptions,
-	editPlayoffMatchRefTeamSchema,
-} from "@/data/tournaments/referee";
+import { editPlayoffMatchRefTeamSchema } from "@/data/tournaments/referee";
 import { getPoolStats, type PoolTeamStats } from "@/hooks/matches";
 import { isNotNullOrUndefined } from "@/utils/types";
 import type { MatchTeam } from "../panels/games/pool-match-grid";
+import { editMatchRefTeamMutationOptions } from "@/functions/refs/edit-match-ref-teams";
 
 export type EditPlayoffMatchRefsFormProps = {
 	tournamentDivisionId: number;
 	opponent?: MatchTeam | null;
-} & (
-	| {
-			playoffMatchId: number;
-			poolMatchId: never;
-	  }
-	| {
-			playoffMatchId: never;
-			poolMatchId: number;
-	  }
-);
+	playoffMatchId?: number;
+	poolMatchId?: number;
+};
+
+// TODO: for pool, only show teams in pool
+// TODO: Also show remove ref button
+// TODO: undo abandon ref
 
 export function EditMatchRefsForm({
 	tournamentDivisionId,
@@ -45,7 +40,7 @@ export function EditMatchRefsForm({
 	const [isOpen, setOpen] = useState(false);
 
 	const { mutate, failureReason } = useMutation({
-		...editPlayoffMatchRefTeamMutationOptions(),
+		...editMatchRefTeamMutationOptions(),
 		onSuccess: () => {
 			queryClient.invalidateQueries(
 				teamsQueryOptions({ tournamentDivisionId }),
@@ -78,16 +73,6 @@ export function EditMatchRefsForm({
 				teamId,
 			});
 		},
-	});
-
-	const { data: playoffTeams } = useQuery({
-		...playoffsQueryOptions({ tournamentDivisionId }),
-		select: (data) =>
-			new Set(
-				data
-					.flatMap(({ teamAId, teamBId }) => [teamAId, teamBId])
-					.filter(isNotNullOrUndefined),
-			),
 	});
 
 	const { data: teams } = useQuery({

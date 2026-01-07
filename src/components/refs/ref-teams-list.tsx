@@ -9,7 +9,6 @@ import { TeamNames } from "../teams/names";
 import { useViewerHasPermission } from "@/auth/shared";
 import { AbandonRefForm } from "../teams/controls/abandon-ref";
 import { EditMatchRefsForm } from "../tournaments/controls/edit-playoff-match-refs";
-import { assert } from "@/utils/assert";
 
 export type RefTeamsListProps = {
 	tournamentDivisionId: number;
@@ -45,32 +44,29 @@ export function RefTeamsList({
 		tournament: ["update"],
 	});
 
-	const matchId = poolMatchId ?? playoffMatchId;
-
 	return (
 		<>
 			{refTeams.length ? (
-				<>
-					<div className="whitespace-nowrap text-ellipsis flex flex-row items-center gap-2">
-						Refs:{" "}
-						{refTeams.map((team) => (
-							<span key={team.id} className="flex flex-row items-center gap-2">
-								<TeamNames {...team.team.team} />
+				<div className="whitespace-nowrap text-ellipsis flex flex-row items-center gap-2">
+					Refs:{" "}
+					{refTeams.map((team) => (
+						<span key={team.id} className="flex flex-row items-center gap-2">
+							<TeamNames {...team.team.team} />
 
-								{canEdit && <AbandonRefForm refTeamId={team.id} />}
-							</span>
-						))}
-					</div>
-
-					{canEdit && matchStatus !== "completed" && (
-						<EditMatchRefsForm
-							tournamentDivisionId={tournamentDivisionId}
-							matchId={matchId}
-						/>
-					)}
-				</>
+							{canEdit && <AbandonRefForm refTeamId={team.id} />}
+						</span>
+					))}
+				</div>
 			) : (
 				<div>Self Ref</div>
+			)}
+
+			{canEdit && matchStatus !== "completed" && (
+				<EditMatchRefsForm
+					tournamentDivisionId={tournamentDivisionId}
+					playoffMatchId={playoffMatchId}
+					poolMatchId={poolMatchId}
+				/>
 			)}
 		</>
 	);

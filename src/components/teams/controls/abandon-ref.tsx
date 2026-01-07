@@ -49,8 +49,13 @@ export function AbandonRefForm({ refTeamId, ...props }: AbandonRefFormProps) {
 
 	return (
 		<>
-			<Button variant="icon" size="sm" onPress={() => setOpen(true)}>
-				<FlagIcon />
+			<Button
+				variant="text"
+				size="xs"
+				color="primary"
+				onPress={() => setOpen(true)}
+			>
+				<FlagIcon size={12} />
 			</Button>
 			<Modal {...props} isOpen={open} onOpenChange={setOpen}>
 				<div className="p-3 flex flex-col space-y-4 relative">
