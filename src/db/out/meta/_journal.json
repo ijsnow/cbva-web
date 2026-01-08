@@ -99,6 +99,13 @@
       "when": 1767901742907,
       "tag": "0013_lonely_tusk",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1767914801106,
+      "tag": "0014_right_tyger_tiger",
+      "breakpoints": true
     }
   ]
 }

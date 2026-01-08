@@ -46,6 +46,8 @@ export const teamStatusEnum = pgEnum("team_status", [
 	"waitlisted",
 	"confirmed",
 	"cancelled",
+	"withdraw",
+	"late-withdraw",
 ]);
 
 export const teamStatusSchema = createSelectSchema(teamStatusEnum);

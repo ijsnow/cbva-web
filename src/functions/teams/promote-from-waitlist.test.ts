@@ -66,7 +66,9 @@ describe("promoteFromWaitlist", () => {
 		});
 
 		expect(teamsBefore.filter((t) => t.status === "confirmed")).toHaveLength(3);
-		expect(teamsBefore.filter((t) => t.status === "waitlisted")).toHaveLength(1);
+		expect(teamsBefore.filter((t) => t.status === "waitlisted")).toHaveLength(
+			1,
+		);
 
 		// Promote the waitlisted team
 		await promoteFromWaitlist({
@@ -75,6 +77,7 @@ describe("promoteFromWaitlist", () => {
 				seed: null,
 				poolId: null,
 				poolSeed: null,
+				automatic: false,
 			},
 		});
 
@@ -94,7 +97,9 @@ describe("promoteFromWaitlist", () => {
 		expect(teamsAfter.filter((t) => t.status === "waitlisted")).toHaveLength(0);
 
 		// Verify the specific team was promoted
-		const promotedTeam = teamsAfter.find((t) => t.id === insertedWaitlistedTeam.id);
+		const promotedTeam = teamsAfter.find(
+			(t) => t.id === insertedWaitlistedTeam.id,
+		);
 		expect(promotedTeam?.status).toBe("confirmed");
 	});
 });

@@ -12,6 +12,7 @@ import { checkAbandonedRefQueryOptions } from "@/functions/refs/check-abandoned-
 import { isDefined } from "@/utils/types";
 import type { TournamentDivisionTeam } from "@/db/schema";
 import { PromoteFromWaitlistForm } from "./promote-from-waitlist";
+import { RemoveTeamForm } from "./remove-team";
 
 enum ModalKind {
 	Remove = 0,
@@ -93,6 +94,11 @@ export function TeamControlsDropdown({
 					refTeamId={abandonedRefTeamId}
 				/>
 			)}
+
+			<RemoveTeamForm
+				{...makeModalOpenProps(ModalKind.Remove)}
+				tournamentDivisionTeamId={tournamentDivisionTeamId}
+			/>
 		</>
 	);
 }

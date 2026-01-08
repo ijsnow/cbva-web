@@ -12,7 +12,7 @@ import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { and, eq, inArray } from "drizzle-orm";
 import z from "zod";
 import { editSeedTransaction } from "./edit-seed";
-import { notFound } from "@/lib/responses";
+import { assertFound, notFound } from "@/lib/responses";
 import { updatePoolTransaction } from "./update-pool";
 import { calculateSeedsFn } from "./calculate-seeds";
 import { createPoolsFn } from "../pools";
@@ -55,9 +55,7 @@ export const promoteFromWaitlist = createServerFn()
 			where: (t, { eq }) => eq(t.id, id),
 		});
 
-		if (!team) {
-			throw notFound();
-		}
+		assertFound(!team);
 
 		await db.transaction(async (txn) => {
 			await promoteFromWaitlistTransaction(txn, [team.id]);
