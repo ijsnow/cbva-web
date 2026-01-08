@@ -10,7 +10,7 @@ import { teamsQueryOptions } from "@/data/teams";
 import {
 	createPoolsMutationOptions,
 	createPoolsSchema,
-} from "@/data/tournaments/pools";
+} from "@/functions/pools";
 import type { Division, TournamentDivision } from "@/db/schema";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 

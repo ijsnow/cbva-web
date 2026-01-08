@@ -22,11 +22,12 @@ import {
 	inputStyles,
 	Label,
 } from "./shared";
+import { ReactNode } from "react";
 
 export type Option<Value extends Key> = {
 	value: Value;
 	display: string;
-	additionalText?: string;
+	afterDisplay?: ReactNode;
 };
 
 export type SelectFieldProps<Value extends Key> = FieldProps &
@@ -129,12 +130,17 @@ export function SelectField<Value extends Key>({
 							items={options}
 							className="border border-gray-300 outline-0 p-1 shadow-lg rounded-lg bg-popover outline-hidden max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]"
 						>
-							{options.map(({ value, display }) => (
+							{options.map(({ value, display, afterDisplay }) => (
 								<ListBoxItem key={value} id={value} className={itemStyles}>
 									{({ isSelected }) => (
 										<>
 											<span className="flex items-center flex-1 gap-2 font-normal truncate group-selected:font-semibold">
 												{display}
+												{afterDisplay && (
+													<span className="italic text-xs text-gray-600">
+														{afterDisplay}
+													</span>
+												)}
 											</span>
 											<span className="flex items-center w-5">
 												{isSelected && <Check className="w-4 h-4" />}

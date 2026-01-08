@@ -8,15 +8,12 @@ import {
 	completePoolsFn,
 	createPoolMatchesFn,
 	createPoolsFn,
-} from "@/data/tournaments/pools";
-import { calculateSeedsFn } from "@/data/tournaments/teams";
+} from "@/functions/pools";
+import { calculateSeedsFn } from "@/functions/teams/calculate-seeds";
 import {
 	type Database,
 	divisions,
-	playerProfiles,
 	playoffMatches,
-	teamPlayers,
-	teams,
 	tournamentDirectors,
 	tournamentDivisions,
 	tournamentDivisionTeams,
@@ -148,9 +145,13 @@ export async function bootstrapTournament(
 
 		// Get the highest order for this tournament division
 		const maxOrderResult = await db
-			.select({ maxOrder: sql<number | null>`MAX(${tournamentDivisionTeams.order})` })
+			.select({
+				maxOrder: sql<number | null>`MAX(${tournamentDivisionTeams.order})`,
+			})
 			.from(tournamentDivisionTeams)
-			.where(eq(tournamentDivisionTeams.tournamentDivisionId, tournamentDivisionId));
+			.where(
+				eq(tournamentDivisionTeams.tournamentDivisionId, tournamentDivisionId),
+			);
 
 		const startOrder = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
 

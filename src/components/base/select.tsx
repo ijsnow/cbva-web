@@ -35,6 +35,7 @@ export type Option<Value extends Key> = {
 	display: string;
 	link?: LinkOptions;
 	beforeDisplay?: ReactNode;
+	afterDisplay?: ReactNode;
 };
 
 export type SelectFieldProps<
@@ -179,11 +180,16 @@ export function Select<
 							items={options}
 							className="border border-gray-300 outline-0 p-1 shadow-lg rounded-lg bg-popover outline-hidden max-h-[inherit] overflow-auto [clip-path:inset(0_0_0_0_round_.75rem)]"
 						>
-							{options.map(({ value, display, link }) => {
+							{options.map(({ value, display, afterDisplay, link }) => {
 								const renderFn = ({ isSelected }: ListBoxItemRenderProps) => (
 									<>
 										<span className="flex items-center flex-1 gap-2 font-normal truncate group-selected:font-semibold">
 											{display}
+											{afterDisplay && (
+												<span className="italic text-gray-600">
+													{afterDisplay}
+												</span>
+											)}
 										</span>
 										<span className="flex items-center w-5">
 											{isSelected && <Check className="w-4 h-4" />}

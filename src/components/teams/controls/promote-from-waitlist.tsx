@@ -12,10 +12,11 @@ import {
 	usePlayoffsQueryOptions,
 	usePoolsQueryOptions,
 	useTeamsQueryOptions,
+	useLastSeed,
 } from "@/components/tournaments/context";
-import { useEffect, useState } from "react";
 import type z from "zod";
-import { Radio, RadioGroup } from "@/components/base/radio-group";
+import { isDefined } from "@/utils/types";
+import { orderBy } from "lodash-es";
 
 export type PromoteFromWaitlistFormProps = {
 	tournamentDivisionTeamId: number;
@@ -30,17 +31,34 @@ export function PromoteFromWaitlistForm({
 	const queryClient = useQueryClient();
 
 	const teamsQueryOptions = useTeamsQueryOptions();
-	const poolsQueryOptions = usePoolsQueryOptions();
-	const playoffsQueryOptions = usePlayoffsQueryOptions();
 
-	const { data: poolOptions } = useQuery({
-		...poolsQueryOptions,
-		select: (data) =>
-			data.map((pool) => ({
-				value: pool.id,
-				display: pool.name.toUpperCase(),
-			})),
-	});
+	const { data: teams } = useQuery(teamsQueryOptions);
+
+	const hasSeeds = teams?.some((team) => isDefined(team.seed));
+
+	const lastSeed = useLastSeed();
+
+	const poolsQueryOptions = usePoolsQueryOptions();
+
+	const { data: pools } = useQuery(poolsQueryOptions);
+
+	const hasPoolSeeds = pools?.some((pool) =>
+		pool.teams.some((team) => isDefined(team.seed)),
+	);
+
+	const poolsSmallestToLargest = orderBy(
+		pools,
+		[(pool) => pool.teams.length],
+		["asc"],
+	);
+
+	const poolOptions = poolsSmallestToLargest?.map((pool) => ({
+		value: pool.id,
+		display: pool.name.toUpperCase(),
+		afterDisplay: `${pool.teams.length} teams`,
+	}));
+
+	const playoffsQueryOptions = usePlayoffsQueryOptions();
 
 	const { mutate, failureReason } = useMutation({
 		...promoteFromWaitlistMutationOptions(),
@@ -55,35 +73,42 @@ export function PromoteFromWaitlistForm({
 
 	const schema = promoteFromWaitlistSchema.omit({ id: true });
 
+	const defaultValues = {
+		seed: hasSeeds ? lastSeed + 1 : null,
+		poolId: null,
+		poolSeed: null,
+		automatic: false,
+	} as z.infer<typeof schema>;
+
 	const form = useAppForm({
-		defaultValues: {
-			seed: null,
-			poolId: null,
-			poolSeed: null,
-		} as z.infer<typeof schema>,
+		defaultValues,
 		validators: {
 			onMount: schema,
 			onChange: schema,
 		},
-		onSubmit: ({ value: { seed, poolId, poolSeed } }) => {
+		listeners: {
+			onChange: ({ formApi, fieldApi }) => {
+				if (fieldApi.name === "automatic") {
+					if (fieldApi.state.value) {
+						formApi.setFieldValue("seed", null);
+						formApi.setFieldValue("poolId", null);
+						formApi.setFieldValue("poolSeed", null);
+					} else {
+						formApi.reset(defaultValues);
+					}
+				}
+			},
+		},
+		onSubmit: ({ value: { automatic, seed, poolId, poolSeed } }) => {
 			mutate({
 				id: tournamentDivisionTeamId,
 				seed,
 				poolId,
 				poolSeed,
+				automatic,
 			});
 		},
 	});
-
-	const [mode, setMode] = useState<"calculate" | "manual">("calculate");
-
-	useEffect(() => {
-		if (mode === "calculate") {
-			form.setFieldValue("seed", null);
-			form.setFieldValue("poolId", null);
-			form.setFieldValue("poolSeed", null);
-		}
-	}, [mode, form]);
 
 	return (
 		<Modal {...props}>
@@ -109,57 +134,60 @@ export function PromoteFromWaitlistForm({
 						</form.AppForm>
 					)}
 
-					<RadioGroup
-						value={mode}
-						onChange={(mode) => setMode(mode as "calculate" | "manual")}
-					>
-						<Radio
-							value="calculate"
-							isDisabled={poolOptions ? poolOptions.length === 0 : true}
-						>
-							Recalculate seeds and pools for whole division
-						</Radio>
-						<Radio
-							value="manual"
-							isDisabled={poolOptions ? poolOptions.length === 0 : true}
-						>
-							Manually set seed and pool
-						</Radio>
-					</RadioGroup>
+					<form.AppField name="automatic">
+						{(field) => (
+							<field.Checkbox
+								field={field}
+								label="Recalculate seeds and pools for whole division"
+							/>
+						)}
+					</form.AppField>
 
-					{mode === "manual" && (
-						<>
-							<form.AppField name="seed">
-								{(field) => (
-									<field.Number label="Seed" field={field} minValue={1} />
+					<form.Subscribe selector={(state) => state.values.automatic}>
+						{(automatic) => (
+							<>
+								{hasSeeds && (
+									<form.AppField name="seed">
+										{(field) => (
+											<field.Number
+												isDisabled={automatic}
+												label="Seed"
+												field={field}
+												minValue={1}
+												maxValue={lastSeed + 1}
+											/>
+										)}
+									</form.AppField>
 								)}
-							</form.AppField>
 
-							{poolOptions && (
-								<>
+								{poolOptions.length > 0 && (
 									<form.AppField name="poolId">
 										{(field) => (
 											<field.Select
+												isDisabled={automatic}
 												label="Pool"
 												options={poolOptions ?? []}
 												field={field}
 											/>
 										)}
 									</form.AppField>
+								)}
 
+								{poolOptions && hasPoolSeeds && (
 									<form.AppField name="poolSeed">
 										{(field) => (
 											<field.Number
+												isDisabled={automatic}
 												label="Pool Seed"
 												field={field}
 												minValue={1}
 											/>
 										)}
 									</form.AppField>
-								</>
-							)}
-						</>
-					)}
+								)}
+							</>
+						)}
+					</form.Subscribe>
 
 					<form.AppForm>
 						<form.Footer>

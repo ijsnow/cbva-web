@@ -10,7 +10,7 @@ import { poolsQueryOptions } from "@/data/pools";
 import {
 	setPoolCourtMutationOptions,
 	setPoolCourtSchema,
-} from "@/data/tournaments/pools";
+} from "@/functions/pools";
 import { useTournamentDivisionName } from "@/hooks/tournament";
 
 export type SetCourtForm = {

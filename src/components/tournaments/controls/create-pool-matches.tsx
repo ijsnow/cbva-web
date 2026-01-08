@@ -10,7 +10,7 @@ import { teamsQueryOptions } from "@/data/teams";
 import {
 	createPoolMatchesMutationOptions,
 	createPoolMatchesSchema,
-} from "@/data/tournaments/pools";
+} from "@/functions/pools";
 import type { Division, TournamentDivision } from "@/db/schema";
 
 export type CreatePoolMatchesFormProps = {

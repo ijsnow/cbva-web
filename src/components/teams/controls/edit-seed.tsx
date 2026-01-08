@@ -2,15 +2,15 @@ import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Popover } from "@/components/base/popover";
 import {
+	useLastSeed,
 	usePoolsQueryOptions,
 	useTeamsQueryOptions,
 } from "@/components/tournaments/context";
-import { editSeedMutationOptions } from "@/functions/teams/edit-seed";
 import {
-	useMutation,
-	useQueryClient,
-	useSuspenseQuery,
-} from "@tanstack/react-query";
+	editSeedMutationOptions,
+	editSeedSchema,
+} from "@/functions/teams/edit-seed";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { Dialog } from "react-aria-components";
@@ -32,13 +32,8 @@ export function EditSeedForm({
 	const teamsQueryOptions = useTeamsQueryOptions();
 	const poolsQueryOptions = usePoolsQueryOptions();
 
-	const { data: teams } = useSuspenseQuery(teamsQueryOptions);
+	const lastSeed = useLastSeed();
 
-	const lastSeed = Math.max(
-		...(teams?.map(({ seed }) => seed ?? Number.POSITIVE_INFINITY) ?? []),
-	);
-
-	// const [showForm, setShowForm] = useState(false);
 	const queryClient = useQueryClient();
 
 	const { mutate, failureReason } = useMutation({
@@ -54,12 +49,15 @@ export function EditSeedForm({
 		},
 	});
 
+	const schema = editSeedSchema.omit({ id: true, target: true });
+
 	const form = useAppForm({
 		defaultValues: {
 			seed,
 		},
 		validators: {
-			// ...
+			onMount: schema,
+			onChange: schema,
 		},
 		onSubmit: ({ value: { seed } }) => {
 			mutate({

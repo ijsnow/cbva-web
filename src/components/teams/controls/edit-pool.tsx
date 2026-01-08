@@ -4,7 +4,10 @@ import {
 	usePoolsQueryOptions,
 	useTeamsQueryOptions,
 } from "@/components/tournaments/context";
-import { updatePoolMutationOptions } from "@/functions/teams/update-pool";
+import {
+	updatePoolMutationOptions,
+	updatePoolSchema,
+} from "@/functions/teams/update-pool";
 import { Button } from "@/components/base/button";
 import { EditIcon } from "lucide-react";
 import { useAppForm } from "@/components/base/form";
@@ -13,6 +16,7 @@ import { Dialog } from "react-aria-components";
 import { Popover } from "@/components/base/popover";
 import { Radio, RadioGroup } from "@/components/base/radio-group";
 import { isNotNullOrUndefined } from "@/utils/types";
+import type z from "zod";
 
 export type EditPoolFormProps = {
 	tournamentDivisionTeamId: number;
@@ -45,12 +49,17 @@ export function EditPoolForm({
 
 	const pools = usePools();
 
+	const schema = updatePoolSchema.omit({ id: true });
+
 	const form = useAppForm({
 		defaultValues: {
 			poolId,
 			seed: null as number | null | undefined,
+		} as z.infer<typeof schema>,
+		validators: {
+			onMount: schema,
+			onChange: schema,
 		},
-		validators: {},
 		onSubmit: ({ value: { poolId, seed } }) => {
 			mutate({
 				id: tournamentDivisionTeamId,

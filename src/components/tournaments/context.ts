@@ -3,8 +3,8 @@ import { useParams } from "@tanstack/react-router";
 import { tournamentQueryOptions } from "@/data/tournaments";
 import { teamsQueryOptions } from "@/data/teams";
 import { poolsQueryOptions } from "@/data/pools";
-import { playoffMatchQueryOptions } from "@/data/matches";
 import { playoffsQueryOptions } from "@/data/playoffs";
+import { isDefined } from "@/utils/types";
 
 export function useTournament() {
 	const { tournamentId } = useParams({
@@ -113,3 +113,15 @@ export function usePools() {
 // 	}),
 // 	select: (data) => data.length > 0,
 // });
+
+export function useLastSeed() {
+	const options = useTeamsQueryOptions();
+
+	const { data: teams } = useQuery(options);
+
+	const lastSeed = Math.max(
+		...(teams?.map((team) => team.seed).filter(isDefined) ?? []),
+	);
+
+	return lastSeed;
+}

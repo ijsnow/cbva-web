@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Heading } from "react-aria-components";
-import { Alert } from "@/components/base/alert";
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
@@ -9,7 +8,7 @@ import { teamsQueryOptions } from "@/data/teams";
 import {
 	calculateSeedsMutationOptions,
 	calculateSeedsSchema,
-} from "@/data/tournaments/teams";
+} from "@/functions/teams/calculate-seeds";
 import type { Division, TournamentDivision } from "@/db/schema";
 
 export type CalculateSeedsFormProps = {
