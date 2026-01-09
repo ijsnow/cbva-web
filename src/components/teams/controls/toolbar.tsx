@@ -1,24 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import clsx from "clsx";
-import { EditIcon } from "lucide-react";
-import {
-	Dialog,
-	DialogTrigger,
-	Group,
-	PopoverContext,
-	ToggleButton,
-} from "react-aria-components";
+import { Group } from "react-aria-components";
 import { useViewerHasPermission } from "@/auth/shared";
-import { Button } from "@/components/base/button";
-import { Popover } from "@/components/base/popover";
 import { Separator } from "@/components/base/separator";
 import { Toolbar } from "@/components/base/toolbar";
 import { tournamentQueryOptions } from "@/data/tournaments";
 import { AddTeamForm } from "./add-team";
 import { SetCapacityForm } from "./set-capacity";
 
-export function TeamsControls({ className }: { className?: string }) {
+export function TeamsControlsToolbar({ className }: { className?: string }) {
 	const canUpdate = useViewerHasPermission({
 		tournament: ["update"],
 	});

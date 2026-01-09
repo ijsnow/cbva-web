@@ -1,55 +1,55 @@
-export const UNAUTHORIZED = "UNAUTHORIZED";
-export const FORBIDDEN = "FORBIDDEN";
-export const NOT_FOUND = "NOT_FOUND";
-export const BAD_REQUEST = "BAD_REQUEST";
+export const UNAUTHORIZED = "UNAUTHORIZED"
+export const FORBIDDEN = "FORBIDDEN"
+export const NOT_FOUND = "NOT_FOUND"
+export const BAD_REQUEST = "BAD_REQUEST"
 
 export enum ErrorKind {
-	UNAUTHORIZED = "UNAUTHORIZED",
-	FORBIDDEN = "FORBIDDEN",
-	NOT_FOUND = "NOT_FOUND",
-	BAD_REQUEST = "BAD_REQUEST",
-	TOO_MANY_REQUESTS = "TOO_MANY_REQUESTS",
-	INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
+  UNAUTHORIZED = "UNAUTHORIZED",
+  FORBIDDEN = "FORBIDDEN",
+  NOT_FOUND = "NOT_FOUND",
+  BAD_REQUEST = "BAD_REQUEST",
+  TOO_MANY_REQUESTS = "TOO_MANY_REQUESTS",
+  INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
 }
 
 export function makeError(code: ErrorKind, message: string = code) {
-	throw new Error(
-		JSON.stringify({
-			code,
-			message,
-		}),
-	);
+  throw new Error(
+    JSON.stringify({
+      code,
+      message,
+    })
+  )
 }
 
 function isErrorCode(error: unknown, code: string): boolean {
-	const parsed = JSON.parse((error as Error).message) as {
-		code: string;
-		message: string;
-	};
+  const parsed = JSON.parse((error as Error).message) as {
+    code: string
+    message: string
+  }
 
-	return parsed.code === code;
+  return parsed.code === code
 }
 
 export function isUnauthorized(error: unknown): boolean {
-	return isErrorCode(error, ErrorKind.UNAUTHORIZED);
+  return isErrorCode(error, ErrorKind.UNAUTHORIZED)
 }
 
 export function isForbidden(error: unknown): boolean {
-	return isErrorCode(error, ErrorKind.FORBIDDEN);
+  return isErrorCode(error, ErrorKind.FORBIDDEN)
 }
 
 export function isNotFound(error: unknown): boolean {
-	return isErrorCode(error, ErrorKind.NOT_FOUND);
+  return isErrorCode(error, ErrorKind.NOT_FOUND)
 }
 
 export function isBadRequest(error: unknown): boolean {
-	return isErrorCode(error, ErrorKind.BAD_REQUEST);
+  return isErrorCode(error, ErrorKind.BAD_REQUEST)
 }
 
 export function isTooManyRequests(error: unknown): boolean {
-	return isErrorCode(error, ErrorKind.TOO_MANY_REQUESTS);
+  return isErrorCode(error, ErrorKind.TOO_MANY_REQUESTS)
 }
 
 export function isInternalServerError(error: unknown): boolean {
-	return isErrorCode(error, ErrorKind.INTERNAL_SERVER_ERROR);
+  return isErrorCode(error, ErrorKind.INTERNAL_SERVER_ERROR)
 }

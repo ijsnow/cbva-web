@@ -1,65 +1,74 @@
-import { jsonb, pgEnum } from "drizzle-orm/pg-core";
-import { createSelectSchema } from "drizzle-zod";
-import type z from "zod";
+import { jsonb, pgEnum, timestamp } from "drizzle-orm/pg-core"
+import { createSelectSchema } from "drizzle-zod"
+import type z from "zod"
 
-export type LexicalState = {
-	root: {
-		children: Array<any>;
-		direction: "ltr" | "rtl" | null;
-		format: "" | "left" | "start" | "center" | "right" | "end" | "justify" | "";
-		indent: number;
-		type: "root";
-		version: number;
-	};
-};
-
-export function richText() {
-	return jsonb().$type<LexicalState>();
+export const timestamps = {
+  createdAt: timestamp().$defaultFn(() => /* @__PURE__ */ new Date()),
+  updatedAt: timestamp()
+    .$defaultFn(() => /* @__PURE__ */ new Date())
+    .$onUpdateFn(() => new Date()),
 }
 
-export const genderEnum = pgEnum("gender", ["male", "female", "coed"]);
+export type LexicalState = {
+  root: {
+    children: Array<any>
+    direction: "ltr" | "rtl" | null
+    format: "" | "left" | "start" | "center" | "right" | "end" | "justify" | ""
+    indent: number
+    type: "root"
+    version: number
+  }
+}
 
-export const genderSchema = createSelectSchema(genderEnum);
+export function richText() {
+  return jsonb().$type<LexicalState>()
+}
 
-export type Gender = z.infer<typeof genderSchema>;
+export const genderEnum = pgEnum("gender", ["male", "female", "coed"])
 
-export const rightLeftEnum = pgEnum("right_left", ["right", "left"]);
+export const genderSchema = createSelectSchema(genderEnum)
 
-export const playerRoleEnum = pgEnum("player_role", ["blocker", "defender"]);
+export type Gender = z.infer<typeof genderSchema>
+
+export const rightLeftEnum = pgEnum("right_left", ["right", "left"])
+
+export const playerRoleEnum = pgEnum("player_role", ["blocker", "defender"])
 
 export const tournamentStatusEnum = pgEnum("tournament_status", [
-	"closed",
-	"running",
-	"paused",
-	"complete",
-]);
+  "closed",
+  "running",
+  "paused",
+  "complete",
+])
 
 export const teamStatusEnum = pgEnum("team_status", [
-	"registered",
-	"waitlisted",
-	"confirmed",
-	"cancelled",
-]);
+  "registered",
+  "waitlisted",
+  "confirmed",
+  "cancelled",
+  "withdraw",
+  "late-withdraw",
+])
 
-export const teamStatusSchema = createSelectSchema(teamStatusEnum);
+export const teamStatusSchema = createSelectSchema(teamStatusEnum)
 
-export type TeamStatus = z.infer<typeof teamStatusSchema>;
+export type TeamStatus = z.infer<typeof teamStatusSchema>
 
 export const venueStatusEnum = pgEnum("venue_status", [
-	"active",
-	"hidden",
-	"legacy",
-]);
+  "active",
+  "hidden",
+  "legacy",
+])
 
 export const matchStatusEnum = pgEnum("match_status", [
-	"scheduled",
-	"in_progress",
-	"completed",
-	"cancelled",
-]);
+  "scheduled",
+  "in_progress",
+  "completed",
+  "cancelled",
+])
 
 export const setStatusEnum = pgEnum("set_status", [
-	"not_started",
-	"in_progress",
-	"completed",
-]);
+  "not_started",
+  "in_progress",
+  "completed",
+])

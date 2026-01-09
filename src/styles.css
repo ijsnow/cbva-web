@@ -5,14 +5,14 @@
 
 /* Scale up hit targets on high resolution mobile devices. */
 @media (min-resolution: 200dpi) {
-    html {
-        font-size: 18px;
-    }
+  html {
+    font-size: 18px;
+  }
 
-    .text-sm {
-        /* ensure minimum font size of 16px */
-        font-size: 0.9rem;
-    }
+  .text-sm {
+    /* ensure minimum font size of 16px */
+    font-size: 0.9rem;
+  }
 }
 
 /* body {
@@ -21,77 +21,77 @@
 } */
 
 :root {
-    --sand: oklch(0.9287 0.0046 78.3);
-    --sand-contrast: oklch(0.8561 0.0046 78.3);
-    --sand-400: #f5f3f0;
+  --sand: oklch(0.9287 0.0046 78.3);
+  --sand-contrast: oklch(0.8561 0.0046 78.3);
+  --sand-400: #f5f3f0;
 
-    --navy: oklch(0.307 0.0648 260.79);
-    --navy-contrast: oklch(0.2471 0.0567 260.79);
+  --navy: oklch(0.307 0.0648 260.79);
+  --navy-contrast: oklch(0.2471 0.0567 260.79);
 
-    --content-background: var(--sand);
-    --content-background-alt: var(--sand-400);
-    --content-foreground: oklch(0 0 0);
+  --content-background: var(--sand);
+  --content-background-alt: var(--sand-400);
+  --content-foreground: oklch(0 0 0);
 
-    --navbar-background: var(--navy);
-    --navbar-foreground: var(--sand);
-    --navbar-border: var(--navy-contrast);
-    --navbar-foreground-hover: var(--navy);
+  --navbar-background: var(--navy);
+  --navbar-foreground: var(--sand);
+  --navbar-border: var(--navy-contrast);
+  --navbar-foreground-hover: var(--navy);
 
-    --default: oklch(0.9287 0.0046 78.3);
-    --default-hover: oklch(0.9649 0.0045 78.3);
-    --default-foreground: oklch(0 0 0);
+  --default: oklch(0.9287 0.0046 78.3);
+  --default-hover: oklch(0.9649 0.0045 78.3);
+  --default-foreground: oklch(0 0 0);
 
-    --primary: oklch(0.6598 0.2169 27.92);
-    --primary-hover: oklch(0.6168 0.2012 27.83);
-    --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.6598 0.2169 27.92);
+  --primary-hover: oklch(0.6168 0.2012 27.83);
+  --primary-foreground: oklch(0.985 0 0);
 
-    --secondary: oklch(0.307 0.0648 260.79);
-    --secondary-hover: oklch(0.2662 0.0547 261.4);
-    --secondary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.307 0.0648 260.79);
+  --secondary-hover: oklch(0.2662 0.0547 261.4);
+  --secondary-foreground: oklch(0.985 0 0);
 
-    --alternate: oklch(1 0 0);
-    --alternate-hover: oklch(0.7789 0 0);
-    --alternate-foreground: oklch(0 0 0);
+  --alternate: oklch(1 0 0);
+  --alternate-hover: oklch(0.7789 0 0);
+  --alternate-foreground: oklch(0 0 0);
 
-    --popover: oklch(1 0 0);
-    --popover-hover: oklch(0.8323 0 0);
-    --popover-foreground: oklch(0 0 0);
+  --popover: oklch(1 0 0);
+  --popover-hover: oklch(0.8323 0 0);
+  --popover-foreground: oklch(0 0 0);
 }
 
 .dark {
-    /* --content-background: var(--sand);
+  /* --content-background: var(--sand);
   --content-foreground: oklch(0 0 0); */
 }
 
 @theme inline {
-    --color-content-background: var(--content-background);
-    --color-content-background-alt: var(--content-background-alt);
-    --color-content-foreground: var(--content-foreground);
+  --color-content-background: var(--content-background);
+  --color-content-background-alt: var(--content-background-alt);
+  --color-content-foreground: var(--content-foreground);
 
-    --color-placeholder: var(--color-gray-500);
+  --color-placeholder: var(--color-gray-500);
 
-    --color-navbar-background: var(--navbar-background);
-    --color-navbar-border: var(--navbar-border);
-    --color-navbar-foreground: var(--navbar-foreground);
-    --color-navbar-foreground-hover: var(--navbar-foreground-hover);
+  --color-navbar-background: var(--navbar-background);
+  --color-navbar-border: var(--navbar-border);
+  --color-navbar-foreground: var(--navbar-foreground);
+  --color-navbar-foreground-hover: var(--navbar-foreground-hover);
 
-    --color-default: var(--default);
-    --color-default-hover: var(--default-hover);
-    --color-default-foreground: var(--default-foreground);
+  --color-default: var(--default);
+  --color-default-hover: var(--default-hover);
+  --color-default-foreground: var(--default-foreground);
 
-    --color-primary: var(--primary);
-    --color-primary-hover: var(--primary-hover);
-    --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
 
-    --color-secondary: var(--secondary);
-    --color-secondary-hover: var(--secondary-hover);
-    --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-    --color-alternate: var(--alternate);
-    --color-alternate-hover: var(--alternate-hover);
-    --color-alternate-foreground: var(--alternate-foreground);
+  --color-alternate: var(--alternate);
+  --color-alternate-hover: var(--alternate-hover);
+  --color-alternate-foreground: var(--alternate-foreground);
 
-    --color-popover: var(--popover);
-    --color-popover-hover: var(--popover-hover);
-    --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-popover-hover: var(--popover-hover);
+  --color-popover-foreground: var(--popover-foreground);
 }

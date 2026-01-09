@@ -1,0 +1,1 @@
+ALTER TABLE "match_ref_teams" ADD COLUMN "abandoned" boolean;

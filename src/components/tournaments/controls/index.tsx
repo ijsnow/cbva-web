@@ -1,218 +1,229 @@
-import { SettingsIcon } from "lucide-react";
-import { useState } from "react";
+import { SettingsIcon } from "lucide-react"
+import { useState } from "react"
 
-import { useViewerHasPermission } from "@/auth/shared";
-import {
-	DropdownMenu,
-	DropdownMenuItem,
-} from "@/components/base/dropdown-menu";
-import { MenuSection } from "@/components/base/menu";
-import type { Division, TournamentDivision } from "@/db/schema";
-import { AddTeamForm } from "./add-team";
-import { CalculateSeedsForm } from "./calculate-seeds";
-import { CompletePoolsForm } from "./complete-pools";
-import { CompleteTournamentDivisionForm } from "./complete-tournament-division";
-import { CreatePlayoffsForm } from "./create-playoffs";
-import { CreatePoolMatchesForm } from "./create-pool-matches";
-import { CreatePoolsForm } from "./create-pools";
-import { DuplicateForm } from "./duplicate";
-import { EditDivisionsForm } from "./edit-divisions";
-import { EditGeneralInfoForm } from "./edit-general-info";
-import { FillTournamentForm } from "./fill-tournament";
-import { SimulateMatchesForm } from "./simulate-matches";
+import { useViewerHasPermission } from "@/auth/shared"
+import { DropdownMenu, DropdownMenuItem } from "@/components/base/dropdown-menu"
+import { MenuSection } from "@/components/base/menu"
+import type { Division, TournamentDivision } from "@/db/schema"
+import { AddTeamForm } from "./add-team"
+import { CalculateSeedsForm } from "./calculate-seeds"
+import { CompletePoolsForm } from "./complete-pools"
+import { CompleteTournamentDivisionForm } from "./complete-tournament-division"
+import { CreatePlayoffsForm } from "./create-playoffs"
+import { CreatePoolMatchesForm } from "./create-pool-matches"
+import { CreatePoolsForm } from "./create-pools"
+import { DuplicateForm } from "./duplicate"
+import { EditDivisionsForm } from "./edit-divisions"
+import { EditGeneralInfoForm } from "./edit-general-info"
+import { FillTournamentForm } from "./fill-tournament"
+import { SimulateMatchesForm } from "./simulate-matches"
+import { useIsDemoTournament, useTeamsAtCapacity } from "../context"
 
 export type TournamentAdminControlsProps = {
-	tournamentId: number;
-	division: TournamentDivision & { division: Division };
-};
+  tournamentId: number
+  division: TournamentDivision & { division: Division }
+}
 
 enum ModalKind {
-	Duplicate = 0,
-	AddTeam = 1,
-	CalculateSeeds = 2,
-	CreatePools = 3,
-	CreatePoolMatches = 4,
-	SimulateMatches = 5,
-	CreatePlayoffs = 6,
-	CompletePools = 7,
-	FillTournament = 8,
-	EditDivisions = 9,
-	EditGeneralInfo = 10,
-	CompleteTournamentDivision = 11,
+  Duplicate = 0,
+  AddTeam = 1,
+  CalculateSeeds = 2,
+  CreatePools = 3,
+  CreatePoolMatches = 4,
+  SimulateMatches = 5,
+  CreatePlayoffs = 6,
+  CompletePools = 7,
+  FillTournament = 8,
+  EditDivisions = 9,
+  EditGeneralInfo = 10,
+  CompleteTournamentDivision = 11,
 }
 
 export function TournamentControls({
-	tournamentId,
-	division,
+  tournamentId,
+  division,
 }: TournamentAdminControlsProps) {
-	const canCreate = useViewerHasPermission({
-		tournament: ["create"],
-	});
+  const canCreate = useViewerHasPermission({
+    tournament: ["create"],
+  })
 
-	const canUpdate = useViewerHasPermission({
-		tournament: ["update"],
-	});
+  const canUpdate = useViewerHasPermission({
+    tournament: ["update"],
+  })
 
-	const [activeModal, setActiveModal] = useState<ModalKind>();
+  const atCapacity = useTeamsAtCapacity()
 
-	if (![canCreate, canUpdate].some(Boolean)) {
-		return null;
-	}
+  const [activeModal, setActiveModal] = useState<ModalKind>()
 
-	const makeModalOpenProps = (kind: ModalKind) => ({
-		isOpen: activeModal === kind,
-		onOpenChange: (open: boolean) => {
-			const next = open ? kind : undefined;
+  const isDemo = useIsDemoTournament()
 
-			setActiveModal(next);
-		},
-	});
+  if (![canCreate, canUpdate].some(Boolean)) {
+    return null
+  }
 
-	return (
-		<>
-			<DropdownMenu
-				buttonClassName="absolute top-6 right-6"
-				buttonIcon={<SettingsIcon />}
-			>
-				{canCreate && (
-					<MenuSection title="Admin Controls">
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.Duplicate)}
-						>
-							Duplicate
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.EditGeneralInfo)}
-						>
-							Edit General Info
-						</DropdownMenuItem>
-					</MenuSection>
-				)}
+  const makeModalOpenProps = (kind: ModalKind) => ({
+    isOpen: activeModal === kind,
+    onOpenChange: (open: boolean) => {
+      const next = open ? kind : undefined
 
-				{canUpdate && (
-					<MenuSection title="Tournament Controls">
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.EditDivisions)}
-						>
-							Edit Divisions
-						</DropdownMenuItem>
-						<DropdownMenuItem onPress={() => setActiveModal(ModalKind.AddTeam)}>
-							Add Team
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.FillTournament)}
-						>
-							Fill Tournament
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.CalculateSeeds)}
-						>
-							Calculate Seeds
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.CreatePools)}
-						>
-							Create Pools
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.CreatePoolMatches)}
-						>
-							Create Pool Matches
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.SimulateMatches)}
-						>
-							Simulate Matches
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.CompletePools)}
-						>
-							Complete Pools
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() => setActiveModal(ModalKind.CreatePlayoffs)}
-						>
-							Create Playoffs
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onPress={() =>
-								setActiveModal(ModalKind.CompleteTournamentDivision)
-							}
-						>
-							Complete Division
-						</DropdownMenuItem>
-					</MenuSection>
-				)}
-			</DropdownMenu>
+      setActiveModal(next)
+    },
+  })
 
-			<EditDivisionsForm
-				tournamentId={tournamentId}
-				{...makeModalOpenProps(ModalKind.EditDivisions)}
-			/>
+  return (
+    <>
+      <DropdownMenu
+        buttonClassName="absolute top-6 right-6"
+        buttonIcon={<SettingsIcon />}
+      >
+        {canCreate && (
+          <MenuSection title="Admin Controls">
+            <DropdownMenuItem
+              onPress={() => setActiveModal(ModalKind.Duplicate)}
+            >
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onPress={() => setActiveModal(ModalKind.EditGeneralInfo)}
+            >
+              Edit General Info
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onPress={() => setActiveModal(ModalKind.EditDivisions)}
+            >
+              Edit Divisions
+            </DropdownMenuItem>
+          </MenuSection>
+        )}
 
-			<EditGeneralInfoForm
-				tournamentId={tournamentId}
-				{...makeModalOpenProps(ModalKind.EditGeneralInfo)}
-			/>
+        {canUpdate && (
+          <>
+            {isDemo && (
+              <MenuSection title="Demo Controls">
+                <DropdownMenuItem
+                  isDisabled={atCapacity}
+                  onPress={() => setActiveModal(ModalKind.FillTournament)}
+                >
+                  Fill With Teams
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onPress={() => setActiveModal(ModalKind.SimulateMatches)}
+                >
+                  Simulate Matches
+                </DropdownMenuItem>
+              </MenuSection>
+            )}
+            <MenuSection title="Tournament Controls">
+              <DropdownMenuItem
+                onPress={() => setActiveModal(ModalKind.AddTeam)}
+              >
+                Add Team
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onPress={() => setActiveModal(ModalKind.CalculateSeeds)}
+              >
+                Calculate Seeds
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onPress={() => setActiveModal(ModalKind.CreatePools)}
+              >
+                Create Pools
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onPress={() => setActiveModal(ModalKind.CreatePoolMatches)}
+              >
+                Create Pool Matches
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onPress={() => setActiveModal(ModalKind.CompletePools)}
+              >
+                Complete Pools
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onPress={() => setActiveModal(ModalKind.CreatePlayoffs)}
+              >
+                Create Playoffs
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onPress={() =>
+                  setActiveModal(ModalKind.CompleteTournamentDivision)
+                }
+              >
+                Complete Division
+              </DropdownMenuItem>
+            </MenuSection>
+          </>
+        )}
+      </DropdownMenu>
 
-			<DuplicateForm
-				tournamentId={tournamentId}
-				{...makeModalOpenProps(ModalKind.Duplicate)}
-			/>
+      <EditDivisionsForm
+        tournamentId={tournamentId}
+        {...makeModalOpenProps(ModalKind.EditDivisions)}
+      />
 
-			<AddTeamForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.AddTeam)}
-			/>
+      <EditGeneralInfoForm
+        tournamentId={tournamentId}
+        {...makeModalOpenProps(ModalKind.EditGeneralInfo)}
+      />
 
-			<FillTournamentForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.FillTournament)}
-			/>
+      <DuplicateForm
+        tournamentId={tournamentId}
+        {...makeModalOpenProps(ModalKind.Duplicate)}
+      />
 
-			<CalculateSeedsForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.CalculateSeeds)}
-			/>
+      <AddTeamForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.AddTeam)}
+      />
 
-			<CreatePoolsForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.CreatePools)}
-			/>
+      <FillTournamentForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.FillTournament)}
+      />
 
-			<CreatePoolMatchesForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.CreatePoolMatches)}
-			/>
+      <CalculateSeedsForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.CalculateSeeds)}
+      />
 
-			<SimulateMatchesForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.SimulateMatches)}
-			/>
+      <CreatePoolsForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.CreatePools)}
+      />
 
-			<CompletePoolsForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.CompletePools)}
-			/>
+      <CreatePoolMatchesForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.CreatePoolMatches)}
+      />
 
-			<CreatePlayoffsForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.CreatePlayoffs)}
-			/>
+      <SimulateMatchesForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.SimulateMatches)}
+      />
 
-			<CompleteTournamentDivisionForm
-				tournamentId={tournamentId}
-				division={division}
-				{...makeModalOpenProps(ModalKind.CompleteTournamentDivision)}
-			/>
-		</>
-	);
+      <CompletePoolsForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.CompletePools)}
+      />
+
+      <CreatePlayoffsForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.CreatePlayoffs)}
+      />
+
+      <CompleteTournamentDivisionForm
+        tournamentId={tournamentId}
+        division={division}
+        {...makeModalOpenProps(ModalKind.CompleteTournamentDivision)}
+      />
+    </>
+  )
 }

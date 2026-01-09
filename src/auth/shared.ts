@@ -1,32 +1,43 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createMiddleware, createServerFn } from "@tanstack/react-start";
-import { setResponseStatus } from "@tanstack/react-start/server";
-import { isEmpty } from "lodash-es";
-import { db } from "@/db/connection";
-import { authClient } from "./client";
-import type { Permissions, Role } from "./permissions";
-import { getViewer } from "./server";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query"
+import { createMiddleware, createServerFn } from "@tanstack/react-start"
+import { setResponseStatus } from "@tanstack/react-start/server"
+import { isEmpty } from "lodash-es"
+import { db } from "@/db/connection"
+import { authClient } from "./client"
+import type { Permissions, Role } from "./permissions"
+import { getViewer, type Viewer } from "./server"
+
+export type SessionViewer = Pick<
+  Viewer,
+  | "id"
+  | "name"
+  | "role"
+  | "email"
+  | "emailVerified"
+  | "phoneNumber"
+  | "phoneNumberVerified"
+>
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
-	const { impersonatedBy, ...viewer } = await getViewer();
+  const { impersonatedBy, ...viewer } = await getViewer()
 
-	return await next({
-		context: {
-			viewer: !isEmpty(viewer)
-				? {
-						id: viewer.id,
-						name: viewer.name,
-						role: viewer.role,
-						email: viewer.email,
-						emailVerified: viewer.emailVerified,
-						phoneNumber: viewer.phoneNumber,
-						phoneNumberVerified: viewer.phoneNumberVerified,
-					}
-				: undefined,
-			impersonatorId: impersonatedBy,
-		},
-	});
-});
+  return await next({
+    context: {
+      viewer: !isEmpty(viewer)
+        ? {
+            id: viewer.id,
+            name: viewer.name,
+            role: viewer.role,
+            email: viewer.email,
+            emailVerified: viewer.emailVerified,
+            phoneNumber: viewer.phoneNumber,
+            phoneNumberVerified: viewer.phoneNumberVerified,
+          }
+        : undefined,
+      impersonatorId: impersonatedBy,
+    },
+  })
+})
 // .client(async ({ next }) => {
 // // authClient.
 // 	const result = await next(); // <-- This will execute the next middleware in the chain and eventually, the RPC to the server
@@ -34,30 +45,30 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 // });
 
 export const getViewerId = createServerFn({ method: "GET" })
-	.middleware([authMiddleware])
-	.handler(async ({ context }) => {
-		return context?.viewer?.id ?? null;
-	});
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return context?.viewer?.id ?? null
+  })
 
 export const viewerIdQueryOptions = () =>
-	queryOptions({
-		queryKey: ["viewer", "id"],
-		queryFn: () => getViewerId(),
-	});
+  queryOptions({
+    queryKey: ["viewer", "id"],
+    queryFn: () => getViewerId(),
+  })
 
 export function useViewerId() {
-	const { data: id } = useSuspenseQuery(viewerIdQueryOptions());
+  const { data: id } = useSuspenseQuery(viewerIdQueryOptions())
 
-	return id;
+  return id
 }
 
 export function useIsLoggedIn() {
-	const { data: isLoggedIn } = useSuspenseQuery({
-		...viewerIdQueryOptions(),
-		select: (id) => typeof id === "string",
-	});
+  const { data: isLoggedIn } = useSuspenseQuery({
+    ...viewerIdQueryOptions(),
+    select: (id) => typeof id === "string",
+  })
 
-	return isLoggedIn;
+  return isLoggedIn
 }
 
 // export const getAvatar = createServerFn({ method: "GET" })
@@ -67,116 +78,116 @@ export function useIsLoggedIn() {
 //   });
 
 export const getViewerFn = createServerFn({ method: "GET" })
-	.middleware([authMiddleware])
-	.handler(async ({ context }) => {
-		return context?.viewer ?? null;
-	});
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+    return context?.viewer ?? null
+  })
 
 export const viewerQueryOptions = () =>
-	queryOptions({
-		queryKey: ["viewer"],
-		queryFn: () => getViewerFn(),
-	});
+  queryOptions({
+    queryKey: ["viewer"],
+    queryFn: () => getViewerFn(),
+  })
 
 export function useViewer() {
-	const { data: viewer } = useSuspenseQuery(viewerQueryOptions());
+  const { data: viewer } = useSuspenseQuery(viewerQueryOptions())
 
-	return viewer;
+  return viewer
 }
 
 export function useViewerRole() {
-	const { data: viewer } = useSuspenseQuery(viewerQueryOptions());
+  const { data: viewer } = useSuspenseQuery(viewerQueryOptions())
 
-	return viewer?.role;
+  return viewer?.role
 }
 
 export function useViewerIsAdmin() {
-	const { data: viewer } = useSuspenseQuery(viewerQueryOptions());
+  const { data: viewer } = useSuspenseQuery(viewerQueryOptions())
 
-	return viewer ? viewer.role === "admin" : undefined;
+  return viewer ? viewer.role === "admin" : undefined
 }
 
 export function useViewerHasPermission<P extends Permissions>(permissions: P) {
-	const viewer = useViewer();
+  const viewer = useViewer()
 
-	if (!viewer) {
-		return false;
-	}
+  if (!viewer) {
+    return false
+  }
 
-	return roleHasPermission(viewer.role, permissions);
+  return roleHasPermission(viewer.role, permissions)
 }
 
 export const getImpersonatorFn = createServerFn({ method: "GET" })
-	.middleware([authMiddleware])
-	.handler(async ({ context: { impersonatorId } }) => {
-		if (!impersonatorId) {
-			return null;
-		}
+  .middleware([authMiddleware])
+  .handler(async ({ context: { impersonatorId } }) => {
+    if (!impersonatorId) {
+      return null
+    }
 
-		return await db.query.users.findFirst({
-			where: (t, { eq }) => eq(t.id, impersonatorId),
-		});
-	});
+    return await db.query.users.findFirst({
+      where: (t, { eq }) => eq(t.id, impersonatorId),
+    })
+  })
 
 export const impersonatorQueryOptions = () =>
-	queryOptions({
-		queryKey: ["impersonator"],
-		queryFn: () => getImpersonatorFn(),
-	});
+  queryOptions({
+    queryKey: ["impersonator"],
+    queryFn: () => getImpersonatorFn(),
+  })
 
 export function useImpersonator() {
-	const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions());
+  const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions())
 
-	return impersonator;
+  return impersonator
 }
 
 export function useImpersonatorRole() {
-	const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions());
+  const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions())
 
-	return impersonator?.role;
+  return impersonator?.role
 }
 
 export function useImpersonatorIsAdmin() {
-	const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions());
+  const { data: impersonator } = useSuspenseQuery(impersonatorQueryOptions())
 
-	return impersonator?.role === "admin";
+  return impersonator?.role === "admin"
 }
 
 export function useImpersonatorHasPermission<P extends Permissions>(
-	permissions: P,
+  permissions: P
 ) {
-	const impersonator = useImpersonator();
+  const impersonator = useImpersonator()
 
-	if (!impersonator?.role) {
-		return false;
-	}
+  if (!impersonator?.role) {
+    return false
+  }
 
-	return roleHasPermission(impersonator.role, permissions);
+  return roleHasPermission(impersonator.role, permissions)
 }
 
 export function roleHasPermission<P extends Permissions>(
-	role: Role,
-	permissions: P,
+  role: Role,
+  permissions: P
 ) {
-	return authClient.admin.checkRolePermission({
-		permissions,
-		role,
-	});
+  return authClient.admin.checkRolePermission({
+    permissions,
+    role,
+  })
 }
 
 export const requireAuthenticated = createMiddleware()
-	.middleware([authMiddleware])
-	.server(async ({ next, context }) => {
-		const { viewer } = context;
+  .middleware([authMiddleware])
+  .server(async ({ next, context }) => {
+    const { viewer } = context
 
-		if (!viewer) {
-			setResponseStatus(401);
+    if (!viewer) {
+      setResponseStatus(401)
 
-			throw new Error("Unauthorized");
-		}
+      throw new Error("Unauthorized")
+    }
 
-		return await next({ context });
-	});
+    return await next({ context })
+  })
 
 /**
  * Creates a middleware that ensures the logged-in user has the specified permissions.
@@ -229,29 +240,29 @@ export const requireAuthenticated = createMiddleware()
  * ```
  */
 export function requirePermissions<P extends Permissions>(permissions: P) {
-	return createMiddleware()
-		.middleware([authMiddleware])
-		.server(async ({ next, context }) => {
-			const { viewer } = context;
+  return createMiddleware()
+    .middleware([authMiddleware])
+    .server(async ({ next, context }) => {
+      const { viewer } = context
 
-			if (!viewer) {
-				setResponseStatus(401);
+      if (!viewer) {
+        setResponseStatus(401)
 
-				throw new Error("Unauthorized");
-			}
+        throw new Error("Unauthorized")
+      }
 
-			if (viewer) {
-				const hasPermission = roleHasPermission(viewer.role, permissions);
+      if (viewer) {
+        const hasPermission = roleHasPermission(viewer.role, permissions)
 
-				if (!hasPermission) {
-					setResponseStatus(403);
+        if (!hasPermission) {
+          setResponseStatus(403)
 
-					throw new Error("Forbidden");
-				}
-			}
+          throw new Error("Forbidden")
+        }
+      }
 
-			return await next({ context });
-		});
+      return await next({ context })
+    })
 }
 
 /**
@@ -288,25 +299,25 @@ export function requirePermissions<P extends Permissions>(permissions: P) {
  * ```
  */
 export function requireRole(roles: Role[]) {
-	return createMiddleware()
-		.middleware([authMiddleware])
-		.server(async ({ next, context }) => {
-			const { viewer } = context;
+  return createMiddleware()
+    .middleware([authMiddleware])
+    .server(async ({ next, context }) => {
+      const { viewer } = context
 
-			if (!viewer) {
-				setResponseStatus(401);
+      if (!viewer) {
+        setResponseStatus(401)
 
-				throw new Error("Unauthorized");
-			}
+        throw new Error("Unauthorized")
+      }
 
-			if (viewer && !roles.includes(viewer.role)) {
-				setResponseStatus(403);
+      if (viewer && !roles.includes(viewer.role)) {
+        setResponseStatus(403)
 
-				throw new Error(
-					`Forbidden: requires one of the following roles: ${roles.join(", ")}`,
-				);
-			}
+        throw new Error(
+          `Forbidden: requires one of the following roles: ${roles.join(", ")}`
+        )
+      }
 
-			return await next({ context });
-		});
+      return await next({ context })
+    })
 }

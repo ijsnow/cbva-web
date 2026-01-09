@@ -42,15 +42,12 @@ import { createServerFn } from "@tanstack/react-start"
 import { authMiddleware, requirePermissions } from "@/auth/shared"
 
 export const createTournamentFn = createServerFn({ method: "POST" })
-  .middleware([
-    authMiddleware,
-    requirePermissions({ tournament: ["create"] })
-  ])
+  .middleware([authMiddleware, requirePermissions({ tournament: ["create"] })])
   .handler(async ({ context, data }) => {
     // User is guaranteed to have tournament:create permission
     // context.viewer is available and typed
     console.log(`Creating tournament for user: ${context.viewer.id}`)
-    
+
     // Your logic here
   })
 ```
@@ -61,7 +58,7 @@ export const createTournamentFn = createServerFn({ method: "POST" })
 export const updateTournamentFn = createServerFn({ method: "POST" })
   .middleware([
     authMiddleware,
-    requirePermissions({ tournament: ["update", "delete"] })
+    requirePermissions({ tournament: ["update", "delete"] }),
   ])
   .handler(async ({ context }) => {
     // User must have BOTH tournament:update AND tournament:delete
@@ -76,10 +73,11 @@ export const deleteContentFn = createServerFn({ method: "POST" })
     authMiddleware,
     requirePermissions(
       { content: ["delete"] },
-      { 
-        onUnauthorized: "You do not have permission to delete content. Please contact an administrator."
+      {
+        onUnauthorized:
+          "You do not have permission to delete content. Please contact an administrator.",
       }
-    )
+    ),
   ])
   .handler(async ({ context }) => {
     // User has content:delete permission
@@ -103,9 +101,9 @@ export const sensitiveOperationFn = createServerFn({ method: "POST" })
           return new Error(
             `User ${viewer.id} with role ${viewer.role} attempted unauthorized deletion`
           )
-        }
+        },
       }
-    )
+    ),
   ])
   .handler(async ({ context }) => {
     // Your logic here
@@ -121,7 +119,7 @@ export const publicButRestrictedFn = createServerFn({ method: "GET" })
     requirePermissions(
       { tournament: ["create"] },
       { requireAuth: false } // Won't throw 401 for anonymous users
-    )
+    ),
   ])
   .handler(async ({ context }) => {
     if (!context.viewer) {
@@ -144,10 +142,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { authMiddleware, requireRole } from "@/auth/shared"
 
 export const adminOnlyFn = createServerFn({ method: "POST" })
-  .middleware([
-    authMiddleware,
-    requireRole(["admin"])
-  ])
+  .middleware([authMiddleware, requireRole(["admin"])])
   .handler(async ({ context }) => {
     // User is guaranteed to be an admin
     console.log(`Admin ${context.viewer.id} performed action`)
@@ -160,7 +155,7 @@ export const adminOnlyFn = createServerFn({ method: "POST" })
 export const tournamentManagementFn = createServerFn({ method: "POST" })
   .middleware([
     authMiddleware,
-    requireRole(["admin", "td"]) // User must be either admin OR td
+    requireRole(["admin", "td"]), // User must be either admin OR td
   ])
   .handler(async ({ context }) => {
     // User is either admin or tournament director
@@ -178,10 +173,9 @@ export const tournamentManagementFn = createServerFn({ method: "POST" })
 export const superAdminOnlyFn = createServerFn({ method: "POST" })
   .middleware([
     authMiddleware,
-    requireRole(
-      ["admin"],
-      { onUnauthorized: "This action requires administrator privileges" }
-    )
+    requireRole(["admin"], {
+      onUnauthorized: "This action requires administrator privileges",
+    }),
   ])
   .handler(async ({ context }) => {
     // Admin-only logic
@@ -219,7 +213,7 @@ export const Route = createFileRoute("/admin/dashboard")({
 
     // Or check specific permissions
     const canManageContent = roleHasPermission(viewer.role, {
-      content: ["update"]
+      content: ["update"],
     })
 
     if (!canManageContent) {
@@ -244,14 +238,11 @@ import { createTournamentSchema } from "@/db/schema"
 
 export const createTournamentFn = createServerFn({ method: "POST" })
   .inputValidator(createTournamentSchema)
-  .middleware([
-    authMiddleware,
-    requirePermissions({ tournament: ["create"] })
-  ])
+  .middleware([authMiddleware, requirePermissions({ tournament: ["create"] })])
   .handler(async ({ context, data }) => {
     // Only users with tournament:create permission can reach here
     // Admin and TD roles have this permission
-    
+
     const tournament = await db.insert(tournaments).values({
       ...data,
       createdBy: context.viewer.id,
@@ -273,10 +264,11 @@ export const updateVenueFn = createServerFn({ method: "POST" })
     authMiddleware,
     requirePermissions(
       { venues: ["update"] },
-      { 
-        onUnauthorized: "Only administrators and tournament directors can update venues"
+      {
+        onUnauthorized:
+          "Only administrators and tournament directors can update venues",
       }
-    )
+    ),
   ])
   .handler(async ({ context, data }) => {
     // Update venue logic
@@ -293,11 +285,12 @@ import { authMiddleware, requireRole } from "@/auth/shared"
 export const banUserFn = createServerFn({ method: "POST" })
   .middleware([
     authMiddleware,
-    requireRole(["admin"]) // Only admins can ban users
+    requireRole(["admin"]), // Only admins can ban users
   ])
   .handler(async ({ context, data }) => {
     // Ban user logic
-    await db.update(users)
+    await db
+      .update(users)
       .set({
         banned: true,
         banReason: data.reason,
@@ -316,14 +309,11 @@ import { authMiddleware, requirePermissions } from "@/auth/shared"
 import { setResponseStatus } from "@tanstack/react-start/server"
 
 export const deleteTournamentFn = createServerFn({ method: "POST" })
-  .middleware([
-    authMiddleware,
-    requirePermissions({ tournament: ["delete"] })
-  ])
+  .middleware([authMiddleware, requirePermissions({ tournament: ["delete"] })])
   .handler(async ({ context, data }) => {
     // Check if user owns the tournament or is an admin
     const tournament = await db.query.tournaments.findFirst({
-      where: eq(tournaments.id, data.tournamentId)
+      where: eq(tournaments.id, data.tournamentId),
     })
 
     if (!tournament) {
@@ -350,6 +340,7 @@ export const deleteTournamentFn = createServerFn({ method: "POST" })
 ## Best Practices
 
 1. **Always use `authMiddleware` first**
+
    ```typescript
    .middleware([authMiddleware, requirePermissions(...)])
    ```
@@ -387,21 +378,21 @@ describe("createTournamentFn", () => {
   it("should allow admin to create tournament", async () => {
     // Mock authenticated admin user
     const mockViewer = { id: "user-1", role: "admin" }
-    
+
     // Your test logic
   })
 
   it("should deny regular user from creating tournament", async () => {
     // Mock authenticated regular user
     const mockViewer = { id: "user-2", role: "user" }
-    
+
     // Expect error to be thrown
   })
 
   it("should deny unauthenticated user", async () => {
     // Mock no viewer (unauthenticated)
     const mockViewer = undefined
-    
+
     // Expect 401 error
   })
 })

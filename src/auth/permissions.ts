@@ -1,45 +1,45 @@
-import { createAccessControl } from "better-auth/plugins/access";
-import { adminAc, defaultStatements } from "better-auth/plugins/admin/access";
+import { createAccessControl } from "better-auth/plugins/access"
+import { adminAc, defaultStatements } from "better-auth/plugins/admin/access"
 
-export type { Role } from "@/db/schema";
+export type { Role } from "@/db/schema"
 
 export const statement = {
-	tournament: ["create", "update", "delete", "teehee"],
-	venues: ["create", "update", "delete"],
-	content: ["update"],
-	files: ["create", "delete"],
-	profiles: ["create", "update"],
-	...defaultStatements,
-} as const;
+  tournament: ["create", "update", "delete", "teehee"],
+  venues: ["create", "update", "delete"],
+  content: ["update"],
+  files: ["create", "delete"],
+  profiles: ["create", "update"],
+  ...defaultStatements,
+} as const
 
-export const ac = createAccessControl(statement);
+export const ac = createAccessControl(statement)
 
 export type Permissions = {
-	[K in keyof typeof statement]?: Array<(typeof statement)[K][number]>;
-};
+  [K in keyof typeof statement]?: Array<(typeof statement)[K][number]>
+}
 
 export const superadmin = ac.newRole({
-	...adminAc.statements,
-});
+  ...adminAc.statements,
+})
 
 export const admin = ac.newRole({
-	tournament: ["create", "update", "delete"],
-	venues: ["create", "update", "delete"],
-	content: ["update"],
-	files: ["create", "delete"],
-	profiles: ["create", "update"],
-	...adminAc.statements,
-});
+  tournament: ["create", "update", "delete"],
+  venues: ["create", "update", "delete"],
+  content: ["update"],
+  files: ["create", "delete"],
+  profiles: ["create", "update"],
+  ...adminAc.statements,
+})
 
 export const td = ac.newRole({
-	tournament: ["create", "update"],
-	venues: ["update"],
-	files: ["create", "delete"],
-	profiles: ["create", "update"],
-});
+  tournament: ["update"],
+  venues: ["update"],
+  files: ["create", "delete"],
+  profiles: ["create", "update"],
+})
 
 export const user = ac.newRole({
-	tournament: [],
-	files: ["create", "delete"],
-	profiles: ["create", "update"],
-});
+  tournament: [],
+  files: ["create", "delete"],
+  profiles: ["create", "update"],
+})

@@ -57,18 +57,18 @@ Areas for Improvement
 Specific Recommendations
 
 1. Add missing indexes:
-CREATE INDEX users_role_idx ON users(role);
-CREATE INDEX tournament_division_teams_status_idx ON tournament_division_teams(status);
-CREATE INDEX player_profiles_user_id_idx ON player_profiles(user_id);
-CREATE INDEX tournaments_date_idx ON tournaments(date);
+   CREATE INDEX users_role_idx ON users(role);
+   CREATE INDEX tournament_division_teams_status_idx ON tournament_division_teams(status);
+   CREATE INDEX player_profiles_user_id_idx ON player_profiles(user_id);
+   CREATE INDEX tournaments_date_idx ON tournaments(date);
 
 2. Fix data types:
-ALTER TABLE accounts
-  ALTER COLUMN access_token_expires_at TYPE timestamptz,
-  ALTER COLUMN refresh_token_expires_at TYPE timestamptz;
+   ALTER TABLE accounts
+   ALTER COLUMN access_token_expires_at TYPE timestamptz,
+   ALTER COLUMN refresh_token_expires_at TYPE timestamptz;
 
 3. Add audit columns to tables missing them (directors, divisions, etc.)
 4. Consider table partitioning for match_sets, sessions based on date ranges for large datasets
 5. Add validation constraints:
-ALTER TABLE tournament_divisions ADD CONSTRAINT team_size_positive CHECK (team_size > 0);
-ALTER TABLE tournaments ADD CONSTRAINT future_date CHECK (date >= CURRENT_DATE);
+   ALTER TABLE tournament_divisions ADD CONSTRAINT team_size_positive CHECK (team_size > 0);
+   ALTER TABLE tournaments ADD CONSTRAINT future_date CHECK (date >= CURRENT_DATE);

@@ -1,4 +1,4 @@
 onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@sentry/cli'
+  - "@parcel/watcher"
+  - "@sentry/cli"
   - esbuild

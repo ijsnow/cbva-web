@@ -1,4 +1,4 @@
-import { range } from "lodash-es";
+import { range } from "lodash-es"
 
 // export function bytesToScore(input: string) {
 //   if (input.length > 40) {
@@ -35,76 +35,76 @@ import { range } from "lodash-es";
 // }
 
 export function bytesToScore1(input: string) {
-	if (input.length > 40) {
-		return null;
-	}
+  if (input.length > 40) {
+    return null
+  }
 
-	let bytes: number[];
+  let bytes: number[]
 
-	try {
-		// Remove hex processing - only handle base64 like Rust
-		bytes = Array.from(Buffer.from(input, "base64"));
-	} catch {
-		return null;
-	}
+  try {
+    // Remove hex processing - only handle base64 like Rust
+    bytes = Array.from(Buffer.from(input, "base64"))
+  } catch {
+    return null
+  }
 
-	// let bytes: number[];
+  // let bytes: number[];
 
-	// try {
-	//   bytes = input.match(/\\x/g)
-	//     ? Array.from(
-	//         Buffer.from(
-	//           Buffer.from(input.replace(/\\x/g, ""), "hex").toString("ascii"),
-	//           "base64",
-	//         ),
-	//       )
-	//     : Array.from(Buffer.from(input, "base64"));
+  // try {
+  //   bytes = input.match(/\\x/g)
+  //     ? Array.from(
+  //         Buffer.from(
+  //           Buffer.from(input.replace(/\\x/g, ""), "hex").toString("ascii"),
+  //           "base64",
+  //         ),
+  //       )
+  //     : Array.from(Buffer.from(input, "base64"));
 
-	//   // // Convert hex string to base64, then decode to bytes
-	//   // const cleanHex = input.replace(/\\x/g, "");
+  //   // // Convert hex string to base64, then decode to bytes
+  //   // const cleanHex = input.replace(/\\x/g, "");
 
-	//   // const ascii = Buffer.from(cleanHex, "hex").toString("ascii");
+  //   // const ascii = Buffer.from(cleanHex, "hex").toString("ascii");
 
-	//   // console.log(ascii);
+  //   // console.log(ascii);
 
-	//   // bytes = Array.from(Buffer.from(ascii, "base64"));
-	// } catch {
-	//   return null;
-	// }
+  //   // bytes = Array.from(Buffer.from(ascii, "base64"));
+  // } catch {
+  //   return null;
+  // }
 
-	const lastByte = bytes.pop();
+  const lastByte = bytes.pop()
 
-	if (lastByte === undefined) {
-		return null;
-	}
+  if (lastByte === undefined) {
+    return null
+  }
 
-	const [_byte, a, b] = range(0, 8).reduce<[number, number, number]>(
-		([byte, a, b], _i) => {
-			if (byte === 0b0 || byte === 0b10000000) {
-				return [0, a, b];
-			}
-			if ((byte & 0b10000000) === 0b0) {
-				return [byte << 1, a + 1, b];
-			}
-			return [byte << 1, a, b + 1];
-		},
-		[lastByte, 0, 0],
-	);
+  const [_byte, a, b] = range(0, 8).reduce<[number, number, number]>(
+    ([byte, a, b], _i) => {
+      if (byte === 0b0 || byte === 0b10000000) {
+        return [0, a, b]
+      }
+      if ((byte & 0b10000000) === 0b0) {
+        return [byte << 1, a + 1, b]
+      }
+      return [byte << 1, a, b + 1]
+    },
+    [lastByte, 0, 0]
+  )
 
-	return bytes.reduce<[number, number]>(
-		([a, b], byte) => {
-			return range(0, 8).reduce<[number, number]>(
-				([a, b], i) => {
-					if ((byte & (1 << i)) === 0) {
-						return [a + 1, b];
-					}
-					return [a, b + 1];
-				},
-				[a, b],
-			);
-		},
-		[a, b],
-	);
+  return bytes.reduce<[number, number]>(
+    ([a, b], byte) => {
+      return range(0, 8).reduce<[number, number]>(
+        ([a, b], i) => {
+          if ((byte & (1 << i)) === 0) {
+            return [a + 1, b]
+          }
+          return [a, b + 1]
+        },
+        [a, b]
+      )
+    },
+    [a, b]
+  )
 }
 
 // ```rust
@@ -142,51 +142,51 @@ export function bytesToScore1(input: string) {
 // ```
 
 export function bytesToScore(input: string) {
-	if (input.length > 40) {
-		return null;
-	}
+  if (input.length > 40) {
+    return null
+  }
 
-	let bytes: number[];
+  let bytes: number[]
 
-	try {
-		bytes = Array.from(Buffer.from(input, "base64"));
-	} catch {
-		return null;
-	}
+  try {
+    bytes = Array.from(Buffer.from(input, "base64"))
+  } catch {
+    return null
+  }
 
-	const lastByte = bytes.pop();
+  const lastByte = bytes.pop()
 
-	if (lastByte === undefined) {
-		return null;
-	}
+  if (lastByte === undefined) {
+    return null
+  }
 
-	// Process the last byte with special logic (matching Rust implementation)
-	const [_byte, a, b] = range(0, 8).reduce<[number, number, number]>(
-		([byte, a, b], _i) => {
-			if (byte === 0b0 || byte === 0b10000000) {
-				return [0, a, b];
-			}
-			if ((byte & 0b10000000) === 0b0) {
-				return [(byte << 1) & 0xff, a + 1, b];
-			}
-			return [(byte << 1) & 0xff, a, b + 1];
-		},
-		[lastByte, 0, 0],
-	);
+  // Process the last byte with special logic (matching Rust implementation)
+  const [_byte, a, b] = range(0, 8).reduce<[number, number, number]>(
+    ([byte, a, b], _i) => {
+      if (byte === 0b0 || byte === 0b10000000) {
+        return [0, a, b]
+      }
+      if ((byte & 0b10000000) === 0b0) {
+        return [(byte << 1) & 0xff, a + 1, b]
+      }
+      return [(byte << 1) & 0xff, a, b + 1]
+    },
+    [lastByte, 0, 0]
+  )
 
-	// Process remaining bytes normally
-	return bytes.reduce<[number, number]>(
-		([a, b], byte) => {
-			return range(0, 8).reduce<[number, number]>(
-				([a, b], i) => {
-					if ((byte & (1 << i)) === 0) {
-						return [a + 1, b];
-					}
-					return [a, b + 1];
-				},
-				[a, b],
-			);
-		},
-		[a, b],
-	);
+  // Process remaining bytes normally
+  return bytes.reduce<[number, number]>(
+    ([a, b], byte) => {
+      return range(0, 8).reduce<[number, number]>(
+        ([a, b], i) => {
+          if ((byte & (1 << i)) === 0) {
+            return [a + 1, b]
+          }
+          return [a, b + 1]
+        },
+        [a, b]
+      )
+    },
+    [a, b]
+  )
 }
