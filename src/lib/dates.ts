@@ -1,3 +1,3 @@
 export function getDefaultTimeZone() {
-	return "America/Los_Angeles";
+  return "America/Los_Angeles"
 }

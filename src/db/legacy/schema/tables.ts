@@ -1,27 +1,27 @@
 import {
-	type AnyGelColumn,
-	boolean,
-	bytes,
-	doublePrecision,
-	duration,
-	foreignKey,
-	gelTable,
-	integer,
-	json,
-	localDate,
-	real,
-	text,
-	timestamp,
-	timestamptz,
-	uuid,
-} from "drizzle-orm/gel-core";
-import type { AnyPgColumn } from "drizzle-orm/pg-core";
+  type AnyGelColumn,
+  boolean,
+  bytes,
+  doublePrecision,
+  duration,
+  foreignKey,
+  gelTable,
+  integer,
+  json,
+  localDate,
+  real,
+  text,
+  timestamp,
+  timestamptz,
+  uuid,
+} from "drizzle-orm/gel-core"
+import type { AnyPgColumn } from "drizzle-orm/pg-core"
 
 // module default {
 
 const hasCreated = {
-	created: timestamp().notNull(),
-};
+  created: timestamp().notNull(),
+}
 
 //     scalar type Gender extending enum<Male, Female, Coed>;
 //     scalar type TShirtSize extending enum<S, M, L, XL>;
@@ -32,56 +32,56 @@ const hasCreated = {
 //             U12, U14, U16, U18>;
 
 export const users = gelTable("User", {
-	...hasCreated,
-	id: uuid().primaryKey().notNull(),
-	username: text().notNull().unique(),
-	legalName: text().notNull(),
-	firstName: text().notNull(),
-	lastName: text().notNull(),
-	avpId: integer().unique(),
-	legacyId: integer().unique(),
-	customerKey: text(),
-	gender: text().notNull(),
-	birthdate: localDate().notNull(),
-	email: text().notNull(),
-	phone: text().notNull(),
-	playerPhone: text(),
-	country: text().notNull(),
-	zipcode: text(),
-	tshirtSize: text().notNull(),
-	highSchoolGradYear: integer(),
-	rating: text().notNull(),
-	ratedPoints: doublePrecision().notNull(),
-	juniorsPoints: doublePrecision().notNull(),
-	rank: integer().notNull(),
-});
+  ...hasCreated,
+  id: uuid().primaryKey().notNull(),
+  username: text().notNull().unique(),
+  legalName: text().notNull(),
+  firstName: text().notNull(),
+  lastName: text().notNull(),
+  avpId: integer().unique(),
+  legacyId: integer().unique(),
+  customerKey: text(),
+  gender: text().notNull(),
+  birthdate: localDate().notNull(),
+  email: text().notNull(),
+  phone: text().notNull(),
+  playerPhone: text(),
+  country: text().notNull(),
+  zipcode: text(),
+  tshirtSize: text().notNull(),
+  highSchoolGradYear: integer(),
+  rating: text().notNull(),
+  ratedPoints: doublePrecision().notNull(),
+  juniorsPoints: doublePrecision().notNull(),
+  rank: integer().notNull(),
+})
 
 export const phoneVerification = gelTable("PhoneVerification", {
-	userId: uuid()
-		.notNull()
-		.references(() => users.id),
-	phone: text().notNull(),
-});
+  userId: uuid()
+    .notNull()
+    .references(() => users.id),
+  phone: text().notNull(),
+})
 
 export const directorPreferences = gelTable("DirectorPreferences", {
-	id: uuid().primaryKey().notNull(),
-	userId: uuid()
-		.notNull()
-		.references(() => users.id),
-	email: text(),
-	phone: text(),
-});
+  id: uuid().primaryKey().notNull(),
+  userId: uuid()
+    .notNull()
+    .references(() => users.id),
+  email: text(),
+  phone: text(),
+})
 
 //     scalar type Relationship extending enum<Parent, Guardian, Coach, Friend, Relative, Other>;
 
 export const emergencyContact = gelTable("EmergencyContact", {
-	name: text().notNull(),
-	relationship: text().notNull(),
-	userId: uuid().notNull(),
-	email: text().notNull(),
-	phone: text().notNull(),
-	note: text().notNull(),
-});
+  name: text().notNull(),
+  relationship: text().notNull(),
+  userId: uuid().notNull(),
+  email: text().notNull(),
+  phone: text().notNull(),
+  note: text().notNull(),
+})
 
 //     scalar type Social extending enum<Instagram, Facebook, YouTube, TikTok, Other>;
 
@@ -793,260 +793,260 @@ export const emergencyContact = gelTable("EmergencyContact", {
 // }
 
 export const beaches = gelTable("Beach", {
-	id: uuid().primaryKey().notNull(),
-	legacyId: integer(),
-	name: text().notNull(),
-	city: text().notNull(),
-	shortName: text().notNull(),
-	url: text().notNull(),
-	refundCutoff: duration().notNull(),
-	autoOpen: duration(),
-	directions: text().notNull(),
-	description: text().notNull(),
-	googleMapsLink: text().notNull(),
-	status: text().notNull(),
-	directorId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  legacyId: integer(),
+  name: text().notNull(),
+  city: text().notNull(),
+  shortName: text().notNull(),
+  url: text().notNull(),
+  refundCutoff: duration().notNull(),
+  autoOpen: duration(),
+  directions: text().notNull(),
+  description: text().notNull(),
+  googleMapsLink: text().notNull(),
+  status: text().notNull(),
+  directorId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const tournaments = gelTable("Tournament", {
-	...hasCreated,
-	id: uuid().primaryKey().notNull(),
-	legacyId: integer(),
-	bonusPoints: integer(),
-	pointFactor: integer(),
-	scheduleTemplateId: uuid().references((): AnyGelColumn => tournaments.id),
-	startAt: timestamptz().notNull(),
-	name: text(),
-	url: text().notNull(),
-	status: text().notNull(),
-	registration: text().notNull(),
-	fee: real().notNull(),
-	division: text().notNull(),
-	gender: text().notNull(),
-	teamSize: integer().notNull().default(2),
-	customFormat: text(),
-	requirements:
-		json().$type<{ minimum: number; gender: string; division: string }[]>(),
-	full: boolean().notNull().default(false),
-	beachId: uuid()
-		.references(() => beaches.id)
-		.notNull(),
-	poolsPublic: boolean().notNull().default(false),
-	directions: text(),
-	description: text(),
-	maxTeams: integer().notNull().default(10),
-	maxWaitlist: integer().notNull().default(5),
-	autopromoteWl: boolean().notNull().default(true),
-});
+  ...hasCreated,
+  id: uuid().primaryKey().notNull(),
+  legacyId: integer(),
+  bonusPoints: integer(),
+  pointFactor: integer(),
+  scheduleTemplateId: uuid().references((): AnyGelColumn => tournaments.id),
+  startAt: timestamptz().notNull(),
+  name: text(),
+  url: text().notNull(),
+  status: text().notNull(),
+  registration: text().notNull(),
+  fee: real().notNull(),
+  division: text().notNull(),
+  gender: text().notNull(),
+  teamSize: integer().notNull().default(2),
+  customFormat: text(),
+  requirements:
+    json().$type<{ minimum: number; gender: string; division: string }[]>(),
+  full: boolean().notNull().default(false),
+  beachId: uuid()
+    .references(() => beaches.id)
+    .notNull(),
+  poolsPublic: boolean().notNull().default(false),
+  directions: text(),
+  description: text(),
+  maxTeams: integer().notNull().default(10),
+  maxWaitlist: integer().notNull().default(5),
+  autopromoteWl: boolean().notNull().default(true),
+})
 
 export const tournamentDirectors = gelTable(
-	"Tournament.directors",
-	{
-		source: uuid().notNull(),
-		target: uuid().notNull(),
-		rank: integer(),
-	},
-	(table) => [
-		foreignKey({
-			columns: [table.target],
-			foreignColumns: [directorPreferences.id],
-			name: "Tournament.directors_fk_target",
-		})
-			.onUpdate("restrict")
-			.onDelete("restrict"),
-		foreignKey({
-			columns: [table.source],
-			foreignColumns: [tournaments.id],
-			name: "Tournament.directors_fk_source",
-		})
-			.onUpdate("restrict")
-			.onDelete("restrict"),
-	],
-);
+  "Tournament.directors",
+  {
+    source: uuid().notNull(),
+    target: uuid().notNull(),
+    rank: integer(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.target],
+      foreignColumns: [directorPreferences.id],
+      name: "Tournament.directors_fk_target",
+    })
+      .onUpdate("restrict")
+      .onDelete("restrict"),
+    foreignKey({
+      columns: [table.source],
+      foreignColumns: [tournaments.id],
+      name: "Tournament.directors_fk_source",
+    })
+      .onUpdate("restrict")
+      .onDelete("restrict"),
+  ]
+)
 
 export const tournamentInvites = gelTable("TournamentInvites", {
-	id: uuid().primaryKey().notNull(),
-	tournamentId: uuid()
-		.references(() => tournaments.id)
-		.notNull(),
-	userId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  tournamentId: uuid()
+    .references(() => tournaments.id)
+    .notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const teams = gelTable("Team", {
-	...hasCreated,
-	id: uuid().primaryKey().notNull(),
-	legacyId: integer(),
-	legacyPaymentId: integer(),
-	url: text().notNull(),
-	transactionKey: text().notNull(),
-	tournamentId: uuid()
-		.references(() => tournaments.id)
-		.notNull(),
-	status: text().notNull(),
-	seed: integer(),
-	poolId: uuid().references(() => pools.id),
-	poolSeed: integer(),
-	finish: integer(),
-	pointsEarned: real(),
-	ratingEarned: text(),
-});
+  ...hasCreated,
+  id: uuid().primaryKey().notNull(),
+  legacyId: integer(),
+  legacyPaymentId: integer(),
+  url: text().notNull(),
+  transactionKey: text().notNull(),
+  tournamentId: uuid()
+    .references(() => tournaments.id)
+    .notNull(),
+  status: text().notNull(),
+  seed: integer(),
+  poolId: uuid().references(() => pools.id),
+  poolSeed: integer(),
+  finish: integer(),
+  pointsEarned: real(),
+  ratingEarned: text(),
+})
 
 export const teamPlayers = gelTable(
-	"Team.players",
-	{
-		source: uuid().notNull(),
-		target: uuid().notNull(),
-		rank: integer(),
-	},
-	(table) => [
-		foreignKey({
-			columns: [table.target],
-			foreignColumns: [users.id],
-			name: "Team.players_fk_target",
-		})
-			.onUpdate("restrict")
-			.onDelete("restrict"),
-		foreignKey({
-			columns: [table.source],
-			foreignColumns: [teams.id],
-			name: "Team.players_fk_source",
-		})
-			.onUpdate("restrict")
-			.onDelete("restrict"),
-	],
-);
+  "Team.players",
+  {
+    source: uuid().notNull(),
+    target: uuid().notNull(),
+    rank: integer(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.target],
+      foreignColumns: [users.id],
+      name: "Team.players_fk_target",
+    })
+      .onUpdate("restrict")
+      .onDelete("restrict"),
+    foreignKey({
+      columns: [table.source],
+      foreignColumns: [teams.id],
+      name: "Team.players_fk_source",
+    })
+      .onUpdate("restrict")
+      .onDelete("restrict"),
+  ]
+)
 
 export const teamCanEdit = gelTable("TeamCanEdit", {
-	id: uuid().primaryKey().notNull(),
-	teamId: uuid()
-		.references(() => teams.id)
-		.notNull(),
-	userId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  teamId: uuid()
+    .references(() => teams.id)
+    .notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const teamPlayerChanges = gelTable("TeamPlayerChanged", {
-	...hasCreated,
-	id: uuid().primaryKey().notNull(),
-	teamId: uuid()
-		.references(() => teams.id)
-		.notNull(),
-	editorId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  ...hasCreated,
+  id: uuid().primaryKey().notNull(),
+  teamId: uuid()
+    .references(() => teams.id)
+    .notNull(),
+  editorId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const teamPlayerChangesOld = gelTable("TeamPlayerChangedOld", {
-	id: uuid().primaryKey().notNull(),
-	teamPlayerChangeId: uuid()
-		.references(() => teamPlayerChanges.id)
-		.notNull(),
-	userId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  teamPlayerChangeId: uuid()
+    .references(() => teamPlayerChanges.id)
+    .notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const teamPlayerChangesNew = gelTable("TeamPlayerChangedNew", {
-	id: uuid().primaryKey().notNull(),
-	teamPlayerChangeId: uuid()
-		.references(() => teamPlayerChanges.id)
-		.notNull(),
-	userId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  teamPlayerChangeId: uuid()
+    .references(() => teamPlayerChanges.id)
+    .notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const pools = gelTable("Pool", {
-	id: uuid().primaryKey().notNull(),
-	name: text().notNull(),
-	tournamentId: uuid()
-		.references(() => tournaments.id)
-		.notNull(),
-	court: text(),
-	done: boolean().notNull().default(false),
-});
+  id: uuid().primaryKey().notNull(),
+  name: text().notNull(),
+  tournamentId: uuid()
+    .references(() => tournaments.id)
+    .notNull(),
+  court: text(),
+  done: boolean().notNull().default(false),
+})
 
 export const poolMatches = gelTable("PoolMatch", {
-	id: uuid().primaryKey().notNull(),
-	matchNumber: integer().notNull(),
-	teamAId: uuid().references(() => teams.id),
-	teamBId: uuid().references(() => teams.id),
-	poolId: uuid()
-		.references(() => pools.id)
-		.notNull(),
-	court: text(),
-});
+  id: uuid().primaryKey().notNull(),
+  matchNumber: integer().notNull(),
+  teamAId: uuid().references(() => teams.id),
+  teamBId: uuid().references(() => teams.id),
+  poolId: uuid()
+    .references(() => pools.id)
+    .notNull(),
+  court: text(),
+})
 
 export const playoffMatches = gelTable("PlayoffMatch", {
-	id: uuid().primaryKey().notNull(),
-	matchNumber: integer().notNull(),
-	teamAId: uuid().references(() => teams.id),
-	teamBId: uuid().references(() => teams.id),
-	tournamentId: uuid()
-		.references(() => tournaments.id)
-		.notNull(),
-	aFromId: uuid(), // .references((): AnyGelColumn => playoffMatches.id),
-	// aFromPoolId: uuid().references(() => pools.id),
-	// aFromRank: integer(),
-	bFromId: uuid(), //.references((): AnyGelColumn => playoffMatches.id),
-	// bFromPoolId: uuid().references(() => pools.id),
-	// bFromRank: integer(),
-	refFromId: uuid(), // .references((): AnyGelColumn => playoffMatches.id),
-	court: text(),
-});
+  id: uuid().primaryKey().notNull(),
+  matchNumber: integer().notNull(),
+  teamAId: uuid().references(() => teams.id),
+  teamBId: uuid().references(() => teams.id),
+  tournamentId: uuid()
+    .references(() => tournaments.id)
+    .notNull(),
+  aFromId: uuid(), // .references((): AnyGelColumn => playoffMatches.id),
+  // aFromPoolId: uuid().references(() => pools.id),
+  // aFromRank: integer(),
+  bFromId: uuid(), //.references((): AnyGelColumn => playoffMatches.id),
+  // bFromPoolId: uuid().references(() => pools.id),
+  // bFromRank: integer(),
+  refFromId: uuid(), // .references((): AnyGelColumn => playoffMatches.id),
+  court: text(),
+})
 
 export const matchRefs = gelTable("MatchRefs", {
-	id: uuid().primaryKey().notNull(),
-	matchId: uuid().notNull(),
-	userId: uuid()
-		.references(() => users.id)
-		.notNull(),
-	scorekeeper: boolean(),
-});
+  id: uuid().primaryKey().notNull(),
+  matchId: uuid().notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+  scorekeeper: boolean(),
+})
 
 export const matchSets = gelTable("MatchSet", {
-	id: uuid().primaryKey().notNull(),
-	forMatchId: uuid().notNull(),
-	setNumber: integer().notNull(),
-	startedAt: timestamp(),
-	endedAt: timestamp(),
-	winScore: integer().notNull(),
-	score: text(),
-});
+  id: uuid().primaryKey().notNull(),
+  forMatchId: uuid().notNull(),
+  setNumber: integer().notNull(),
+  startedAt: timestamp(),
+  endedAt: timestamp(),
+  winScore: integer().notNull(),
+  score: text(),
+})
 
 export const invites = gelTable("Invite", {
-	...hasCreated,
-	id: uuid().primaryKey().notNull(),
-	sourceTournamentId: uuid().references(() => tournaments.id),
-});
+  ...hasCreated,
+  id: uuid().primaryKey().notNull(),
+  sourceTournamentId: uuid().references(() => tournaments.id),
+})
 
 export const inviteTournaments = gelTable("InviteTournaments", {
-	id: uuid().primaryKey().notNull(),
-	inviteId: uuid()
-		.references(() => invites.id)
-		.notNull(),
-	tournamentId: uuid()
-		.references(() => tournaments.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  inviteId: uuid()
+    .references(() => invites.id)
+    .notNull(),
+  tournamentId: uuid()
+    .references(() => tournaments.id)
+    .notNull(),
+})
 
 export const invitePlayers = gelTable("InvitePlayers", {
-	id: uuid().primaryKey().notNull(),
-	inviteId: uuid()
-		.references(() => invites.id)
-		.notNull(),
-	userId: uuid()
-		.references(() => users.id)
-		.notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  inviteId: uuid()
+    .references(() => invites.id)
+    .notNull(),
+  userId: uuid()
+    .references(() => users.id)
+    .notNull(),
+})
 
 export const faqs = gelTable("Faq", {
-	id: uuid().primaryKey().notNull(),
-	question: text().notNull(),
-	answer: text().notNull(),
-});
+  id: uuid().primaryKey().notNull(),
+  question: text().notNull(),
+  answer: text().notNull(),
+})

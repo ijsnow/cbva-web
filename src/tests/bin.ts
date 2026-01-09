@@ -1,6 +1,6 @@
-import { getMockDb } from "./db";
-import { startApp } from "./server";
+import { getMockDb } from "./db"
+import { startApp } from "./server"
 
-const { url } = await getMockDb();
+const { url } = await getMockDb()
 
-await startApp(url);
+await startApp(url)

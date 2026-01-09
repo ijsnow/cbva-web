@@ -153,6 +153,7 @@ Let me improve this:
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 type TableNames = keyof typeof db.query;
 type Schema = NonNullable<typeof db._.schema>;
@@ -218,7 +219,6 @@ async function cleanupBucket<TTableName extends ConfiguredBuckets>(
 }
 ```
 
-
 ## Assistant
 
 Now I need to update the call site to handle the type-safe version. The issue is that `bucket.name` from Supabase might not be in our configured buckets. Let me fix that:
@@ -227,6 +227,7 @@ Now I need to update the call site to handle the type-safe version. The issue is
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db, type schema } from "@/db/connection";
@@ -372,7 +373,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Perfect! I've made the `cleanupBucket` function significantly more type-safe using patterns from `pagination.ts`. Here are the key improvements:
@@ -407,6 +407,7 @@ Let me check for type errors by running TypeScript:
 Status: Completed
 
 Terminal:
+
 ```
 src/routes/api/tasks/cleanup/storage.ts(2,19): error TS6133: 'schema' is declared but its value is never read.
 src/routes/api/tasks/cleanup/storage.ts(3,1): error TS6133: 'Database' is declared but its value is never read.
@@ -430,7 +431,6 @@ src/routes/matches/pool/$matchId/index.tsx(151,6): error TS2322: Type 'string | 
 
 ```
 
-
 ## Assistant
 
 I see the type errors. The issue is that TypeScript can't narrow the generic types properly in the reduce and map operations. Let me fix this with a different approach:
@@ -439,6 +439,7 @@ I see the type errors. The issue is that TypeScript can't narrow the generic typ
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/db/connection";
@@ -583,7 +584,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Now let me fix the main type issues in the cleanupBucket function:
@@ -592,6 +592,7 @@ Now let me fix the main type issues in the cleanupBucket function:
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/db/connection";
@@ -738,7 +739,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Now let me also remove the unused `request` parameter:
@@ -747,6 +747,7 @@ Now let me also remove the unused `request` parameter:
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/db/connection";
@@ -893,7 +894,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Now let's verify the type errors are fixed:
@@ -902,13 +902,13 @@ Now let's verify the type errors are fixed:
 Status: Completed
 
 Terminal:
+
 ```
 src/routes/api/tasks/cleanup/storage.ts(69,3): error TS7053: Element implicitly has an 'any' type because expression of type '"headerImageSource" | "thumbnailImageSource"' can't be used to index type 'Record<ColumnKey, true>'.
 src/routes/api/tasks/cleanup/storage.ts(73,3): error TS2322: Type 'Record<ColumnKey, true>' is not assignable to type '{ [K in keyof ExtractTablesWithRelations<{ directorRelations: Relations<"directors", { profile: One<"player_profiles", true>; }>; divisionRelations: Relations<"divisions", { tournamentDivisions: Many<"tournament_divisions">; }>; ... 41 more ...; rateLimiterFlexibleSchema: PgTableWithColumns<...>; }>[TTableName]["col...'.
 src/routes/api/tasks/cleanup/storage.ts(78,26): error TS2769: No overload matches this call.
 
 ```
-
 
 ## Assistant
 
@@ -936,21 +936,22 @@ Create a shared secret and validate it in the handler:
 ```typescript
 POST: async ({ request }) => {
   // Validate authorization header
-  const authHeader = request.headers.get('authorization');
-  const expectedSecret = process.env.CRON_SECRET;
-  
+  const authHeader = request.headers.get("authorization")
+  const expectedSecret = process.env.CRON_SECRET
+
   if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
+      headers: { "Content-Type": "application/json" },
+    })
   }
-  
+
   // ... rest of your handler
 }
 ```
 
 Then in your pg_cron job:
+
 ```sql
 SELECT net.http_post(
   url := 'https://your-domain.com/api/tasks/cleanup/storage',
@@ -964,13 +965,14 @@ SELECT net.http_post(
 ## Option 2: Custom Header Verification
 
 Similar but with a custom header:
+
 ```typescript
-const cronToken = request.headers.get('x-cron-token');
+const cronToken = request.headers.get("x-cron-token")
 if (cronToken !== process.env.CRON_SECRET) {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
     status: 401,
-    headers: { 'Content-Type': 'application/json' },
-  });
+    headers: { "Content-Type": "application/json" },
+  })
 }
 ```
 
@@ -981,29 +983,30 @@ For multiple cron endpoints, create a reusable validation helper:
 ```typescript
 // src/lib/auth/cron.ts
 export function validateCronRequest(request: Request): boolean {
-  const authHeader = request.headers.get('authorization');
-  const expectedSecret = process.env.CRON_SECRET;
-  
+  const authHeader = request.headers.get("authorization")
+  const expectedSecret = process.env.CRON_SECRET
+
   if (!expectedSecret) {
-    throw new Error('CRON_SECRET not configured');
+    throw new Error("CRON_SECRET not configured")
   }
-  
-  return authHeader === `Bearer ${expectedSecret}`;
+
+  return authHeader === `Bearer ${expectedSecret}`
 }
 
 export function unauthorizedResponse() {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
     status: 401,
-    headers: { 'Content-Type': 'application/json' },
-  });
+    headers: { "Content-Type": "application/json" },
+  })
 }
 ```
 
 Then use it in your handlers:
+
 ```typescript
 POST: async ({ request }) => {
   if (!validateCronRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse()
   }
   // ... rest of handler
 }
@@ -1014,6 +1017,7 @@ POST: async ({ request }) => {
 To access the secret from pg_cron, you can:
 
 1. **Use Vault (recommended for production):**
+
 ```sql
 -- Store secret in Vault
 SELECT vault.create_secret('your-secret-value', 'cron_secret');
@@ -1028,6 +1032,7 @@ SELECT net.http_post(
 ```
 
 2. **Use custom setting (simpler for development):**
+
 ```sql
 -- In your database config
 ALTER DATABASE postgres SET app.cron_secret = 'your-secret-value';

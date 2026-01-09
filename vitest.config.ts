@@ -18,16 +18,16 @@
 //   },
 // });
 
-import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
-	plugins: [tsconfigPaths()],
-	test: {
-		include: ["./src/**/*.test.ts?(x)"],
-		exclude: ["./src/**/*.browser.test.ts?(x)"],
+  plugins: [tsconfigPaths()],
+  test: {
+    include: ["./src/**/*.test.ts?(x)"],
+    exclude: ["./src/**/*.browser.test.ts?(x)"],
 
-		// coverage: { provider: "istanbul" },
-		setupFiles: ["src/tests/setup.integration.ts"],
-	},
-});
+    // coverage: { provider: "istanbul" },
+    setupFiles: ["src/tests/setup.integration.ts"],
+  },
+})

@@ -1,78 +1,78 @@
-import { isServer, type QueryClient } from "@tanstack/query-core";
+import { isServer, type QueryClient } from "@tanstack/query-core"
 import {
-	createRootRouteWithContext,
-	HeadContent,
-	Outlet,
-	Scripts,
-} from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import type * as React from "react";
+  createRootRouteWithContext,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from "@tanstack/react-router"
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import type * as React from "react"
 import {
-	getViewerFn,
-	viewerIdQueryOptions,
-	viewerQueryOptions,
-} from "@/auth/shared";
-import { Provider } from "@/providers";
-import appCss from "../styles.css?url";
+  getViewerFn,
+  viewerIdQueryOptions,
+  viewerQueryOptions,
+} from "@/auth/shared"
+import { Provider } from "@/providers"
+import appCss from "../styles.css?url"
 
 interface RouterContext {
-	queryClient: QueryClient;
+  queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-	beforeLoad: async ({ context: { queryClient } }) => {
-		const viewer = await getViewerFn();
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const viewer = await getViewerFn()
 
-		if (viewer) {
-			queryClient.setQueryData(viewerQueryOptions().queryKey, viewer);
-			queryClient.setQueryData(viewerIdQueryOptions().queryKey, viewer.id);
-		}
+    if (viewer) {
+      queryClient.setQueryData(viewerQueryOptions().queryKey, viewer)
+      queryClient.setQueryData(viewerIdQueryOptions().queryKey, viewer.id)
+    }
 
-		return {
-			viewer,
-		};
-	},
-	head: () => ({
-		meta: [
-			{
-				charSet: "utf-8",
-			},
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1",
-			},
-			{
-				title: "CBVA",
-			},
-		],
-		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
-		],
-	}),
-	shellComponent: RootDocument,
-	component: () => (
-		<>
-			<Outlet />
-			<TanStackRouterDevtools />
-		</>
-	),
-});
+    return {
+      viewer,
+    }
+  },
+  head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      {
+        title: "CBVA",
+      },
+    ],
+    links: [
+      {
+        rel: "stylesheet",
+        href: appCss,
+      },
+    ],
+  }),
+  shellComponent: RootDocument,
+  component: () => (
+    <>
+      <Outlet />
+      <TanStackRouterDevtools />
+    </>
+  ),
+})
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-	const { queryClient } = Route.useRouteContext();
+  const { queryClient } = Route.useRouteContext()
 
-	return (
-		<html lang="en">
-			<head>
-				<HeadContent />
-			</head>
-			<body>
-				<Provider queryClient={queryClient}>{children}</Provider>
-				<Scripts />
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <Provider queryClient={queryClient}>{children}</Provider>
+        <Scripts />
+      </body>
+    </html>
+  )
 }

@@ -153,6 +153,7 @@ Let me improve this:
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 type TableNames = keyof typeof db.query;
 type Schema = NonNullable<typeof db._.schema>;
@@ -218,7 +219,6 @@ async function cleanupBucket<TTableName extends ConfiguredBuckets>(
 }
 ```
 
-
 ## Assistant
 
 Now I need to update the call site to handle the type-safe version. The issue is that `bucket.name` from Supabase might not be in our configured buckets. Let me fix that:
@@ -227,6 +227,7 @@ Now I need to update the call site to handle the type-safe version. The issue is
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db, type schema } from "@/db/connection";
@@ -372,7 +373,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Perfect! I've made the `cleanupBucket` function significantly more type-safe using patterns from `pagination.ts`. Here are the key improvements:
@@ -407,6 +407,7 @@ Let me check for type errors by running TypeScript:
 Status: Completed
 
 Terminal:
+
 ```
 src/routes/api/tasks/cleanup/storage.ts(2,19): error TS6133: 'schema' is declared but its value is never read.
 src/routes/api/tasks/cleanup/storage.ts(3,1): error TS6133: 'Database' is declared but its value is never read.
@@ -430,7 +431,6 @@ src/routes/matches/pool/$matchId/index.tsx(151,6): error TS2322: Type 'string | 
 
 ```
 
-
 ## Assistant
 
 I see the type errors. The issue is that TypeScript can't narrow the generic types properly in the reduce and map operations. Let me fix this with a different approach:
@@ -439,6 +439,7 @@ I see the type errors. The issue is that TypeScript can't narrow the generic typ
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/db/connection";
@@ -583,7 +584,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Now let me fix the main type issues in the cleanupBucket function:
@@ -592,6 +592,7 @@ Now let me fix the main type issues in the cleanupBucket function:
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/db/connection";
@@ -738,7 +739,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Now let me also remove the unused `request` parameter:
@@ -747,6 +747,7 @@ Now let me also remove the unused `request` parameter:
 Status: Completed
 
 Diff: /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
+
 ```
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@/db/connection";
@@ -893,7 +894,6 @@ export const Route = createFileRoute("/api/tasks/cleanup/storage")({
 
 ```
 
-
 ## Assistant
 
 Now let's verify the type errors are fixed:
@@ -902,13 +902,13 @@ Now let's verify the type errors are fixed:
 Status: Completed
 
 Terminal:
+
 ```
 src/routes/api/tasks/cleanup/storage.ts(69,3): error TS7053: Element implicitly has an 'any' type because expression of type '"headerImageSource" | "thumbnailImageSource"' can't be used to index type 'Record<ColumnKey, true>'.
 src/routes/api/tasks/cleanup/storage.ts(73,3): error TS2322: Type 'Record<ColumnKey, true>' is not assignable to type '{ [K in keyof ExtractTablesWithRelations<{ directorRelations: Relations<"directors", { profile: One<"player_profiles", true>; }>; divisionRelations: Relations<"divisions", { tournamentDivisions: Many<"tournament_divisions">; }>; ... 41 more ...; rateLimiterFlexibleSchema: PgTableWithColumns<...>; }>[TTableName]["col...'.
 src/routes/api/tasks/cleanup/storage.ts(78,26): error TS2769: No overload matches this call.
 
 ```
-
 
 ## Assistant
 
@@ -936,21 +936,22 @@ Create a shared secret and validate it in the handler:
 ```typescript
 POST: async ({ request }) => {
   // Validate authorization header
-  const authHeader = request.headers.get('authorization');
-  const expectedSecret = process.env.CRON_SECRET;
-  
+  const authHeader = request.headers.get("authorization")
+  const expectedSecret = process.env.CRON_SECRET
+
   if (!expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
-    });
+      headers: { "Content-Type": "application/json" },
+    })
   }
-  
+
   // ... rest of your handler
 }
 ```
 
 Then in your pg_cron job:
+
 ```sql
 SELECT net.http_post(
   url := 'https://your-domain.com/api/tasks/cleanup/storage',
@@ -964,13 +965,14 @@ SELECT net.http_post(
 ## Option 2: Custom Header Verification
 
 Similar but with a custom header:
+
 ```typescript
-const cronToken = request.headers.get('x-cron-token');
+const cronToken = request.headers.get("x-cron-token")
 if (cronToken !== process.env.CRON_SECRET) {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
     status: 401,
-    headers: { 'Content-Type': 'application/json' },
-  });
+    headers: { "Content-Type": "application/json" },
+  })
 }
 ```
 
@@ -981,29 +983,30 @@ For multiple cron endpoints, create a reusable validation helper:
 ```typescript
 // src/lib/auth/cron.ts
 export function validateCronRequest(request: Request): boolean {
-  const authHeader = request.headers.get('authorization');
-  const expectedSecret = process.env.CRON_SECRET;
-  
+  const authHeader = request.headers.get("authorization")
+  const expectedSecret = process.env.CRON_SECRET
+
   if (!expectedSecret) {
-    throw new Error('CRON_SECRET not configured');
+    throw new Error("CRON_SECRET not configured")
   }
-  
-  return authHeader === `Bearer ${expectedSecret}`;
+
+  return authHeader === `Bearer ${expectedSecret}`
 }
 
 export function unauthorizedResponse() {
-  return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+  return new Response(JSON.stringify({ error: "Unauthorized" }), {
     status: 401,
-    headers: { 'Content-Type': 'application/json' },
-  });
+    headers: { "Content-Type": "application/json" },
+  })
 }
 ```
 
 Then use it in your handlers:
+
 ```typescript
 POST: async ({ request }) => {
   if (!validateCronRequest(request)) {
-    return unauthorizedResponse();
+    return unauthorizedResponse()
   }
   // ... rest of handler
 }
@@ -1014,6 +1017,7 @@ POST: async ({ request }) => {
 To access the secret from pg_cron, you can:
 
 1. **Use Vault (recommended for production):**
+
 ```sql
 -- Store secret in Vault
 SELECT vault.create_secret('your-secret-value', 'cron_secret');
@@ -1028,6 +1032,7 @@ SELECT net.http_post(
 ```
 
 2. **Use custom setting (simpler for development):**
+
 ```sql
 -- In your database config
 ALTER DATABASE postgres SET app.cron_secret = 'your-secret-value';
@@ -1133,7 +1138,8 @@ Based on my thorough exploration of the codebase, here's a complete understandin
   - `levelEarnedId` (level achieved in tournament)
   - `externalRef` (UUID)
 
-**File locations:** 
+**File locations:**
+
 - `/Users/isaacsnow/ws/cbva-deploy/src/db/schema/team-players.ts`
 - `/Users/isaacsnow/ws/cbva-deploy/src/db/schema/tournament-division-teams.ts`
 - `/Users/isaacsnow/ws/cbva-deploy/src/db/schema/player-profiles.ts`
@@ -1149,6 +1155,7 @@ Based on my thorough exploration of the codebase, here's a complete understandin
   - `minimum` (minimum number of required players)
 
 **Capacity Controls:**
+
 - Each tournament_division has:
   - `capacity` - max registered teams
   - `waitlistCapacity` - max waitlisted teams
@@ -1194,12 +1201,14 @@ Based on my thorough exploration of the codebase, here's a complete understandin
   - `status`, `scheduledTime` (full timestamp)
 
 **Winner Tracking:**
+
 - Winners are tracked at two levels:
   1. Individual match level: `winnerId` in pool_matches and playoff_matches
   2. Team placement: `finish` in pool_teams and `finish`/`playoffsSeed` in tournament_division_teams
   3. Level earned: `levelEarnedId` in tournament_division_teams
 
 **File locations:**
+
 - `/Users/isaacsnow/ws/cbva-deploy/src/db/schema/pools.ts`
 - `/Users/isaacsnow/ws/cbva-deploy/src/db/schema/pool-matches.ts`
 - `/Users/isaacsnow/ws/cbva-deploy/src/db/schema/playoff-matches.ts`
@@ -1216,11 +1225,13 @@ The codebase uses a **server function pattern** (TanStack React Start) for regis
 Location: `/Users/isaacsnow/ws/cbva-deploy/src/data/tournaments/teams.ts`
 
 Key function: `addTeamFn` - Registers a team for a tournament division
+
 - Validates that team exists or creates new team with players
 - Adds entry to `tournament_division_teams` table
 - Default status is **"registered"** (not explicitly set, defaults to schema default)
 
 **Team Status States:**
+
 ```typescript
 enum team_status {
   "registered"   // Standard registration
@@ -1232,13 +1243,15 @@ enum team_status {
 
 **Capacity Management:**
 The system tracks:
-- Regular capacity: `capacity` 
+
+- Regular capacity: `capacity`
 - Waitlist capacity: `waitlistCapacity`
 - Auto-promotion flag: `autopromoteWaitlist`
 
 However, **there is no explicit invitation table or mechanism** in the current schema. The legacy EdgeDB schema (comments suggest) mentions invitations but they haven't been implemented in the new PostgreSQL schema.
 
 From legacy schema comments:
+
 ```
 # Shows normally but cannot register or waitlist unless invited.
 # Used by Santa Cruz for T-30 days
@@ -1256,7 +1269,7 @@ Create a new table to track invitations:
 ```
 tournament_invitations
 ├── id (serial PK)
-├── tournament_division_id (FK) 
+├── tournament_division_id (FK)
 ├── inviter_id (FK to users/directors)
 ├── invitee_type (enum: team, player, email)
 ├── invitee_id (nullable FK - for existing teams/players)
@@ -1271,6 +1284,7 @@ tournament_invitations
 **Option 2: Extend tournament_division_teams**
 
 Add invitation-related columns to existing table:
+
 - `invited_by_id` (FK to directors/users)
 - `invite_status` (separate from team status)
 - `invited_at`
@@ -1283,6 +1297,7 @@ Add invitation-related columns to existing table:
 4. **Auto-promotion:** Work with existing `autopromoteWaitlist` logic
 
 **Related Data Functions:**
+
 - Server function: `/Users/isaacsnow/ws/cbva-deploy/src/data/tournaments/teams.ts` - `addTeamFn`
 - Team queries: `/Users/isaacsnow/ws/cbva-deploy/src/data/teams.ts` - `getTeams`, `teamsQueryOptions`
 - Capacity control: Existing schema fields `capacity`, `waitlistCapacity`
@@ -1291,23 +1306,23 @@ Add invitation-related columns to existing table:
 
 ### SCHEMA FILE LOCATIONS SUMMARY
 
-| Component | File |
-|-----------|------|
-| Tournaments | `/src/db/schema/tournaments.ts` |
-| Tournament Divisions | `/src/db/schema/tournament-divisions.ts` |
-| Division Requirements | `/src/db/schema/tournament-division-requirements.ts` |
-| Tournament Division Teams | `/src/db/schema/tournament-division-teams.ts` |
-| Teams | `/src/db/schema/teams.ts` |
-| Team Players | `/src/db/schema/team-players.ts` |
-| Player Profiles | `/src/db/schema/player-profiles.ts` |
-| Pools | `/src/db/schema/pools.ts` |
-| Pool Teams | `/src/db/schema/pool-teams.ts` |
-| Pool Matches | `/src/db/schema/pool-matches.ts` |
-| Playoff Matches | `/src/db/schema/playoff-matches.ts` |
-| Match Sets | `/src/db/schema/match-sets.ts` |
-| Shared Enums | `/src/db/schema/shared.ts` |
-| Registration Logic | `/src/data/tournaments/teams.ts` |
-| Team Queries | `/src/data/teams.ts` |
+| Component                 | File                                                 |
+| ------------------------- | ---------------------------------------------------- |
+| Tournaments               | `/src/db/schema/tournaments.ts`                      |
+| Tournament Divisions      | `/src/db/schema/tournament-divisions.ts`             |
+| Division Requirements     | `/src/db/schema/tournament-division-requirements.ts` |
+| Tournament Division Teams | `/src/db/schema/tournament-division-teams.ts`        |
+| Teams                     | `/src/db/schema/teams.ts`                            |
+| Team Players              | `/src/db/schema/team-players.ts`                     |
+| Player Profiles           | `/src/db/schema/player-profiles.ts`                  |
+| Pools                     | `/src/db/schema/pools.ts`                            |
+| Pool Teams                | `/src/db/schema/pool-teams.ts`                       |
+| Pool Matches              | `/src/db/schema/pool-matches.ts`                     |
+| Playoff Matches           | `/src/db/schema/playoff-matches.ts`                  |
+| Match Sets                | `/src/db/schema/match-sets.ts`                       |
+| Shared Enums              | `/src/db/schema/shared.ts`                           |
+| Registration Logic        | `/src/data/tournaments/teams.ts`                     |
+| Team Queries              | `/src/data/teams.ts`                                 |
 
 ---
 
@@ -1327,7 +1342,7 @@ This comprehensive model provides a solid foundation for designing an invitation
 
 agentId: aa3d6f3 (for resuming to continue this agent's work if needed)
 
-**Tool Call: Find `**/*.sql`**
+**Tool Call: Find `**/\*.sql`\*\*
 Status: Completed
 
 /Users/isaacsnow/ws/cbva-deploy/src/db/out/0000_wealthy_blue_blade.sql
@@ -1340,7 +1355,7 @@ Status: Completed
 /Users/isaacsnow/ws/cbva-deploy/src/db/out/0007_clammy_magik.sql
 /Users/isaacsnow/ws/cbva-deploy/src/db/out/0008_melted_the_hunter.sql
 
-**Tool Call: Find `**/*.ts`**
+**Tool Call: Find `**/\*.ts`\*\*
 Status: Completed
 
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@types+react@19.2.2/node_modules/@types/react/jsx-dev-runtime.d.ts
@@ -1445,19 +1460,19 @@ Status: Completed
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@tanstack+start-client-core@1.141.1/node_modules/@tanstack/start-client-core/dist/esm/tests/createIsomorphicFn.test-d.d.ts
 (Results are truncated. Consider using a more specific path or pattern.)
 
-**Tool Call: Find `**/*migration*`**
+**Tool Call: Find `**/_migration_`\*\*
 Status: Completed
 
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/kysely@0.28.8/node_modules/kysely/dist/cjs/migration/file-migration-provider.js
+/Users/isaacsnow/ws/cbva-deploy/node*modules/.pnpm/kysely@0.28.8/node_modules/kysely/dist/cjs/migration/file-migration-provider.js
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/kysely@0.28.8/node_modules/kysely/dist/esm/migration/file-migration-provider.js
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/kysely@0.28.8/node_modules/kysely/dist/esm/migration/file-migration-provider.d.ts
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/kysely@0.28.8/node_modules/kysely/dist/cjs/migration/file-migration-provider.d.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/better-auth@1.4.5_@tanstack+react-start@1.141.1_crossws@0.4.1_srvx@0.9.7__react-dom@19._c9b6a3e9f5405628647fbfb8d5a0cc2e/node_modules/better-auth/dist/get-migration-Bf0TuCzm.mjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/better-auth@1.4.5*@tanstack+react-start@1.141.1_crossws@0.4.1_srvx@0.9.7__react-dom@19.\_c9b6a3e9f5405628647fbfb8d5a0cc2e/node_modules/better-auth/dist/get-migration-Bf0TuCzm.mjs
 
-**Tool Call: Find `**/*schema*`**
+**Tool Call: Find `**/_schema_`\*\*
 Status: Completed
 
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/core/standard-schema.js
+/Users/isaacsnow/ws/cbva-deploy/node*modules/.pnpm/zod@3.25.76/node_modules/zod/v4/core/standard-schema.js
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/core/json-schema.js
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/standard-schema.js
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@4.1.12/node_modules/zod/v4/core/standard-schema.js
@@ -1501,34 +1516,34 @@ Status: Completed
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/mdn-data@2.12.2/node_modules/mdn-data/css/syntaxes.schema.json
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/mdn-data@2.12.2/node_modules/mdn-data/css/types.schema.json
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/mdn-data@2.12.2/node_modules/mdn-data/css/units.schema.json
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@typescript-eslint+eslint-plugin@8.46.2_@typescript-eslint+parser@8.46.2_eslint@9.38.0__7f0603c005ed3ea549f6c3ee040b9782/node_modules/@typescript-eslint/eslint-plugin/dist/rules/naming-convention-utils/schema.js
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@typescript-eslint+utils@8.46.2_eslint@9.38.0_jiti@2.6.1__typescript@5.9.3/node_modules/@typescript-eslint/utils/dist/json-schema.js
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@typescript-eslint+eslint-plugin@8.46.2*@typescript-eslint+parser@8.46.2_eslint@9.38.0**7f0603c005ed3ea549f6c3ee040b9782/node_modules/@typescript-eslint/eslint-plugin/dist/rules/naming-convention-utils/schema.js
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@typescript-eslint+utils@8.46.2_eslint@9.38.0_jiti@2.6.1**typescript@5.9.3/node*modules/@typescript-eslint/utils/dist/json-schema.js
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/core/json-schema.d.cts
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/core/json-schema.d.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/gel-core/schema.cjs
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/mysql-core/schema.cjs
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/pg-core/schema.cjs
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.cjs
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/gel-core/schema.d.cts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/mysql-core/schema.d.cts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/pg-core/schema.d.cts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.d.cts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/gel-core/schema.js
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/mysql-core/schema.js
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/pg-core/schema.js
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.js
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/gel-core/schema.cjs.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/mysql-core/schema.cjs.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/pg-core/schema.cjs.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.cjs.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/gel-core/schema.js.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/mysql-core/schema.js.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/pg-core/schema.js.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.js.map
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/gel-core/schema.d.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/mysql-core/schema.d.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/pg-core/schema.d.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7_@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.d.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/gel-core/schema.cjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/mysql-core/schema.cjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/pg-core/schema.cjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/singlestore-core/schema.cjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/gel-core/schema.d.cts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/mysql-core/schema.d.cts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/pg-core/schema.d.cts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/singlestore-core/schema.d.cts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/gel-core/schema.js
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/mysql-core/schema.js
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/pg-core/schema.js
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/singlestore-core/schema.js
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/gel-core/schema.cjs.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/mysql-core/schema.cjs.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/pg-core/schema.cjs.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/singlestore-core/schema.cjs.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/gel-core/schema.js.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/mysql-core/schema.js.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/pg-core/schema.js.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/singlestore-core/schema.js.map
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/gel-core/schema.d.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/mysql-core/schema.d.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node*modules/drizzle-orm/pg-core/schema.d.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/drizzle-orm@0.44.7*@electric-sql+pglite@0.3.14_@opentelemetry+api@1.9.0_@types+pg@8.15._f4a68c9318af81452c4efe4d246c8d2c/node_modules/drizzle-orm/singlestore-core/schema.d.ts
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/classic/schemas.cjs
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/core/schemas.cjs
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/mini/schemas.cjs
@@ -1562,12 +1577,12 @@ Status: Completed
 **Tool Call: Find `**/db/**`**
 Status: Completed
 
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/schema/account.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/schema/session.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/schema/shared.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/schema/user.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/schema/verification.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/schema/rate-limit.ts
+/Users/isaacsnow/ws/cbva-deploy/node*modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/schema/account.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/schema/session.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/schema/shared.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/schema/user.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/schema/verification.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/schema/rate-limit.ts
 /Users/isaacsnow/ws/cbva-deploy/.git/objects/db/d1e67d463fd5a7ff17eeead313acb1eb8853e7
 /Users/isaacsnow/ws/cbva-deploy/.git/objects/db/8e69391f6e6b7c58a3c57f1cc438e8c89072d9
 /Users/isaacsnow/ws/cbva-deploy/.git/objects/db/cda64946d28413b10131f272f546490560ce25
@@ -1641,16 +1656,16 @@ Status: Completed
 /Users/isaacsnow/ws/cbva-deploy/src/db/import/dup-tournaments.edgeql
 /Users/isaacsnow/ws/cbva-deploy/src/db/import/tournaments.ts
 /Users/isaacsnow/ws/cbva-deploy/src/db/legacy/fix.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/dist/db/adapter/index.mjs
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/better-auth@1.4.5_@tanstack+react-start@1.141.1_crossws@0.4.1_srvx@0.9.7__react-dom@19._c9b6a3e9f5405628647fbfb8d5a0cc2e/node_modules/better-auth/dist/db/index.mjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/dist/db/adapter/index.mjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/better-auth@1.4.5*@tanstack+react-start@1.141.1_crossws@0.4.1_srvx@0.9.7__react-dom@19._c9b6a3e9f5405628647fbfb8d5a0cc2e/node_modules/better-auth/dist/db/index.mjs
 /Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/better-auth@1.4.5_@tanstack+react-start@1.141.1_crossws@0.4.1_srvx@0.9.7__react-dom@19._c9b6a3e9f5405628647fbfb8d5a0cc2e/node_modules/better-auth/dist/db/index.d.mts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/dist/db/index.mjs
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/dist/db/adapter/index.d.mts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/dist/db/index.d.mts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/adapter/index.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/index.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/plugin.ts
-/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/type.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5_@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/dist/db/index.mjs
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/dist/db/adapter/index.d.mts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/dist/db/index.d.mts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/adapter/index.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/index.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node*modules/@better-auth/core/src/db/plugin.ts
+/Users/isaacsnow/ws/cbva-deploy/node_modules/.pnpm/@better-auth+core@1.4.5*@better-auth+utils@0.3.0_@better-fetch+fetch@1.1.18_better-call_ea4095182156bdcc998f59ad00451619/node_modules/@better-auth/core/src/db/type.ts
 /Users/isaacsnow/ws/cbva-deploy/src/db/schema/auth.ts
 /Users/isaacsnow/ws/cbva-deploy/src/db/out/meta/0001_snapshot.json
 /Users/isaacsnow/ws/cbva-deploy/src/db/out/0001_nebulous_zzzax.sql
@@ -3338,39 +3353,39 @@ export const setCapacityMutationOptions = () =>
 Status: Completed
 
 src/db/import/teams.ts:18:): "registered" | "waitlisted" | "confirmed" | "cancelled" {
-src/db/import/teams.ts:21:			return "confirmed";
-src/db/import/teams.ts:22:		case "waitlisted":
-src/db/import/teams.ts:23:			return "waitlisted";
-src/data/profiles.ts:195:		eq(tournamentDivisionTeams.status, "confirmed"),
-src/data/teams.ts:45:					: or(eq(t.status, "confirmed"), eq(t.status, "registered")),
-src/db/legacy/schema/tables.ts:181://         # Roster, waitlist cleared and refunded
-src/db/legacy/schema/tables.ts:192://         # Shows normally but cannot register or waitlist unless invited.
-src/db/legacy/schema/tables.ts:351://         required max_waitlist: int16 {
-src/db/legacy/schema/tables.ts:409://         # Can be solo due to signing up to waitlist while solo
-src/db/legacy/schema/tables.ts:497://         # Position on waitlist if status is waitlist
-src/tests/utils/tournaments.ts:149:				status: "confirmed" as const,
-src/data/tournaments/pools.ts:79:					eq(t.status, "confirmed"),
-src/data/tournaments/teams.ts:121:							where: (t, { eq }) => eq(t.status, "confirmed"),
-src/data/tournaments/teams.ts:174:					eq(tournamentDivisionTeams.status, "confirmed"),
-src/data/tournaments/teams.ts:292:					status: "confirmed" as const,
-src/data/tournaments/teams.ts:310:		waitlistCapacity: z.number().min(0),
-src/data/tournaments/teams.ts:322:	.handler(async ({ data: { id, capacity, waitlistCapacity } }) => {
-src/data/tournaments/teams.ts:327:				waitlistCapacity,
-src/db/schema/tournament-divisions.ts:40:		waitlistCapacity: integer().notNull().default(5),
+src/db/import/teams.ts:21: return "confirmed";
+src/db/import/teams.ts:22: case "waitlisted":
+src/db/import/teams.ts:23: return "waitlisted";
+src/data/profiles.ts:195: eq(tournamentDivisionTeams.status, "confirmed"),
+src/data/teams.ts:45: : or(eq(t.status, "confirmed"), eq(t.status, "registered")),
+src/db/legacy/schema/tables.ts:181:// # Roster, waitlist cleared and refunded
+src/db/legacy/schema/tables.ts:192:// # Shows normally but cannot register or waitlist unless invited.
+src/db/legacy/schema/tables.ts:351:// required max_waitlist: int16 {
+src/db/legacy/schema/tables.ts:409:// # Can be solo due to signing up to waitlist while solo
+src/db/legacy/schema/tables.ts:497:// # Position on waitlist if status is waitlist
+src/tests/utils/tournaments.ts:149: status: "confirmed" as const,
+src/data/tournaments/pools.ts:79: eq(t.status, "confirmed"),
+src/data/tournaments/teams.ts:121: where: (t, { eq }) => eq(t.status, "confirmed"),
+src/data/tournaments/teams.ts:174: eq(tournamentDivisionTeams.status, "confirmed"),
+src/data/tournaments/teams.ts:292: status: "confirmed" as const,
+src/data/tournaments/teams.ts:310: waitlistCapacity: z.number().min(0),
+src/data/tournaments/teams.ts:322: .handler(async ({ data: { id, capacity, waitlistCapacity } }) => {
+src/data/tournaments/teams.ts:327: waitlistCapacity,
+src/db/schema/tournament-divisions.ts:40: waitlistCapacity: integer().notNull().default(5),
 src/db/schema/shared.ts:37:export const teamStatusEnum = pgEnum("team_status", [
-src/db/schema/shared.ts:39:	"waitlisted",
-src/db/schema/shared.ts:40:	"confirmed",
-src/components/teams/controls/set-capacity.tsx:39:		waitlistCapacity: true,
-src/components/teams/controls/set-capacity.tsx:45:			waitlistCapacity: division.waitlistCapacity,
-src/components/teams/controls/set-capacity.tsx:51:		onSubmit: ({ value: { capacity, waitlistCapacity } }) => {
-src/components/teams/controls/set-capacity.tsx:55:				waitlistCapacity,
-src/components/teams/controls/set-capacity.tsx:66:				<span>Waitlist Capacity: {division.waitlistCapacity}</span>{" "}
-src/components/teams/controls/set-capacity.tsx:70:				<Dialog aria-label="Set team and waitlist capacity">
-src/components/teams/controls/set-capacity.tsx:96:							name="waitlistCapacity"
+src/db/schema/shared.ts:39: "waitlisted",
+src/db/schema/shared.ts:40: "confirmed",
+src/components/teams/controls/set-capacity.tsx:39: waitlistCapacity: true,
+src/components/teams/controls/set-capacity.tsx:45: waitlistCapacity: division.waitlistCapacity,
+src/components/teams/controls/set-capacity.tsx:51: onSubmit: ({ value: { capacity, waitlistCapacity } }) => {
+src/components/teams/controls/set-capacity.tsx:55: waitlistCapacity,
+src/components/teams/controls/set-capacity.tsx:66: <span>Waitlist Capacity: {division.waitlistCapacity}</span>{" "}
+src/components/teams/controls/set-capacity.tsx:70: <Dialog aria-label="Set team and waitlist capacity">
+src/components/teams/controls/set-capacity.tsx:96: name="waitlistCapacity"
 
 [Showing results with pagination = limit: 30, offset: 0]
 
-**Tool Call: Find `/Users/isaacsnow/ws/cbva-deploy/src/routes/api/**`**
+**Tool Call: Find `/Users/isaacsnow/ws/cbva-deploy/src/routes/api/**`\*\*
 Status: Completed
 
 /Users/isaacsnow/ws/cbva-deploy/src/routes/api/files.ts
@@ -3378,7 +3393,7 @@ Status: Completed
 /Users/isaacsnow/ws/cbva-deploy/src/routes/api/auth/$.ts
 /Users/isaacsnow/ws/cbva-deploy/src/routes/api/tasks/cleanup/storage.ts
 
-**Tool Call: Find `/Users/isaacsnow/ws/cbva-deploy/src/data/**`**
+**Tool Call: Find `/Users/isaacsnow/ws/cbva-deploy/src/data/**`\*\*
 Status: Completed
 
 /Users/isaacsnow/ws/cbva-deploy/src/data/blocks.ts
@@ -3815,6 +3830,7 @@ grantsInviteTo: integer("grants_invite_to").references(() => tournaments.id)
 ```
 
 This allows you to configure:
+
 - Tournament A is **invitation-only** (`inviteOnly: true`)
 - Tournament B **grants invites** to Tournament A (`grantsInviteTo: A.id`)
 
@@ -3827,21 +3843,21 @@ CREATE TABLE tournament_invitations (
   id SERIAL PRIMARY KEY,
   tournament_division_id INTEGER REFERENCES tournament_divisions(id) ON DELETE CASCADE,
   team_id INTEGER REFERENCES teams(id) ON DELETE CASCADE,
-  
+
   -- How the invite was earned/created
   earned_from_tournament_id INTEGER REFERENCES tournaments(id),
   earned_finish INTEGER, -- e.g., 1 for 1st place, 2 for 2nd
   created_by_user_id INTEGER REFERENCES users(id), -- For manual invites by directors
-  
+
   -- Invitation lifecycle
   status TEXT CHECK (status IN ('pending', 'accepted', 'declined', 'expired', 'revoked')) DEFAULT 'pending',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   expires_at TIMESTAMPTZ,
   accepted_at TIMESTAMPTZ,
-  
+
   -- Link to registration if accepted
   tournament_division_team_id INTEGER REFERENCES tournament_division_teams(id),
-  
+
   UNIQUE(tournament_division_id, team_id)
 );
 ```
@@ -3857,34 +3873,31 @@ export async function generateInvitationsFromResults(
   tournamentId: number,
   opts?: { finishPositions?: number[] } // e.g., [1, 2] for 1st and 2nd place
 ) {
-  const positions = opts?.finishPositions ?? [1]; // Default: only winners
-  
+  const positions = opts?.finishPositions ?? [1] // Default: only winners
+
   // Find all divisions in this tournament that grant invites
   const divisions = await db.query.tournamentDivisions.findMany({
-    where: (td, { eq, isNotNull, and }) => 
-      and(
-        eq(td.tournamentId, tournamentId),
-        isNotNull(td.grantsInviteTo)
-      ),
+    where: (td, { eq, isNotNull, and }) =>
+      and(eq(td.tournamentId, tournamentId), isNotNull(td.grantsInviteTo)),
     with: {
       teams: {
         where: (tdt, { inArray }) => inArray(tdt.finish, positions),
       },
     },
-  });
-  
+  })
+
   // Create invitations for qualifying teams
-  const invitations = divisions.flatMap(division => 
-    division.teams.map(team => ({
+  const invitations = divisions.flatMap((division) =>
+    division.teams.map((team) => ({
       tournamentDivisionId: division.grantsInviteTo!,
       teamId: team.teamId,
       earnedFromTournamentId: tournamentId,
       earnedFinish: team.finish,
       expiresAt: calculateExpiration(division.grantsInviteTo!),
     }))
-  );
-  
-  await db.insert(tournamentInvitations).values(invitations);
+  )
+
+  await db.insert(tournamentInvitations).values(invitations)
 }
 ```
 
@@ -3898,31 +3911,33 @@ Update the registration logic to check invitations:
 export const addTeamFn = async (input: AddTeamInput) => {
   const division = await db.query.tournamentDivisions.findFirst({
     where: eq(tournamentDivisions.id, input.tournamentDivisionId),
-  });
-  
+  })
+
   // Check if invitation-only
   if (division.inviteOnly) {
     const invitation = await db.query.tournamentInvitations.findFirst({
-      where: (ti, { eq, and }) => and(
-        eq(ti.tournamentDivisionId, input.tournamentDivisionId),
-        eq(ti.teamId, input.teamId),
-        eq(ti.status, 'pending'),
-        // Check not expired
-      ),
-    });
-    
+      where: (ti, { eq, and }) =>
+        and(
+          eq(ti.tournamentDivisionId, input.tournamentDivisionId),
+          eq(ti.teamId, input.teamId),
+          eq(ti.status, "pending")
+          // Check not expired
+        ),
+    })
+
     if (!invitation) {
-      throw new Error('This tournament is invitation-only');
+      throw new Error("This tournament is invitation-only")
     }
-    
+
     // Mark invitation as accepted
-    await db.update(tournamentInvitations)
-      .set({ status: 'accepted', acceptedAt: new Date() })
-      .where(eq(tournamentInvitations.id, invitation.id));
+    await db
+      .update(tournamentInvitations)
+      .set({ status: "accepted", acceptedAt: new Date() })
+      .where(eq(tournamentInvitations.id, invitation.id))
   }
-  
+
   // Continue with normal registration...
-};
+}
 ```
 
 ### 5. Schema Files to Create/Modify
@@ -3941,6 +3956,7 @@ Would you like me to:
 3. **Create a simpler version** that just marks tournaments as invite-only without auto-generation?
 
 Also, some questions to consider:
+
 - Should invitations expire after a certain time?
 - Can directors manually invite teams (bypassing tournament wins)?
 - Should all finishing positions earn invites (1st-3rd) or just winners?
