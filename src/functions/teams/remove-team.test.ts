@@ -5,6 +5,7 @@ import {
 	tournamentDivisions,
 	tournamentDivisionTeams,
 	poolMatches,
+	poolTeams,
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { createTeams } from "@/tests/utils/users";
@@ -357,6 +358,20 @@ describe("removeTeam", () => {
 			matchesAfterAsTeamA.length + matchesAfterAsTeamB.length;
 
 		expect(totalMatchesAfter).toBe(totalMatchesBefore);
+
+		// Verify that the poolTeam was updated to reference the replacement team
+		const poolTeamBefore = await db.query.poolTeams.findFirst({
+			where: (t, { eq }) => eq(t.teamId, teamToRemove.id),
+		});
+
+		expect(poolTeamBefore).toBeUndefined();
+
+		const poolTeamAfter = await db.query.poolTeams.findFirst({
+			where: (t, { eq }) => eq(t.teamId, insertedReplacementTeam.id),
+		});
+
+		expect(poolTeamAfter).toBeDefined();
+		expect(poolTeamAfter?.teamId).toBe(insertedReplacementTeam.id);
 
 		// Verify that the original team is no longer in any pool matches
 		const originalTeamMatchesAsTeamA = await db.query.poolMatches.findMany({

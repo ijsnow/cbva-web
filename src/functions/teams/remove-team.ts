@@ -102,13 +102,12 @@ export const removeTeam = createServerFn()
 				})
 				.where(eq(tournamentDivisionTeams.id, id));
 
-			await txn.delete(poolTeams).where(eq(poolTeams.teamId, id));
-
 			if (isDefined(replacementTeamId)) {
-				await replaceTeamTransaction(txn, team, replacementTeamId);
+				return await replaceTeamTransaction(txn, team, replacementTeamId);
 			}
+
 			// Check if autopromoteWaitlist is enabled, if so, promote a team
-			else if (
+			if (
 				!late &&
 				["registered", "confirmed"].includes(team.status) &&
 				team.tournamentDivision.autopromoteWaitlist
@@ -134,6 +133,8 @@ export const removeTeam = createServerFn()
 					}
 				}
 			}
+
+			await txn.delete(poolTeams).where(eq(poolTeams.teamId, id));
 		});
 
 		return {

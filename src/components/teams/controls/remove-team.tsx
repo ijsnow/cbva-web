@@ -73,10 +73,11 @@ export function RemoveTeamForm({
 				}
 			},
 		},
-		onSubmit: ({ value: { late } }) => {
+		onSubmit: ({ value: { late, replacementTeamId } }) => {
 			mutate({
 				id: tournamentDivisionTeamId,
 				late,
+				replacementTeamId,
 			});
 		},
 	});
