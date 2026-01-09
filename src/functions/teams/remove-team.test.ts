@@ -70,6 +70,12 @@ describe("removeTeam", () => {
 
 		expect(confirmedTeams).toHaveLength(3);
 
+		// Clear seeds so autopromote can work (autopromote only works when teams aren't seeded yet)
+		await db
+			.update(tournamentDivisionTeams)
+			.set({ seed: null })
+			.where(eq(tournamentDivisionTeams.tournamentDivisionId, tournamentDivisionId));
+
 		// Verify initial state: 3 confirmed, 2 waitlisted
 		const teamsBefore = await db.query.tournamentDivisionTeams.findMany({
 			where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),

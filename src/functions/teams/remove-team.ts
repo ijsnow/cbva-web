@@ -11,7 +11,7 @@ import {
 import { assertFound } from "@/lib/responses";
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { eq, isNotNull } from "drizzle-orm";
 import z from "zod";
 import { promoteFromWaitlistTransaction } from "./promote-from-waitlist";
 import { requirePermissions } from "@/auth/shared";
@@ -33,6 +33,7 @@ const replaceTeamTransaction = createServerOnlyFn(
 			.update(tournamentDivisionTeams)
 			.set({
 				seed: originalTeam.seed,
+				status: "confirmed",
 			})
 			.where(eq(tournamentDivisionTeams.id, replacementTeamId));
 
@@ -112,18 +113,25 @@ export const removeTeam = createServerFn()
 				["registered", "confirmed"].includes(team.status) &&
 				team.tournamentDivision.autopromoteWaitlist
 			) {
-				const nextWaitlistedTeam =
-					await txn.query.tournamentDivisionTeams.findFirst({
-						where: (t, { eq, and }) =>
-							and(
-								eq(t.tournamentDivisionId, team.tournamentDivisionId),
-								eq(t.status, "waitlisted"),
-							),
-						orderBy: (t, { asc }) => [asc(t.order), asc(t.createdAt)],
-					});
+				const seededCount = await txn.$count(
+					tournamentDivisionTeams,
+					isNotNull(tournamentDivisionTeams.seed),
+				);
 
-				if (nextWaitlistedTeam) {
-					await promoteFromWaitlistTransaction(txn, [nextWaitlistedTeam.id]);
+				if (seededCount === 0) {
+					const nextWaitlistedTeam =
+						await txn.query.tournamentDivisionTeams.findFirst({
+							where: (t, { eq, and }) =>
+								and(
+									eq(t.tournamentDivisionId, team.tournamentDivisionId),
+									eq(t.status, "waitlisted"),
+								),
+							orderBy: (t, { asc }) => [asc(t.order), asc(t.createdAt)],
+						});
+
+					if (nextWaitlistedTeam) {
+						await promoteFromWaitlistTransaction(txn, [nextWaitlistedTeam.id]);
+					}
 				}
 			}
 		});

@@ -83,6 +83,18 @@ export function useTeamsQueryOptions() {
 	});
 }
 
+export function useActiveTeams() {
+	const query = useTeamsQueryOptions();
+
+	const { data: teams } = useQuery({
+		...query,
+		select: (data) =>
+			data.filter(({ status }) => ["confirmed", "registered"].includes(status)),
+	});
+
+	return teams;
+}
+
 export function useWaitlist() {
 	const query = useTeamsQueryOptions();
 

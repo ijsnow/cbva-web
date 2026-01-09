@@ -18,6 +18,7 @@ import {
 	poolMatchQueryOptions,
 } from "@/data/matches";
 import {
+	useActiveTeams,
 	usePlayoffsQueryOptions,
 	usePoolsQueryOptions,
 	useTeamsQueryOptions,
@@ -97,9 +98,7 @@ export function EditMatchRefsForm({
 		},
 	});
 
-	const { data: teams } = useQuery({
-		...teamsQueryOptions,
-	});
+	const teams = useActiveTeams();
 
 	const { data: stats } = useQuery({
 		...poolsQueryOptions,
@@ -130,6 +129,7 @@ export function EditMatchRefsForm({
 	const orderedTeams = orderBy(
 		teams?.filter((team) => {
 			const inMatch = matchTeams.includes(team.id);
+
 			const inGroup = poolMatch
 				? team.poolTeam.poolId === poolMatch.poolId
 				: true;

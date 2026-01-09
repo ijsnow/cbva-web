@@ -63,8 +63,6 @@ export function RemoveTeamForm({
 		listeners: {
 			onChange: ({ formApi, fieldApi }) => {
 				if (fieldApi.name === "replace") {
-					console.log(waitlist, fieldApi.state.value);
-
 					if (fieldApi.state.value) {
 						if (waitlist && waitlist.length > 0) {
 							formApi.setFieldValue("replacementTeamId", waitlist[0].id);
