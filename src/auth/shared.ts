@@ -1,11 +1,17 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createMiddleware, createServerFn } from "@tanstack/react-start";
+import {
+	createMiddleware,
+	createServerFn,
+	createServerOnlyFn,
+} from "@tanstack/react-start";
 import { setResponseStatus } from "@tanstack/react-start/server";
 import { isEmpty } from "lodash-es";
 import { db } from "@/db/connection";
 import { authClient } from "./client";
 import type { Permissions, Role } from "./permissions";
 import { getViewer, type Viewer } from "./server";
+import { forbidden } from "@/lib/responses";
+// import { forbidden } from "@/lib/responses";
 
 export type SessionViewer = Pick<
 	Viewer,
@@ -274,6 +280,14 @@ export function requirePermissions<P extends Permissions>(permissions: P) {
 			});
 		});
 }
+
+export const assertRoleHasPermission = createServerOnlyFn(
+	<P extends Permissions>(role: Role, permissions: P) => {
+		if (!roleHasPermission(role, permissions)) {
+			throw forbidden();
+		}
+	},
+);
 
 /**
  * Creates a middleware that ensures the logged-in user has one of the specified roles.
