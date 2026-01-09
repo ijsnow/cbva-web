@@ -8,7 +8,8 @@ import { getLimitAndOffset } from "@/db/pagination";
 import { tournamentDirectors } from "@/db/schema/tournament-directors";
 import { tournaments } from "@/db/schema/tournaments";
 import { venues } from "@/db/schema/venues";
-import { withDirector } from "@/middlewares/with-director";
+import { withDirectorId } from "@/middlewares/with-director-id";
+import { isDefined } from "@/utils/types";
 
 export const getTournamentsByDirectorsSchema = z.object({
 	directorIds: z.array(z.number()).optional(),
@@ -19,7 +20,7 @@ export const getTournamentsByDirectorsSchema = z.object({
 
 export const getTournamentsByDirectors = createServerFn()
 	.middleware([
-		withDirector,
+		withDirectorId,
 		requirePermissions({
 			tournament: ["update"],
 		}),
@@ -28,7 +29,7 @@ export const getTournamentsByDirectors = createServerFn()
 	.handler(
 		async ({
 			data: { directorIds, past, page, pageSize },
-			context: { viewer, director },
+			context: { viewer, directorId },
 		}) => {
 			// Build date filter
 			const today = sql`CURRENT_DATE`;
@@ -50,6 +51,7 @@ export const getTournamentsByDirectors = createServerFn()
 							date: tournaments.date,
 							startTime: tournaments.startTime,
 							visible: tournaments.visible,
+							demo: tournaments.demo,
 							venueId: tournaments.venueId,
 							externalRef: tournaments.externalRef,
 							venue: {
@@ -86,8 +88,8 @@ export const getTournamentsByDirectors = createServerFn()
 			let targetDirectorIds = directorIds;
 
 			// If no directorIds provided, use the current viewer's director ID from context
-			if (!targetDirectorIds && director) {
-				targetDirectorIds = [director.id];
+			if (!targetDirectorIds && isDefined(directorId)) {
+				targetDirectorIds = [directorId];
 			}
 
 			// If still no director IDs, return empty result
@@ -117,6 +119,7 @@ export const getTournamentsByDirectors = createServerFn()
 						date: tournaments.date,
 						startTime: tournaments.startTime,
 						visible: tournaments.visible,
+						demo: tournaments.demo,
 						venueId: tournaments.venueId,
 						externalRef: tournaments.externalRef,
 						venue: {

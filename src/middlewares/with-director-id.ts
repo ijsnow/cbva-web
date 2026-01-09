@@ -1,6 +1,6 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { and } from "drizzle-orm";
-import { authMiddleware } from "@/auth/shared";
+import { authMiddleware, requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import { playerProfiles } from "@/db/schema/player-profiles";
 
@@ -23,23 +23,20 @@ import { playerProfiles } from "@/db/schema/player-profiles";
  *   });
  * ```
  */
-export const withDirector = createMiddleware()
-	.middleware([authMiddleware])
+export const withDirectorId = createMiddleware()
+	.middleware([
+		requirePermissions({
+			tournament: ["update"],
+		}),
+	])
 	.server(async ({ next, context }) => {
 		const { viewer } = context;
 
-		// If no viewer, continue without director
-		if (!viewer) {
-			return await next({
-				context: {
-					...context,
-					director: undefined,
-				},
-			});
-		}
-
 		// Look up director record by viewer's user ID
 		const director = await db.query.directors.findFirst({
+			columns: {
+				id: true,
+			},
 			where: (table, { eq, exists }) =>
 				exists(
 					db
@@ -57,7 +54,7 @@ export const withDirector = createMiddleware()
 		return await next({
 			context: {
 				...context,
-				director: director ?? undefined,
+				directorId: director?.id ?? undefined,
 			},
 		});
 	});

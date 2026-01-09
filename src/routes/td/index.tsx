@@ -14,6 +14,7 @@ import {
 } from "@/components/base/table";
 import { Toolbar } from "@/components/base/toolbar";
 import { createDemoTournamentMuationOptions } from "@/functions/tournaments/create-demo-tournament";
+import { deleteDemoTournamentMuationOptions } from "@/functions/tournaments/delete-demo-tournament";
 import {
 	getTournamentsByDirectorsOptions,
 	getTournamentsByDirectorsSchema,
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/td/")({
 function RouteComponent() {
 	const search = Route.useSearch();
 
-	const { data: tournamentsResponse } = useSuspenseQuery(
+	const { data: tournamentsResponse, refetch } = useSuspenseQuery(
 		getTournamentsByDirectorsOptions({
 			past: search.past,
 			page: search.page,
@@ -85,6 +86,13 @@ function RouteComponent() {
 		},
 	});
 
+	const { mutate: deleteDemo } = useMutation({
+		...deleteDemoTournamentMuationOptions(),
+		onSuccess: () => {
+			refetch();
+		},
+	});
+
 	return (
 		<DefaultLayout
 			classNames={{
@@ -110,7 +118,7 @@ function RouteComponent() {
 					/>
 				</Toolbar>
 
-				<div className="flex flex-col space-y-2 items-end">
+				<div className="flex flex-col space-y-6 items-center">
 					<Table aria-label="Player's tournament results">
 						<TableHeader className="bg-navbar-background">
 							<TableColumn id="date" allowsSorting minWidth={100}>
@@ -164,22 +172,36 @@ function RouteComponent() {
 										</TableCell>
 										<TableCell>
 											<Toolbar>
-												<Button
-													variant="icon"
-													color="default"
-													tooltip="Copy as demo"
-													radius="md"
-													onPress={() => {
-														copyAsDemo({
-															id,
-														});
-													}}
-												>
-													<Gamepad2Icon className="text-green-500" size={16} />
-												</Button>
-												{demo && (
-													<Button>
+												{demo ? (
+													<Button
+														variant="icon"
+														color="default"
+														tooltip="Delete demo tournament"
+														radius="md"
+														onPress={() => {
+															deleteDemo({
+																id,
+															});
+														}}
+													>
 														<XIcon className="text-red-500" size={16} />
+													</Button>
+												) : (
+													<Button
+														variant="icon"
+														color="default"
+														tooltip="Copy as demo"
+														radius="md"
+														onPress={() => {
+															copyAsDemo({
+																id,
+															});
+														}}
+													>
+														<Gamepad2Icon
+															className="text-green-500"
+															size={16}
+														/>
 													</Button>
 												)}
 											</Toolbar>
