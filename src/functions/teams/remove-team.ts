@@ -34,7 +34,7 @@ const replaceTeamTransaction = createServerOnlyFn(
 			.set({
 				seed: originalTeam.seed,
 			})
-			.where(eq(poolTeams.id, replacementTeamId));
+			.where(eq(tournamentDivisionTeams.id, replacementTeamId));
 
 		await txn
 			.update(poolTeams)
@@ -48,14 +48,14 @@ const replaceTeamTransaction = createServerOnlyFn(
 			.set({
 				teamAId: replacementTeamId,
 			})
-			.where(eq(poolMatches.teamAId, originalTeam.poolTeam.id));
+			.where(eq(poolMatches.teamAId, originalTeam.id));
 
 		await txn
 			.update(poolMatches)
 			.set({
 				teamBId: replacementTeamId,
 			})
-			.where(eq(poolMatches.teamBId, originalTeam.poolTeam.id));
+			.where(eq(poolMatches.teamBId, originalTeam.id));
 	},
 );
 

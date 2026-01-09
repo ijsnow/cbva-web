@@ -1,8 +1,12 @@
 import { describe, expect, test } from "vitest";
 import { db } from "@/db/connection";
 import { bootstrapTournament } from "@/tests/utils/tournaments";
-import { tournamentDivisions, tournamentDivisionTeams } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import {
+	tournamentDivisions,
+	tournamentDivisionTeams,
+	poolMatches,
+} from "@/db/schema";
+import { and, eq } from "drizzle-orm";
 import { createTeams } from "@/tests/utils/users";
 import { getQualifiedLevels } from "@/tests/utils/divisions";
 import { removeTeam } from "./remove-team";
@@ -72,7 +76,9 @@ describe("removeTeam", () => {
 		});
 
 		expect(teamsBefore.filter((t) => t.status === "confirmed")).toHaveLength(3);
-		expect(teamsBefore.filter((t) => t.status === "waitlisted")).toHaveLength(2);
+		expect(teamsBefore.filter((t) => t.status === "waitlisted")).toHaveLength(
+			2,
+		);
 
 		// Remove a confirmed team
 		await removeTeam({
@@ -242,5 +248,120 @@ describe("removeTeam", () => {
 		});
 
 		expect(removedTeam?.status).toBe("late-withdraw");
+	});
+
+	test("replaces team manually and updates pool matches", async () => {
+		// Create a tournament with pools and pool matches
+		const tournamentInfo = await bootstrapTournament(db, {
+			date: "2025-01-01",
+			startTime: "09:00:00",
+			divisions: [
+				{
+					division: "b",
+					gender: "male",
+					teams: 4,
+					pools: 1,
+				},
+			],
+			poolMatches: true,
+		});
+
+		const tournamentDivisionId = tournamentInfo.divisions[0];
+
+		// Add a waitlisted team that will be used as replacement
+		const levels = await getQualifiedLevels(db, "b");
+		const replacementTeamIds = await createTeams(db, {
+			count: 1,
+			levels: levels.map(({ name }) => name),
+			gender: "male",
+		});
+
+		const [insertedReplacementTeam] = await db
+			.insert(tournamentDivisionTeams)
+			.values([
+				{
+					tournamentDivisionId,
+					teamId: replacementTeamIds[0].id,
+					status: "waitlisted" as const,
+					order: 4,
+				},
+			])
+			.returning({ id: tournamentDivisionTeams.id });
+
+		// Get one of the confirmed teams to remove
+		const confirmedTeams = await db.query.tournamentDivisionTeams.findMany({
+			where: (t, { eq, and }) =>
+				and(
+					eq(t.tournamentDivisionId, tournamentDivisionId),
+					eq(t.status, "confirmed"),
+				),
+		});
+
+		expect(confirmedTeams).toHaveLength(4);
+
+		const teamToRemove = confirmedTeams[0];
+
+		// Get pool matches where this team participates
+		const matchesBeforeAsTeamA = await db.query.poolMatches.findMany({
+			where: (t, { eq }) => eq(t.teamAId, teamToRemove.id),
+		});
+
+		const matchesBeforeAsTeamB = await db.query.poolMatches.findMany({
+			where: (t, { eq }) => eq(t.teamBId, teamToRemove.id),
+		});
+
+		const totalMatchesBefore =
+			matchesBeforeAsTeamA.length + matchesBeforeAsTeamB.length;
+
+		expect(totalMatchesBefore).toBeGreaterThan(0);
+
+		// Remove the team with a replacement
+		await removeTeam({
+			data: {
+				id: teamToRemove.id,
+				late: false,
+				replacementTeamId: insertedReplacementTeam.id,
+			},
+		});
+
+		// Verify that the team was withdrawn
+		const removedTeam = await db.query.tournamentDivisionTeams.findFirst({
+			where: (t, { eq }) => eq(t.id, teamToRemove.id),
+		});
+
+		expect(removedTeam?.status).toBe("withdraw");
+
+		// Verify that the replacement team took over the seed
+		const replacementTeam = await db.query.tournamentDivisionTeams.findFirst({
+			where: (t, { eq }) => eq(t.id, insertedReplacementTeam.id),
+		});
+
+		expect(replacementTeam?.seed).toBe(teamToRemove.seed);
+
+		// Verify that all pool matches were updated to use the replacement team
+		const matchesAfterAsTeamA = await db.query.poolMatches.findMany({
+			where: (t, { eq }) => eq(t.teamAId, insertedReplacementTeam.id),
+		});
+
+		const matchesAfterAsTeamB = await db.query.poolMatches.findMany({
+			where: (t, { eq }) => eq(t.teamBId, insertedReplacementTeam.id),
+		});
+
+		const totalMatchesAfter =
+			matchesAfterAsTeamA.length + matchesAfterAsTeamB.length;
+
+		expect(totalMatchesAfter).toBe(totalMatchesBefore);
+
+		// Verify that the original team is no longer in any pool matches
+		const originalTeamMatchesAsTeamA = await db.query.poolMatches.findMany({
+			where: (t, { eq }) => eq(t.teamAId, teamToRemove.id),
+		});
+
+		const originalTeamMatchesAsTeamB = await db.query.poolMatches.findMany({
+			where: (t, { eq }) => eq(t.teamBId, teamToRemove.id),
+		});
+
+		expect(originalTeamMatchesAsTeamA).toHaveLength(0);
+		expect(originalTeamMatchesAsTeamB).toHaveLength(0);
 	});
 });
