@@ -98,7 +98,9 @@ export const getTournamentsByDirectors = createServerFn()
 
 						return and(...filters);
 					},
-					orderBy: (tournaments, { asc }) => [asc(tournaments.date)],
+					orderBy: (tournaments, { asc, desc }) => [
+						past ? desc(tournaments.date) : asc(tournaments.date),
+					],
 				},
 			});
 		},
