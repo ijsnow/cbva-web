@@ -5,7 +5,7 @@ import type { Option } from "@/components/base/select"
 import { db } from "@/db/connection"
 
 async function readDivisions(includeJuniors = true) {
-  return await db.query.divisions.findMany({
+  return await db._query.divisions.findMany({
     where: includeJuniors ? undefined : (t, { isNull }) => isNull(t.maxAge),
   })
 }

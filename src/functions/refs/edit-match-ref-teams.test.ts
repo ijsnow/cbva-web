@@ -105,7 +105,7 @@ describe("editMatchRefTeamSchema", () => {
         simulatePoolMatches: false,
       })
 
-      const pool = await db.query.pools.findFirst({
+      const pool = await db._query.pools.findFirst({
         with: {
           matches: {
             limit: 1,
@@ -122,7 +122,7 @@ describe("editMatchRefTeamSchema", () => {
       assert(poolMatch)
 
       // Get a tournament division team to use as ref team
-      const refTeam = await db.query.tournamentDivisionTeams.findFirst({
+      const refTeam = await db._query.tournamentDivisionTeams.findFirst({
         where: (t, { eq }) =>
           eq(t.tournamentDivisionId, tournament.divisions[0]),
       })
@@ -140,7 +140,7 @@ describe("editMatchRefTeamSchema", () => {
       expect(result.success).toBe(true)
 
       // Verify the ref team was created
-      const createdRefTeam = await db.query.matchRefTeams.findFirst({
+      const createdRefTeam = await db._query.matchRefTeams.findFirst({
         where: (t, { eq }) => eq(t.poolMatchId, poolMatch.id),
       })
 
@@ -175,7 +175,7 @@ describe("editMatchRefTeamSchema", () => {
       })
 
       // Get a playoff match
-      const playoffMatch = await db.query.playoffMatches.findFirst({
+      const playoffMatch = await db._query.playoffMatches.findFirst({
         where: (t, { eq }) =>
           eq(t.tournamentDivisionId, tournament.divisions[0]),
       })
@@ -183,7 +183,7 @@ describe("editMatchRefTeamSchema", () => {
       assert(playoffMatch)
 
       // Get a tournament division team to use as ref team
-      const refTeam = await db.query.tournamentDivisionTeams.findFirst({
+      const refTeam = await db._query.tournamentDivisionTeams.findFirst({
         where: (t, { eq }) =>
           eq(t.tournamentDivisionId, tournament.divisions[0]),
       })
@@ -201,7 +201,7 @@ describe("editMatchRefTeamSchema", () => {
       expect(result.success).toBe(true)
 
       // Verify the ref team was created
-      const createdRefTeam = await db.query.matchRefTeams.findFirst({
+      const createdRefTeam = await db._query.matchRefTeams.findFirst({
         where: (t, { eq }) => eq(t.playoffMatchId, playoffMatch.id),
       })
 
@@ -228,7 +228,7 @@ describe("editMatchRefTeamSchema", () => {
         simulatePoolMatches: false,
       })
 
-      const pool = await db.query.pools.findFirst({
+      const pool = await db._query.pools.findFirst({
         with: {
           matches: {
             limit: 1,
@@ -245,7 +245,7 @@ describe("editMatchRefTeamSchema", () => {
       assert(poolMatch)
 
       // Get two tournament division teams to use as ref teams
-      const teams = await db.query.tournamentDivisionTeams.findMany({
+      const teams = await db._query.tournamentDivisionTeams.findMany({
         where: (t, { eq }) =>
           eq(t.tournamentDivisionId, tournament.divisions[0]),
         limit: 2,
@@ -262,7 +262,7 @@ describe("editMatchRefTeamSchema", () => {
       })
 
       // Verify first ref team was created
-      let refTeams = await db.query.matchRefTeams.findMany({
+      let refTeams = await db._query.matchRefTeams.findMany({
         where: (t, { eq }) => eq(t.poolMatchId, poolMatch.id),
       })
 
@@ -278,7 +278,7 @@ describe("editMatchRefTeamSchema", () => {
       })
 
       // Verify old ref team was deleted and new one created
-      refTeams = await db.query.matchRefTeams.findMany({
+      refTeams = await db._query.matchRefTeams.findMany({
         where: (t, { eq }) => eq(t.poolMatchId, poolMatch.id),
       })
 
@@ -311,7 +311,7 @@ describe("editMatchRefTeamSchema", () => {
       })
 
       // Get a playoff match
-      const playoffMatch = await db.query.playoffMatches.findFirst({
+      const playoffMatch = await db._query.playoffMatches.findFirst({
         where: (t, { eq }) =>
           eq(t.tournamentDivisionId, tournament.divisions[0]),
       })
@@ -319,7 +319,7 @@ describe("editMatchRefTeamSchema", () => {
       assert(playoffMatch)
 
       // Get two tournament division teams to use as ref teams
-      const teams = await db.query.tournamentDivisionTeams.findMany({
+      const teams = await db._query.tournamentDivisionTeams.findMany({
         where: (t, { eq }) =>
           eq(t.tournamentDivisionId, tournament.divisions[0]),
         limit: 2,
@@ -336,7 +336,7 @@ describe("editMatchRefTeamSchema", () => {
       })
 
       // Verify first ref team was created
-      let refTeams = await db.query.matchRefTeams.findMany({
+      let refTeams = await db._query.matchRefTeams.findMany({
         where: (t, { eq }) => eq(t.playoffMatchId, playoffMatch.id),
       })
 
@@ -352,7 +352,7 @@ describe("editMatchRefTeamSchema", () => {
       })
 
       // Verify old ref team was deleted and new one created
-      refTeams = await db.query.matchRefTeams.findMany({
+      refTeams = await db._query.matchRefTeams.findMany({
         where: (t, { eq }) => eq(t.playoffMatchId, playoffMatch!.id),
       })
 

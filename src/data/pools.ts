@@ -10,7 +10,7 @@ async function readPools({
   tournamentDivisionId: number
   ids?: []
 }) {
-  return await db.query.pools.findMany({
+  return await db._query.pools.findMany({
     with: {
       matches: {
         with: {

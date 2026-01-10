@@ -9,7 +9,7 @@ import { type UpdateVenue, venues } from "../schema"
 import { files } from "../schema/files"
 
 async function main() {
-  const results = await db.query.venues.findMany({
+  const results = await db._query.venues.findMany({
     columns: {
       id: true,
       imageSource: true,

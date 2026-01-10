@@ -90,7 +90,7 @@ export const editSeedTransaction = createServerOnlyFn(
 export const editSeed = createServerFn()
   .inputValidator(editSeedSchema)
   .handler(async ({ data: { id, seed, target } }) => {
-    const targetTeam = await db.query.tournamentDivisionTeams.findFirst({
+    const targetTeam = await db._query.tournamentDivisionTeams.findFirst({
       with: {
         poolTeam: true,
       },

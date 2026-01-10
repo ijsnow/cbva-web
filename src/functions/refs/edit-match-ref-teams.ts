@@ -32,11 +32,11 @@ export async function editMatchRefTeamHandler({
   const { teamId, playoffMatchId, poolMatchId } = data
 
   const match = playoffMatchId
-    ? await db.query.playoffMatches.findFirst({
+    ? await db._query.playoffMatches.findFirst({
         where: (t, { eq }) => eq(t.id, playoffMatchId),
       })
     : poolMatchId
-      ? await db.query.poolMatches.findFirst({
+      ? await db._query.poolMatches.findFirst({
           where: (t, { eq }) => eq(t.id, poolMatchId),
         })
       : undefined

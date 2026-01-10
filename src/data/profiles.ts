@@ -39,7 +39,7 @@ import { forbidden, unauthorized } from "@/lib/responses"
 import { isNotNull, isNotNullOrUndefined } from "@/utils/types"
 
 async function readViewerProfiles(userId: Viewer["id"]) {
-  return await db.query.playerProfiles.findMany({
+  return await db._query.playerProfiles.findMany({
     where: (t, { eq }) => eq(t.userId, userId),
   })
 }
@@ -95,7 +95,7 @@ export function useInsertPlayerProfile() {
 }
 
 async function readProfile(id: number, viewerId: Viewer["id"]) {
-  const result = await db.query.playerProfiles.findFirst({
+  const result = await db._query.playerProfiles.findFirst({
     where: (t, { eq, and }) => and(eq(t.id, id), eq(t.userId, viewerId)),
   })
 
@@ -132,7 +132,7 @@ const getProfileOverview = createServerFn({
 })
   .inputValidator(selectPlayerProfileSchema.pick({ id: true }))
   .handler(async ({ data: { id } }) => {
-    const result = await db.query.playerProfiles.findFirst({
+    const result = await db._query.playerProfiles.findFirst({
       columns: {
         id: true,
         userId: true,
@@ -424,7 +424,7 @@ export const updatePlayerProfileFn = createServerFn({ method: "POST" })
       collegeTeamYearsParticipated,
     } = data
 
-    const profile = await db.query.playerProfiles.findFirst({
+    const profile = await db._query.playerProfiles.findFirst({
       columns: {
         userId: true,
       },
@@ -495,7 +495,7 @@ export const searchProfiles = createServerFn({
 })
   .inputValidator(searchProfilesSchema)
   .handler(async ({ data: { name, gender, levels } }) => {
-    const profiles = await db.query.playerProfiles.findMany({
+    const profiles = await db._query.playerProfiles.findMany({
       limit: 25,
       where: (t, { and, ilike, eq, inArray, sql }) => {
         const filters = [

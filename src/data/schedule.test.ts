@@ -55,7 +55,7 @@ describe("duplicateTournamentFn", () => {
       data: { id, date: targetDate },
     })
 
-    const dbResult = await db.query.tournaments.findMany({
+    const dbResult = await db._query.tournaments.findMany({
       with: {
         tournamentDivisions: true,
         venue: true,
@@ -176,7 +176,7 @@ describe("duplicateScheduleFn", () => {
       data: { startDate: "2025-01-01", endDate: "2025-12-31", addDays: 364 },
     })
 
-    const dbResult = await db.query.tournaments.findMany({
+    const dbResult = await db._query.tournaments.findMany({
       with: {
         tournamentDivisions: true,
         venue: true,

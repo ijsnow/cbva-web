@@ -21,7 +21,7 @@ describe("division seeds", () => {
 
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
-    const teams = await db.query.tournamentDivisionTeams.findMany({
+    const teams = await db._query.tournamentDivisionTeams.findMany({
       where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),
       orderBy: (t, { asc }) => asc(t.seed),
     })
@@ -48,7 +48,7 @@ describe("division seeds", () => {
       },
     })
 
-    const updatedTeams = await db.query.tournamentDivisionTeams.findMany({
+    const updatedTeams = await db._query.tournamentDivisionTeams.findMany({
       where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),
       orderBy: (t, { asc }) => [asc(t.seed)],
     })
@@ -78,7 +78,7 @@ describe("division seeds", () => {
 
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
-    const teams = await db.query.tournamentDivisionTeams.findMany({
+    const teams = await db._query.tournamentDivisionTeams.findMany({
       where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),
       orderBy: (t, { asc }) => [asc(t.seed)],
     })
@@ -97,7 +97,7 @@ describe("division seeds", () => {
       },
     })
 
-    const updatedTeams = await db.query.tournamentDivisionTeams.findMany({
+    const updatedTeams = await db._query.tournamentDivisionTeams.findMany({
       where: (t, { eq }) => eq(t.tournamentDivisionId, tournamentDivisionId),
       orderBy: (t, { asc }) => [asc(t.seed)],
     })
@@ -130,7 +130,7 @@ describe("pool seeds", () => {
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
     const teams = orderBy(
-      await db.query.tournamentDivisionTeams.findMany({
+      await db._query.tournamentDivisionTeams.findMany({
         with: {
           poolTeam: true,
         },
@@ -166,7 +166,7 @@ describe("pool seeds", () => {
     })
 
     const updatedTeams = orderBy(
-      await db.query.tournamentDivisionTeams.findMany({
+      await db._query.tournamentDivisionTeams.findMany({
         with: {
           poolTeam: true,
         },
@@ -205,7 +205,7 @@ describe("pool seeds", () => {
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
     const teams = orderBy(
-      await db.query.tournamentDivisionTeams.findMany({
+      await db._query.tournamentDivisionTeams.findMany({
         with: {
           poolTeam: true,
         },
@@ -231,7 +231,7 @@ describe("pool seeds", () => {
     })
 
     const updatedTeams = orderBy(
-      await db.query.tournamentDivisionTeams.findMany({
+      await db._query.tournamentDivisionTeams.findMany({
         with: {
           poolTeam: true,
         },

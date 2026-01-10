@@ -130,7 +130,7 @@ export const getImpersonatorFn = createServerFn({ method: "GET" })
 			return null;
 		}
 
-		return await db.query.users.findFirst({
+		return await db._query.users.findFirst({
 			where: (t, { eq }) => eq(t.id, impersonatorId),
 		});
 	});

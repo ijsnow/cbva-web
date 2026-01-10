@@ -30,7 +30,7 @@ export const setCapacityFn = createServerFn({ method: "POST" })
   ])
   .inputValidator(setCapacitySchema)
   .handler(async ({ data: { id, capacity, waitlistCapacity } }) => {
-    const current = await db.query.tournamentDivisions.findFirst({
+    const current = await db._query.tournamentDivisions.findFirst({
       with: {
         teams: {
           orderBy: (t, { asc }) => [asc(t.order), asc(t.createdAt)],

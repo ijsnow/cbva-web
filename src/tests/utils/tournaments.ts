@@ -27,7 +27,7 @@ import { createDirectors, createTeams } from "./users"
 import { getDefaultVenue } from "./venues"
 
 async function getWildcardTeams(db: Database, divisionId: number) {
-  const matches = await db.query.playoffMatches.findMany({
+  const matches = await db._query.playoffMatches.findMany({
     columns: {
       teamAId: true,
       teamBId: true,
@@ -40,7 +40,7 @@ async function getWildcardTeams(db: Database, divisionId: number) {
   )
 
   return (
-    await db.query.tournamentDivisionTeams.findMany({
+    await db._query.tournamentDivisionTeams.findMany({
       columns: { id: true },
       where: (t, { and, eq, notInArray }) =>
         and(
@@ -196,7 +196,7 @@ export async function bootstrapTournament(
       if (config.playoffConfig.assignWildcards) {
         const wildcardTeams = await getWildcardTeams(db, id)
 
-        const matches = await db.query.playoffMatches.findMany({
+        const matches = await db._query.playoffMatches.findMany({
           where: (t, { and, or, eq, isNull, isNotNull }) =>
             and(
               eq(t.tournamentDivisionId, id),

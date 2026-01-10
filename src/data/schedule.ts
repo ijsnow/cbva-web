@@ -183,7 +183,7 @@ export const duplicateTournamentFn = createServerFn({ method: "POST" })
 				});
 			}
 
-			const template = await db.query.tournaments.findFirst({
+			const template = await db._query.tournaments.findFirst({
 				where: (table, { eq }) => eq(table.id, id),
 				with: {
 					venue: true,
@@ -239,7 +239,7 @@ export const duplicateScheduleFn = createServerFn()
 		// consider doing this all at once using $with
 		//
 		// https://orm.drizzle.team/docs/insert#with-insert-clause
-		const tournaments = await db.query.tournaments.findMany({
+		const tournaments = await db._query.tournaments.findMany({
 			with: {
 				venue: true,
 				directors: true,

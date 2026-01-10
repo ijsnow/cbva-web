@@ -19,7 +19,7 @@ export const deleteDemoTournament = createServerFn()
 	.middleware([withDirectorId])
 	.inputValidator(deleteDemoTournamentSchema)
 	.handler(async ({ data: { id }, context: { directorId, viewer } }) => {
-		const tournament = await db.query.tournaments.findFirst({
+		const tournament = await db._query.tournaments.findFirst({
 			with: {
 				directors: {
 					with: {

@@ -53,7 +53,7 @@ export const createPlayoffsFn = createServerFn()
         overwrite,
       },
     }) => {
-      const pools = await db.query.pools.findMany({
+      const pools = await db._query.pools.findMany({
         with: {
           teams: {
             where: (t, { isNotNull }) => isNotNull(t.finish),

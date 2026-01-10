@@ -24,7 +24,7 @@ export async function importGames(year: number) {
   })
 
   const tournamentsMap = (
-    await db.query.tournaments.findMany({
+    await db._query.tournaments.findMany({
       with: {
         tournamentDivisions: true,
       },
@@ -46,7 +46,7 @@ export async function importGames(year: number) {
       ),
   })
 
-  const poolsForYear = await db.query.pools.findMany({
+  const poolsForYear = await db._query.pools.findMany({
     with: {
       teams: {
         with: {

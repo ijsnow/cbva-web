@@ -14,7 +14,7 @@ import {
 } from "@/db/schema"
 
 async function readDirectors() {
-  return await db.query.directors.findMany({
+  return await db._query.directors.findMany({
     with: {
       profile: true,
     },
@@ -45,7 +45,7 @@ export const insertTournamentDirectorFn = createServerFn({ method: "POST" })
         id: tournamentDirectors.id,
       })
 
-    const created = await db.query.tournamentDirectors.findFirst({
+    const created = await db._query.tournamentDirectors.findFirst({
       where: (t, { eq }) => eq(t.id, res.id),
       with: {
         director: {
@@ -116,7 +116,7 @@ export const insertVenueDirectorFn = createServerFn({ method: "POST" })
       id: venueDirectors.id,
     })
 
-    const created = await db.query.venueDirectors.findFirst({
+    const created = await db._query.venueDirectors.findFirst({
       where: (t, { eq }) => eq(t.id, res.id),
       with: {
         director: {

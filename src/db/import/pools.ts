@@ -32,7 +32,7 @@ export async function importPoolsForYear(
   )
 
   const tournamentDivisions = (
-    await db.query.tournaments.findMany({
+    await db._query.tournaments.findMany({
       where: (t, { gte, lt, and }) =>
         and(gte(t.date, `${year}-01-01`), lt(t.date, `${year + 1}-01-01`)),
       with: {

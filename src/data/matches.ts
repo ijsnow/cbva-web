@@ -10,7 +10,7 @@ export const getPoolMatch = createServerFn({
 })
   .inputValidator((input: { id: number }) => input)
   .handler(async ({ data: { id } }) => {
-    return await db.query.poolMatches.findFirst({
+    return await db._query.poolMatches.findFirst({
       where: eq(poolMatches.id, id),
       with: {
         sets: true,
@@ -77,7 +77,7 @@ export const getPoolMatchSet = createServerFn({
 })
   .inputValidator((input: { id: number }) => input)
   .handler(async ({ data: { id } }) => {
-    return await db.query.matchSets.findFirst({
+    return await db._query.matchSets.findFirst({
       where: eq(poolMatches.id, id),
       with: {
         poolMatch: {
@@ -125,7 +125,7 @@ export const getPlayoffMatch = createServerFn({
 })
   .inputValidator((input: { id: number }) => input)
   .handler(async ({ data: { id } }) => {
-    return await db.query.playoffMatches.findFirst({
+    return await db._query.playoffMatches.findFirst({
       where: (t, { eq }) => eq(t.id, id),
       with: {
         sets: true,

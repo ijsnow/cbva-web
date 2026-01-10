@@ -115,7 +115,7 @@ export const updatePool = createServerFn()
 		async ({
 			data: { id: tournamentDivisionTeamId, poolId, seed: desiredSeed },
 		}) => {
-			const targetTeam = await db.query.tournamentDivisionTeams.findFirst({
+			const targetTeam = await db._query.tournamentDivisionTeams.findFirst({
 				with: {
 					poolTeam: true,
 				},

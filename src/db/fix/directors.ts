@@ -34,7 +34,7 @@ async function main() {
 
   console.log(`found ${beaches.length}`)
 
-  const venuesToFix = await db.query.venues.findMany()
+  const venuesToFix = await db._query.venues.findMany()
 
   for (const venue of venuesToFix) {
     const beach = beaches.find(({ id }) => id === venue.externalRef)
@@ -43,7 +43,7 @@ async function main() {
       throw new Error(`could not find beach: ${JSON.stringify(venue, null, 2)}`)
     }
 
-    const director = await db.query.users.findFirst({
+    const director = await db._query.users.findFirst({
       where: (t, { eq }) => eq(t.id, beach.director.id),
     })
 

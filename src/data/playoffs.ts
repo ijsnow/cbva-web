@@ -7,7 +7,7 @@ async function readPlayoffs({
 }: {
   tournamentDivisionId: number
 }) {
-  return await db.query.playoffMatches.findMany({
+  return await db._query.playoffMatches.findMany({
     with: {
       sets: true,
       teamA: {

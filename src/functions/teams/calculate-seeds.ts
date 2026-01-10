@@ -35,7 +35,7 @@ export const calculateSeedsFn = createServerFn()
     async ({
       data: { id: tournamentId, tournamentDivisionIds, overwrite },
     }) => {
-      const tournament = await db.query.tournaments.findFirst({
+      const tournament = await db._query.tournaments.findFirst({
         with: {
           tournamentDivisions: {
             with: {

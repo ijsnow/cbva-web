@@ -37,7 +37,7 @@ export const completePoolsFn = createServerFn()
   .inputValidator(completePoolsSchema)
   .handler(async ({ data: { id: tournamentDivisionId } }) => {
     // Get all pools for this tournament division with their teams and completed matches
-    const poolsData = await db.query.pools.findMany({
+    const poolsData = await db._query.pools.findMany({
       with: {
         teams: {
           columns: {

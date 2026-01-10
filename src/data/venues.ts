@@ -12,7 +12,7 @@ import { db } from "@/db/connection"
 import { selectVenueSchema, updateVenueSchema, venues } from "@/db/schema"
 
 async function readVenues() {
-  return await db.query.venues.findMany({
+  return await db._query.venues.findMany({
     where: (venues, { eq }) => eq(venues.status, "active"),
     orderBy: (venues, { asc }) => [asc(venues.city), asc(venues.name)],
   })
@@ -94,7 +94,7 @@ export const getVenue = createServerFn({
   .middleware([authMiddleware])
   .inputValidator(selectVenueSchema.pick({ id: true }))
   .handler(async ({ data: { id }, context: { viewer } }) => {
-    const venue = await db.query.venues.findFirst({
+    const venue = await db._query.venues.findFirst({
       with: {
         directors: {
           with: {

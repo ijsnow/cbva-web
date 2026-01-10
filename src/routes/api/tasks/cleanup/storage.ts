@@ -35,7 +35,7 @@ async function walk(
   return paths
 }
 
-type TableNames = keyof typeof db.query
+type TableNames = keyof typeof db._query
 type Schema = NonNullable<typeof db._.schema>
 
 type BucketLookupColumns = {
@@ -60,7 +60,7 @@ async function cleanupBucket<TTableName extends ConfiguredBuckets>(
 
   const storagePaths = objects.map(({ path }) => path)
 
-  const query = db.query[bucketName]
+  const query = db._query[bucketName]
 
   const result = await query.findMany({
     columns: lookupColumns.reduce((memo, key) => {

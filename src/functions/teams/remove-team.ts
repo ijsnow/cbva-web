@@ -23,7 +23,7 @@ const replaceTeamTransaction = createServerOnlyFn(
     originalTeam: TournamentDivisionTeam & { poolTeam: PoolTeam },
     replacementTeamId: number
   ) => {
-    const replacementTeam = await db.query.tournamentDivisionTeams.findFirst({
+    const replacementTeam = await db._query.tournamentDivisionTeams.findFirst({
       where: (t, { eq }) => eq(t.id, replacementTeamId),
     })
 
@@ -78,7 +78,7 @@ export const removeTeam = createServerFn()
   ])
   .inputValidator(removeTeamSchema)
   .handler(async ({ data: { id, late, replacementTeamId } }) => {
-    const team = await db.query.tournamentDivisionTeams.findFirst({
+    const team = await db._query.tournamentDivisionTeams.findFirst({
       with: {
         poolTeam: true,
         tournamentDivision: {

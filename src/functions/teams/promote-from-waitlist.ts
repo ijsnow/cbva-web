@@ -42,7 +42,7 @@ export const promoteFromWaitlistTransaction = createServerOnlyFn(
 export const promoteFromWaitlist = createServerFn()
   .inputValidator(promoteFromWaitlistSchema)
   .handler(async ({ data: { id, automatic, seed, poolId, poolSeed } }) => {
-    const team = await db.query.tournamentDivisionTeams.findFirst({
+    const team = await db._query.tournamentDivisionTeams.findFirst({
       with: {
         poolTeam: true,
         tournamentDivision: {

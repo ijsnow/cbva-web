@@ -20,7 +20,7 @@ export const getUsersFn = createServerFn()
   .middleware([requireRole(["admin"])])
   .inputValidator(searchUsersSchema)
   .handler(async ({ data: { name } }) => {
-    return await db.query.users.findMany({
+    return await db._query.users.findMany({
       where: (t, { ilike }) => ilike(t.name, `%${name}%`),
       limit: 10,
       orderBy: (t, { asc }) => asc(t.name),

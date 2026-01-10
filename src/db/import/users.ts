@@ -10,7 +10,7 @@ export async function importUsers(levels: Map<string, number>) {
   // const hasMore = true;
   // const offset = 0;
 
-  const existingUsers = await db.query.users.findMany({
+  const existingUsers = await db._query.users.findMany({
     columns: {
       id: true,
       phoneNumber: true,

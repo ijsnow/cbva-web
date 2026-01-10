@@ -25,7 +25,7 @@ describe("updatePool", () => {
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
     // Get a pool
-    const pools = await db.query.pools.findMany({
+    const pools = await db._query.pools.findMany({
       where: (p, { eq }) => eq(p.tournamentDivisionId, tournamentDivisionId),
       limit: 1,
     })
@@ -33,7 +33,7 @@ describe("updatePool", () => {
     const pool = pools[0]
 
     // Get all teams in this pool and remove them
-    const poolTeamsInPool = await db.query.poolTeams.findMany({
+    const poolTeamsInPool = await db._query.poolTeams.findMany({
       where: (pt, { eq }) => eq(pt.poolId, pool.id),
     })
 
@@ -43,7 +43,7 @@ describe("updatePool", () => {
     }
 
     // Get a team that's not in this pool
-    const allTeams = await db.query.tournamentDivisionTeams.findMany({
+    const allTeams = await db._query.tournamentDivisionTeams.findMany({
       with: {
         poolTeam: true,
       },
@@ -63,7 +63,7 @@ describe("updatePool", () => {
     })
 
     // Verify the team has seed 1
-    const addedPoolTeam = await db.query.poolTeams.findFirst({
+    const addedPoolTeam = await db._query.poolTeams.findFirst({
       where: (pt, { eq }) => eq(pt.teamId, teamToAdd!.id),
     })
 
@@ -101,12 +101,12 @@ describe("updatePool", () => {
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
     // Get pools
-    const pools = await db.query.pools.findMany({
+    const pools = await db._query.pools.findMany({
       where: (p, { eq }) => eq(p.tournamentDivisionId, tournamentDivisionId),
     })
 
     // Get a team from pool 1
-    const pool1Team = await db.query.poolTeams.findFirst({
+    const pool1Team = await db._query.poolTeams.findFirst({
       where: (pt, { eq }) => eq(pt.poolId, pools[0].id),
     })
 
@@ -124,7 +124,7 @@ describe("updatePool", () => {
     })
 
     // Verify team is NOT in the original pool
-    const teamInOriginalPool = await db.query.poolTeams.findFirst({
+    const teamInOriginalPool = await db._query.poolTeams.findFirst({
       where: (pt, { eq, and }) =>
         and(eq(pt.teamId, teamId), eq(pt.poolId, originalPoolId)),
     })
@@ -132,14 +132,14 @@ describe("updatePool", () => {
     expect(teamInOriginalPool).toBeUndefined()
 
     // Verify team IS in the new pool
-    const teamInNewPool = await db.query.poolTeams.findFirst({
+    const teamInNewPool = await db._query.poolTeams.findFirst({
       where: (pt, { eq, and }) =>
         and(eq(pt.teamId, teamId), eq(pt.poolId, pools[1].id)),
     })
 
     expect(teamInNewPool).toBeDefined()
 
-    const pool1Teams = await db.query.poolTeams.findMany({
+    const pool1Teams = await db._query.poolTeams.findMany({
       where: (pt, { eq }) => eq(pt.poolId, pools[0].id),
       orderBy: (t, { asc }) => asc(t.seed),
     })
@@ -165,7 +165,7 @@ describe("updatePool", () => {
 
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
-    const [pool, otherPool] = await db.query.pools.findMany({
+    const [pool, otherPool] = await db._query.pools.findMany({
       with: {
         teams: true,
       },
@@ -200,7 +200,7 @@ describe("updatePool", () => {
       },
     })
 
-    const updatedTeams = await db.query.poolTeams.findMany({
+    const updatedTeams = await db._query.poolTeams.findMany({
       with: {
         team: true,
       },
@@ -235,7 +235,7 @@ describe("updatePool", () => {
 
     const tournamentDivisionId = tournamentInfo.divisions[0]
 
-    const [pool, otherPool] = await db.query.pools.findMany({
+    const [pool, otherPool] = await db._query.pools.findMany({
       with: {
         teams: true,
       },
@@ -270,7 +270,7 @@ describe("updatePool", () => {
       },
     })
 
-    const updatedTeams = await db.query.poolTeams.findMany({
+    const updatedTeams = await db._query.poolTeams.findMany({
       with: {
         team: true,
       },

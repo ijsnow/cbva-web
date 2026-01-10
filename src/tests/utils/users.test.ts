@@ -15,7 +15,7 @@ describe("createTeams", () => {
       gender: "female",
     })
 
-    const teams = await db.query.teams.findMany({
+    const teams = await db._query.teams.findMany({
       with: {
         players: {
           with: {
@@ -63,7 +63,7 @@ describe("createTeams", () => {
       },
     ])
 
-    const teams = await db.query.teams.findMany({
+    const teams = await db._query.teams.findMany({
       with: {
         players: {
           with: {
@@ -97,7 +97,7 @@ describe("createDirectors", () => {
   test("can create random directors", async () => {
     const created = await createDirectors(db, 4)
 
-    const directors = await db.query.directors.findMany({
+    const directors = await db._query.directors.findMany({
       with: {
         profile: {
           with: {

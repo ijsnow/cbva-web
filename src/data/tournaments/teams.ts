@@ -35,7 +35,7 @@ export const addTeamFn = createServerFn({ method: "POST" })
   ])
   .inputValidator(addTeamSchema)
   .handler(async ({ data: { tournamentDivisionId, players } }) => {
-    const division = await db.query.tournamentDivisions.findFirst({
+    const division = await db._query.tournamentDivisions.findFirst({
       where: (t, { eq }) => eq(t.id, tournamentDivisionId),
     })
 
@@ -158,7 +158,7 @@ export const fillTournamentFn = createServerFn()
   ])
   .inputValidator(fillTournamentSchema)
   .handler(async ({ data: { id: tournamentId } }) => {
-    const tournament = await db.query.tournaments.findFirst({
+    const tournament = await db._query.tournaments.findFirst({
       with: {
         tournamentDivisions: {
           with: {
@@ -188,7 +188,7 @@ export const fillTournamentFn = createServerFn()
 
       const randomTeams = chunk(
         shuffle(
-          await db.query.playerProfiles.findMany({
+          await db._query.playerProfiles.findMany({
             where: (t, { inArray, and, eq }) =>
               and(inArray(t.levelId, validLevelIds), eq(t.gender, gender)),
             limit: capacity * teamSize - existingTeams.length,

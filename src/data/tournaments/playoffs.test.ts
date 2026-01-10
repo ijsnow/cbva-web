@@ -42,7 +42,7 @@ describe("Generating playoffs", () => {
       },
     })
 
-    const matches = await db.query.playoffMatches.findMany({
+    const matches = await db._query.playoffMatches.findMany({
       with: {
         teamA: true,
         teamB: true,
@@ -94,7 +94,7 @@ describe("Generating playoffs", () => {
       },
     })
 
-    const matches = await db.query.playoffMatches.findMany({
+    const matches = await db._query.playoffMatches.findMany({
       with: {
         teamA: {
           with: {
@@ -162,7 +162,7 @@ describe("Generating playoffs", () => {
       },
     })
 
-    const matches = await db.query.playoffMatches.findMany({
+    const matches = await db._query.playoffMatches.findMany({
       with: {
         teamA: {
           with: {
@@ -230,7 +230,7 @@ describe("referee assignments", () => {
 
     const divisionId = tournamentInfo.divisions[0]
 
-    const match = await db.query.playoffMatches.findFirst({
+    const match = await db._query.playoffMatches.findFirst({
       with: {
         sets: true,
       },
@@ -254,7 +254,7 @@ describe("referee assignments", () => {
 
     const refTeamId = teamAWins ? match.teamBId : match.teamAId
 
-    const refTeam = await db.query.matchRefTeams.findFirst({
+    const refTeam = await db._query.matchRefTeams.findFirst({
       where: (t, { and, eq }) =>
         and(eq(t.teamId, refTeamId!), eq(t.playoffMatchId, match.nextMatchId!)),
     })

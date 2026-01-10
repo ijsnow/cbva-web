@@ -125,7 +125,7 @@ export const createPoolMatchesFn = createServerFn()
   ])
   .inputValidator(createPoolMatchesSchema)
   .handler(async ({ data: { tournamentId, overwrite } }) => {
-    const divisions = await db.query.tournamentDivisions.findMany({
+    const divisions = await db._query.tournamentDivisions.findMany({
       with: {
         tournament: {
           columns: {
@@ -141,7 +141,7 @@ export const createPoolMatchesFn = createServerFn()
       where: (t, { eq }) => eq(t.tournamentId, tournamentId),
     })
 
-    // const pools = await db.query.pools.findMany({
+    // const pools = await db._query.pools.findMany({
     //   with: {
     //     teams: true,
     //   },

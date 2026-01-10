@@ -30,7 +30,7 @@ describe("playoff match finish", () => {
 
     const divisionId = tournamentInfo.divisions[0]
 
-    const match = await db.query.playoffMatches.findFirst({
+    const match = await db._query.playoffMatches.findFirst({
       with: {
         sets: true,
       },
@@ -52,7 +52,7 @@ describe("playoff match finish", () => {
       })
     }
 
-    const teams = await db.query.tournamentDivisionTeams.findMany({
+    const teams = await db._query.tournamentDivisionTeams.findMany({
       where: (t, { inArray }) =>
         inArray(t.id, [match.teamAId!, match.teamBId!]),
     })
@@ -68,7 +68,7 @@ describe("playoff match finish", () => {
     expect(winningTeam?.finish).toBeNull()
     expect(losingTeam?.finish).toBe(9)
 
-    const nextMatch = await db.query.playoffMatches.findFirst({
+    const nextMatch = await db._query.playoffMatches.findFirst({
       where: (t, { eq }) => eq(t.id, match.nextMatchId!),
     })
 

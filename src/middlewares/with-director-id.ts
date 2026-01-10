@@ -33,7 +33,7 @@ export const withDirectorId = createMiddleware()
 		const { viewer } = context;
 
 		// Look up director record by viewer's user ID
-		const director = await db.query.directors.findFirst({
+		const director = await db._query.directors.findFirst({
 			columns: {
 				id: true,
 			},

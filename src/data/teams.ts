@@ -27,7 +27,7 @@ async function readTeams(
       })
     : false
 
-  return await db.query.tournamentDivisionTeams.findMany({
+  return await db._query.tournamentDivisionTeams.findMany({
     with: {
       team: {
         with: {

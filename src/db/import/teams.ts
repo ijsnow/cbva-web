@@ -67,7 +67,7 @@ export async function importTeamsForYear(
   )
 
   const { td: tournamentDivisions, p: pools } = (
-    await db.query.tournaments.findMany({
+    await db._query.tournaments.findMany({
       where: (t, { gte, lt, and }) =>
         and(gte(t.date, `${year}-01-01`), lt(t.date, `${year + 1}-01-01`)),
       with: {
@@ -102,7 +102,7 @@ export async function importTeamsForYear(
   )
 
   const playersMap = (
-    await db.query.playerProfiles.findMany({
+    await db._query.playerProfiles.findMany({
       columns: {
         id: true,
         externalRef: true,

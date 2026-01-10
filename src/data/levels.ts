@@ -14,7 +14,7 @@ const getLevels = createServerFn({
   .inputValidator(getLevelsSchema)
   .handler(
     async ({ data: { division } }) =>
-      await db.query.levels.findMany({
+      await db._query.levels.findMany({
         where: division ? (t, { lte }) => lte(t.order, division) : undefined,
         orderBy: (t, { desc }) => desc(t.order),
       })

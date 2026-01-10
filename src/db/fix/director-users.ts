@@ -5,7 +5,7 @@ import { db } from "../connection";
 import { users } from "../schema";
 
 async function main() {
-	const directors = await db.query.directors.findMany({
+	const directors = await db._query.directors.findMany({
 		with: {
 			profile: {
 				with: {

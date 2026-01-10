@@ -16,7 +16,7 @@ export const getPageBlocks = createServerFn()
     })
   )
   .handler(async ({ data: { path } }) => {
-    const block = await db.query.blocks.findMany({
+    const block = await db._query.blocks.findMany({
       where: (t, { eq }) => eq(t.page, path),
     })
     return block ?? {}

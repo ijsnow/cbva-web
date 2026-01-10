@@ -26,7 +26,7 @@ export const swapSeeds = createServerFn()
   ])
   .inputValidator(swapSeedsSchema)
   .handler(async ({ data: { id: tournamentDivisionTeamId, seed } }) => {
-    const targetTeam = await db.query.tournamentDivisionTeams.findFirst({
+    const targetTeam = await db._query.tournamentDivisionTeams.findFirst({
       where: (table, { eq }) => eq(table.id, tournamentDivisionTeamId),
     })
 
@@ -35,7 +35,7 @@ export const swapSeeds = createServerFn()
     }
 
     // Find the team with the desired seed in the same division
-    const teamWithTargetSeed = await db.query.tournamentDivisionTeams.findFirst(
+    const teamWithTargetSeed = await db._query.tournamentDivisionTeams.findFirst(
       {
         where: (t, { eq, and }) =>
           and(

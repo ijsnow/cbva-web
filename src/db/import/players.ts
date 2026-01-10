@@ -7,7 +7,7 @@ import { type PlayerProfile, playerProfiles } from "../schema"
 import { mapDivision } from "./shared"
 
 export async function importPlayers(levels: Map<string, number>) {
-  const existing = await db.query.playerProfiles.findMany({
+  const existing = await db._query.playerProfiles.findMany({
     columns: {
       externalRef: true,
     },

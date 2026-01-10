@@ -21,7 +21,7 @@ export async function importDirectors() {
   })
 
   const profiles = (
-    await db.query.playerProfiles.findMany({
+    await db._query.playerProfiles.findMany({
       where: (t, { inArray }) =>
         inArray(
           t.externalRef,

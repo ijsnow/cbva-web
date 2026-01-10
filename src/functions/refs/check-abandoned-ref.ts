@@ -10,7 +10,7 @@ export const checkAbandonedRefSchema = selectTournamentDivisionTeamSchema.pick({
 export const checkAbandonedRef = createServerFn()
   .inputValidator(checkAbandonedRefSchema)
   .handler(async ({ data: { id: tournamentDivisionTeamId } }) => {
-    const result = await db.query.matchRefTeams.findFirst({
+    const result = await db._query.matchRefTeams.findFirst({
       columns: {
         id: true,
       },
