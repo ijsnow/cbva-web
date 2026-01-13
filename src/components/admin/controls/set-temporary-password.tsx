@@ -1,16 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Heading } from "react-aria-components";
-import { useViewerHasPermission, useViewerIsAdmin } from "@/auth/shared";
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
-// import {
-// 	setUserPasswordMutationOptions,
-// 	setUserPasswordSchema,
-// } from "@/functions/admin";
-import { useTournamentDivisionName } from "@/hooks/tournament";
 import { authClient } from "@/auth/client";
 import { CopyIcon, LockIcon } from "lucide-react";
 import { dbg } from "@/utils/dbg";
@@ -53,12 +47,15 @@ function generatePassword() {
 	return password;
 }
 
-export type SetUserPasswordForm = {
+export type SetTemporaryPasswordForm = {
 	id: string;
 	name: string;
 };
 
-export function SetUserPasswordForm({ id: userId, name }: SetUserPasswordForm) {
+export function SetTemporaryPasswordForm({
+	id: userId,
+	name,
+}: SetTemporaryPasswordForm) {
 	const [isOpen, setOpen] = useState(false);
 
 	const {
@@ -74,10 +71,18 @@ export function SetUserPasswordForm({ id: userId, name }: SetUserPasswordForm) {
 				newPassword: password,
 			});
 
-			const { data, error } = await authClient.admin.updateUser({
+			if (res.error) {
+				throw res.error;
+			}
+
+			const { error } = await authClient.admin.updateUser({
 				userId,
 				data: { needsPasswordChange: true },
 			});
+
+			if (error) {
+				throw error;
+			}
 
 			return password;
 		},
@@ -108,7 +113,7 @@ export function SetUserPasswordForm({ id: userId, name }: SetUserPasswordForm) {
 				variant="icon"
 				color="default"
 				onPress={() => setOpen(true)}
-				tooltip="Reset password for user"
+				tooltip="Generate temporary password"
 			>
 				<LockIcon />
 			</Button>
@@ -116,12 +121,12 @@ export function SetUserPasswordForm({ id: userId, name }: SetUserPasswordForm) {
 			<Modal isOpen={isOpen} onOpenChange={setOpen}>
 				<div className="p-3 flex flex-col space-y-3">
 					<Heading className={title({ size: "sm" })} slot="title">
-						Set Random Password
+						Set Temporary Password
 					</Heading>
 					{!password ? (
 						<>
 							<p>
-								Randomly generate a password for{" "}
+								Generate a temporary password for{" "}
 								<span className="font-semibold italic">{name}</span>.
 							</p>
 							<form

@@ -10,7 +10,7 @@ import {
 } from "@/data/users";
 import type { User } from "@/db/schema";
 import { ImpersonateButton } from "../impersonator/impersonate-button";
-import { SetUserPasswordForm } from "./controls/set-user-password";
+import { SetTemporaryPasswordForm } from "./controls/set-temporary-password";
 
 export type UpdateUserFormProps = Pick<User, "id" | "name" | "role"> & {
 	refetch: () => void;
@@ -87,7 +87,7 @@ export function UpdateUserForm({
 							color="default"
 							userId={id}
 						/>
-						<SetUserPasswordForm id={id} name={name} />
+						<SetTemporaryPasswordForm id={id} name={name} />
 					</div>
 				</div>
 
