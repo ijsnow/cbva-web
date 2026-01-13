@@ -10,6 +10,7 @@ import {
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { requirePermissions } from "@/auth/shared";
 import type z from "zod";
+import { mutationOptions } from "@tanstack/react-query";
 
 const overrideScoreSchema = selectMatchSetSchema.pick({
 	id: true,
@@ -99,3 +100,10 @@ export const overrideScoreFn = createServerFn()
 	])
 	.inputValidator(overrideScoreSchema)
 	.handler(async ({ data }) => overrideScoreHandler(data));
+
+export const overrideScoreMutationOptions = () =>
+	mutationOptions({
+		mutationFn: async (data: z.infer<typeof overrideScoreSchema>) => {
+			return await overrideScoreFn({ data });
+		},
+	});
