@@ -39,7 +39,7 @@ export const auth = betterAuth({
 		additionalFields: {
 			needsPasswordChange: {
 				type: "boolean",
-				input: true,
+				input: false,
 			},
 		},
 	},

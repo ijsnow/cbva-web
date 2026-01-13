@@ -23,7 +23,7 @@ export const authClient = createAuthClient({
 			user: {
 				needsPasswordChange: {
 					type: "boolean",
-					input: true,
+					input: false,
 				},
 			},
 		}),
