@@ -30,7 +30,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 		}
 
 		if (
-			location.pathname !== "/account/change-password" &&
+			!["/account/change-password", "/log-out"].includes(location.pathname) &&
 			viewer?.needsPasswordChange
 		) {
 			throw redirect({

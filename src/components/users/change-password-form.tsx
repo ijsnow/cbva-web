@@ -5,6 +5,7 @@ import { Alert } from "@/components/base/alert";
 import { useAppForm } from "@/components/base/form";
 import { useLoggedInRedirect } from "@/hooks/auth";
 import { changePasswordMutationOptions } from "@/functions/user/change-password";
+import { Link } from "../base/link";
 
 const schema = z
 	.object({
@@ -128,6 +129,12 @@ export function ChangePasswordForm({
 						)}
 					/>
 				</form.AppForm>
+
+				{isTemp && (
+					<Link to="/log-out" className="self-center text-xs text-gray-600">
+						Log Out
+					</Link>
+				)}
 			</div>
 		</form>
 	);
