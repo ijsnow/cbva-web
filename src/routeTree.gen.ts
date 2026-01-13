@@ -33,6 +33,7 @@ import { Route as AdminScheduleRouteImport } from './routes/admin/schedule'
 import { Route as AccountSetupRouteImport } from './routes/account/setup'
 import { Route as AccountResetPasswordRouteImport } from './routes/account/reset-password'
 import { Route as AccountForgotPasswordRouteImport } from './routes/account/forgot-password'
+import { Route as AccountChangePasswordRouteImport } from './routes/account/change-password'
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
 import { Route as ProfileProfileIdIndexRouteImport } from './routes/profile/$profileId/index'
 import { Route as AccountVerifyIndexRouteImport } from './routes/account/verify/index'
@@ -165,6 +166,11 @@ const AccountForgotPasswordRoute = AccountForgotPasswordRouteImport.update({
   path: '/account/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountChangePasswordRoute = AccountChangePasswordRouteImport.update({
+  id: '/account/change-password',
+  path: '/account/change-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TournamentsTournamentIdIndexRoute =
   TournamentsTournamentIdIndexRouteImport.update({
     id: '/tournaments/$tournamentId/',
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/sanctioning': typeof SanctioningRoute
   '/search': typeof SearchRoute
   '/sign-up': typeof SignUpRoute
+  '/account/change-password': typeof AccountChangePasswordRoute
   '/account/forgot-password': typeof AccountForgotPasswordRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/sanctioning': typeof SanctioningRoute
   '/search': typeof SearchRoute
   '/sign-up': typeof SignUpRoute
+  '/account/change-password': typeof AccountChangePasswordRoute
   '/account/forgot-password': typeof AccountForgotPasswordRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/sanctioning': typeof SanctioningRoute
   '/search': typeof SearchRoute
   '/sign-up': typeof SignUpRoute
+  '/account/change-password': typeof AccountChangePasswordRoute
   '/account/forgot-password': typeof AccountForgotPasswordRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
@@ -350,6 +359,7 @@ export interface FileRouteTypes {
     | '/sanctioning'
     | '/search'
     | '/sign-up'
+    | '/account/change-password'
     | '/account/forgot-password'
     | '/account/reset-password'
     | '/account/setup'
@@ -387,6 +397,7 @@ export interface FileRouteTypes {
     | '/sanctioning'
     | '/search'
     | '/sign-up'
+    | '/account/change-password'
     | '/account/forgot-password'
     | '/account/reset-password'
     | '/account/setup'
@@ -424,6 +435,7 @@ export interface FileRouteTypes {
     | '/sanctioning'
     | '/search'
     | '/sign-up'
+    | '/account/change-password'
     | '/account/forgot-password'
     | '/account/reset-password'
     | '/account/setup'
@@ -462,6 +474,7 @@ export interface RootRouteChildren {
   SanctioningRoute: typeof SanctioningRoute
   SearchRoute: typeof SearchRoute
   SignUpRoute: typeof SignUpRoute
+  AccountChangePasswordRoute: typeof AccountChangePasswordRoute
   AccountForgotPasswordRoute: typeof AccountForgotPasswordRoute
   AccountResetPasswordRoute: typeof AccountResetPasswordRoute
   AccountSetupRoute: typeof AccountSetupRoute
@@ -659,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/change-password': {
+      id: '/account/change-password'
+      path: '/account/change-password'
+      fullPath: '/account/change-password'
+      preLoaderRoute: typeof AccountChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tournaments/$tournamentId/': {
       id: '/tournaments/$tournamentId/'
       path: '/tournaments/$tournamentId'
@@ -750,6 +770,7 @@ const rootRouteChildren: RootRouteChildren = {
   SanctioningRoute: SanctioningRoute,
   SearchRoute: SearchRoute,
   SignUpRoute: SignUpRoute,
+  AccountChangePasswordRoute: AccountChangePasswordRoute,
   AccountForgotPasswordRoute: AccountForgotPasswordRoute,
   AccountResetPasswordRoute: AccountResetPasswordRoute,
   AccountSetupRoute: AccountSetupRoute,

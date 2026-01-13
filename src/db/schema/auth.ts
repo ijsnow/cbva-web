@@ -34,11 +34,13 @@ export const users = pgTable("users", {
 	banned: boolean(),
 	banReason: text(),
 	banDate: date(),
+	needsPasswordChange: boolean(),
 	createdAt: timestamp()
-		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.$defaultFn(() => new Date())
 		.notNull(),
 	updatedAt: timestamp()
-		.$defaultFn(() => /* @__PURE__ */ new Date())
+		.$defaultFn(() => new Date())
+		.$onUpdate(() => new Date())
 		.notNull(),
 });
 

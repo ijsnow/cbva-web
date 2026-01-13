@@ -22,6 +22,7 @@ export type SessionViewer = Pick<
 	| "emailVerified"
 	| "phoneNumber"
 	| "phoneNumberVerified"
+	| "needsPasswordChange"
 >;
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
@@ -38,6 +39,7 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 						emailVerified: viewer.emailVerified,
 						phoneNumber: viewer.phoneNumber,
 						phoneNumberVerified: viewer.phoneNumberVerified,
+						needsPasswordChange: viewer.needsPasswordChange,
 					}
 				: undefined,
 			impersonatorId: impersonatedBy,
