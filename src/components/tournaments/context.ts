@@ -8,6 +8,7 @@ import { isDefined } from "@/utils/types";
 import { parseDate, today } from "@internationalized/date";
 import { getDefaultTimeZone } from "@/lib/dates";
 import { orderBy } from "lodash-es";
+import { getPoolStats, PoolTeamStats } from "@/hooks/matches";
 
 export function useTournament() {
 	const { tournamentId } = useParams({
@@ -201,19 +202,69 @@ export function usePools() {
 	return data;
 }
 
-// const { data: hasGames } = useQuery({
-// 	...poolsQueryOptions({
-// 		tournamentDivisionId: activeDivision.id,
-// 	}),
-// 	select: (data) => data.some((pool) => pool.matches.length > 0),
-// });
-//
-// const { data: hasPlayoffs } = useQuery({
-// 	...playoffsQueryOptions({
-// 		tournamentDivisionId: activeDivision.id,
-// 	}),
-// 	select: (data) => data.length > 0,
-// });
+export function usePoolStats(poolId: number) {
+	const pools = usePools();
+
+	const teamsQuery = useTeamsQueryOptions();
+
+	const pool = pools?.find(({ id }) => id === poolId);
+
+	const { data: teams } = useQuery({
+		...teamsQuery,
+		select: (data) => data.filter((team) => team.poolTeam.poolId === poolId),
+		enabled: isDefined(pool),
+	});
+
+	if (!pool) {
+		return undefined;
+	}
+
+	if (!teams) {
+		return undefined;
+	}
+
+	const stats = getPoolStats(pool);
+
+	if (!stats) {
+		return undefined;
+	}
+
+	const statsMap = new Map(
+		Object.keys(stats).map(
+			(teamId) =>
+				[Number.parseInt(teamId, 10), stats[teamId as unknown as number]] as [
+					number,
+					PoolTeamStats,
+				],
+		),
+	);
+
+	const orderedTeams = orderBy(
+		teams.map((team) => ({
+			...team,
+			stats: statsMap?.get(team.id),
+		})),
+		[
+			(team) => team.poolTeam?.finish,
+			(team) => {
+				const teamStats = statsMap.get(team.id);
+
+				if (teamStats) {
+					return (
+						teamStats.wins.size / teamStats.wins.size + teamStats.losses.size
+					);
+				}
+
+				return 0;
+			},
+			(team) => statsMap.get(team.id)?.totalPointDiff,
+			(team) => team.poolTeam?.pool.name,
+		],
+		["asc", "asc", "desc", "asc"],
+	);
+
+	return orderedTeams;
+}
 
 export function useLastSeed() {
 	const options = useTeamsQueryOptions();
