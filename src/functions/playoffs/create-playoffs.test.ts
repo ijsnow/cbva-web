@@ -34,6 +34,7 @@ describe("Generating playoffs", () => {
 				wildcardCount: 0,
 				matchKind: "set-to-28",
 				overwrite: false,
+				assignCourts: true,
 			},
 		});
 
@@ -307,6 +308,7 @@ describe("court assignment", () => {
 				wildcardCount: 0,
 				matchKind: "set-to-28",
 				overwrite: false,
+				assignCourts: true,
 			},
 		});
 
@@ -440,6 +442,7 @@ describe("court assignment", () => {
 				wildcardCount: 0,
 				matchKind: "set-to-28",
 				overwrite: false,
+				assignCourts: true,
 			},
 		});
 
@@ -560,6 +563,7 @@ describe("court assignment", () => {
 				wildcardCount: 0,
 				matchKind: "set-to-28",
 				overwrite: false,
+				assignCourts: true,
 			},
 		});
 

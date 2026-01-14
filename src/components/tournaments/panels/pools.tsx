@@ -23,7 +23,6 @@ import { CheckIcon, EditIcon } from "lucide-react";
 import { useViewerHasPermission } from "@/auth/shared";
 import { isNotNullOrUndefined } from "@/utils/types";
 import { PoolFinishInfo } from "@/components/pools/finish-info";
-import { dbg } from "@/utils/dbg";
 
 export function PoolsPanel({
 	id,
