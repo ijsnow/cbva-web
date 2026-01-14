@@ -15,6 +15,7 @@ import { useTournamentDivisionName } from "@/hooks/tournament";
 import { EditIcon } from "lucide-react";
 import { isDefined } from "@/utils/types";
 import type z from "zod";
+import { usePlayoffsQueryOptions, usePoolsQueryOptions } from "../context";
 
 // TODO: confirm works with pools and playoffs
 
@@ -47,47 +48,29 @@ export function SetCourtForm({
 	);
 
 	const queryClient = useQueryClient();
+	const poolsQueryOptions = usePoolsQueryOptions();
+	const playoffsQueryOptions = usePlayoffsQueryOptions();
 
 	const { mutate } = useMutation({
 		...setMatchCourtMutationOptions(),
-		onSuccess: (_, { court }) => {
+		onSuccess: (_) => {
 			setOpen(false);
 
-			queryClient.setQueryData(
-				poolsQueryOptions({
-					tournamentDivisionId,
-				}).queryKey,
-				(data) => {
-					return data?.map((pool) => {
-						if (pool.id !== poolId) {
-							return pool;
-						}
-
-						return {
-							...pool,
-							court,
-						};
-					});
-				},
-			);
-
-			queryClient.invalidateQueries({
-				queryKey: poolsQueryOptions({
-					tournamentDivisionId,
-				}).queryKey,
-			});
+			if (poolId) {
+				queryClient.invalidateQueries(poolsQueryOptions);
+			} else {
+				queryClient.invalidateQueries(playoffsQueryOptions);
+			}
 		},
 	});
 
 	const schema = setMatchCourtSchema.pick({
 		court: true,
-		followWinnerInBracket: true,
 	});
 
 	const form = useAppForm({
 		defaultValues: {
-			court: "",
-			followWinnerInBracket: isDefined(playoffMatchId) ? true : undefined,
+			court: court ?? "Court ",
 		} as z.infer<typeof setMatchCourtSchema>,
 		validators: {
 			onMount: schema,
@@ -102,29 +85,35 @@ export function SetCourtForm({
 		},
 	});
 
-	const button = (
-		<Button
-			variant="text"
-			className="text-blue-500"
-			size="sm"
-			onPress={() => setOpen(true)}
-			tooltip="Set or update court"
-		>
-			<EditIcon size={16} />
-		</Button>
-	);
-
 	return (
 		<>
 			{court && (
 				<span className="flex flex-row items-center gap-2">
-					Court {court}
-					{canUpdate && button}
+					{court}
+					{canUpdate && (
+						<Button
+							variant="text"
+							className="text-blue-500"
+							size="sm"
+							onPress={() => setOpen(true)}
+							tooltip="Set or update court"
+						>
+							<EditIcon size={16} />
+						</Button>
+					)}
 				</span>
 			)}
 
 			{!court && canUpdate && (
-				<span className="flex flex-row items-center gap-2">Court {button}</span>
+				<Button
+					className="text-blue-500"
+					size="sm"
+					onPress={() => setOpen(true)}
+					tooltip="Set or update court"
+					variant="link"
+				>
+					Set Court <EditIcon size={12} />
+				</Button>
 			)}
 
 			<Modal isOpen={isOpen} onOpenChange={setOpen}>
@@ -151,17 +140,6 @@ export function SetCourtForm({
 							name="court"
 							children={(field) => (
 								<field.Text isRequired label="Court" field={field} />
-							)}
-						/>
-
-						<form.AppField
-							name="followWinnerInBracket"
-							children={(field) => (
-								<field.Checkbox
-									isRequired
-									label="Keep court for winners"
-									field={field}
-								/>
 							)}
 						/>
 
