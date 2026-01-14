@@ -8,9 +8,9 @@ import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
 import { poolsQueryOptions } from "@/data/pools";
 import {
-	setPoolCourtMutationOptions,
-	setPoolCourtSchema,
-} from "@/functions/pools";
+	setMatchCourtMutationOptions,
+	setMatchCourtSchema,
+} from "@/functions/matches/set-match-court";
 import { useTournamentDivisionName } from "@/hooks/tournament";
 import { EditIcon } from "lucide-react";
 
@@ -25,6 +25,7 @@ export type SetCourtForm = {
 
 export function SetCourtForm({
 	poolId,
+	playoffMatchId,
 	name,
 	court,
 	tournamentId,
@@ -44,7 +45,7 @@ export function SetCourtForm({
 	const queryClient = useQueryClient();
 
 	const { mutate } = useMutation({
-		...setPoolCourtMutationOptions(),
+		...setMatchCourtMutationOptions(),
 		onSuccess: (_, { court }) => {
 			setOpen(false);
 
@@ -74,7 +75,7 @@ export function SetCourtForm({
 		},
 	});
 
-	const schema = setPoolCourtSchema.omit({ id: true });
+	const schema = setMatchCourtSchema.pick({ court: true });
 
 	const form = useAppForm({
 		defaultValues: {
@@ -86,7 +87,8 @@ export function SetCourtForm({
 		},
 		onSubmit: ({ value: { court } }) => {
 			mutate({
-				id: poolId,
+				poolId,
+				playoffMatchId,
 				court,
 			});
 		},
