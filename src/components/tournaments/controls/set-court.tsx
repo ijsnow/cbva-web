@@ -14,6 +14,8 @@ import {
 import { useTournamentDivisionName } from "@/hooks/tournament";
 import { EditIcon } from "lucide-react";
 
+// TODO: confirm works with pools and playoffs
+
 export type SetCourtForm = {
 	tournamentId: number;
 	tournamentDivisionId: number;
