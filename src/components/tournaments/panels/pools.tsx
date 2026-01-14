@@ -23,6 +23,7 @@ import { CheckIcon, EditIcon } from "lucide-react";
 import { useViewerHasPermission } from "@/auth/shared";
 import { isNotNullOrUndefined } from "@/utils/types";
 import { PoolFinishInfo } from "@/components/pools/finish-info";
+import { dbg } from "@/utils/dbg";
 
 export function PoolsPanel({
 	id,
@@ -152,7 +153,7 @@ export function PoolsPanel({
 															<span>
 																{finish ?? stats?.[teamId]?.rank ?? "-"}
 															</span>
-															{finish && (
+															{(finish ?? stats?.[teamId]?.rank) && (
 																<PoolFinishInfo
 																	poolId={pool.id}
 																	activeTeamId={teamId}

@@ -39,7 +39,7 @@ export function PoolFinishInfo({ poolId, activeTeamId }: PoolInfoFinishProps) {
 							["TDiff", "Point differential among tied teams"],
 							["Diff", "Point differential among all teams"],
 						].map(([key, label]) => (
-							<li className="">
+							<li className="" key={key}>
 								<span className="col-span-1">{key}:</span>{" "}
 								<span className="col-span-8">{label}</span>
 							</li>
@@ -54,8 +54,8 @@ export function PoolFinishInfo({ poolId, activeTeamId }: PoolInfoFinishProps) {
 							<span className="col-span-1 text-center">TDiff</span>
 							<span className="col-span-1 text-center">Diff</span>
 						</div>
-						{stats?.map((team) => (
-							<label
+						{stats?.map((team, i) => (
+							<div
 								key={team.id}
 								className={twMerge(
 									"grid grid-cols-9 gap-x-2 items-center w-full rounded-md bg-white border-gray-300",
@@ -64,7 +64,9 @@ export function PoolFinishInfo({ poolId, activeTeamId }: PoolInfoFinishProps) {
 										: "text-black",
 								)}
 							>
-								<span className="col-span-1">{team.poolTeam.finish}</span>
+								<span className="col-span-1">
+									{team.poolTeam.finish ?? i + 1}
+								</span>
 								<span className="col-span-4 text-ellipsis overflow-x-hidden whitespace-nowrap">
 									<TeamNames
 										players={team.team.players}
@@ -85,7 +87,7 @@ export function PoolFinishInfo({ poolId, activeTeamId }: PoolInfoFinishProps) {
 								<span className="col-span-1 text-center">
 									{team.stats?.totalPointDiff}
 								</span>
-							</label>
+							</div>
 						))}
 					</div>
 					<Button className="self-end" slot="close" color="primary">

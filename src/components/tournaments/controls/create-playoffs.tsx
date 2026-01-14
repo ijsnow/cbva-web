@@ -45,6 +45,7 @@ export function CreatePlayoffsForm({
 		teamCount: true,
 		wildcardCount: true,
 		matchKind: true,
+		assignCourts: true,
 		overwrite: true,
 	});
 
@@ -53,6 +54,7 @@ export function CreatePlayoffsForm({
 			teamCount: 10,
 			wildcardCount: 2,
 			matchKind: "set-to-28" as MatchKind,
+			assignCourts: true,
 			overwrite: false,
 		},
 		validators: {
@@ -60,13 +62,14 @@ export function CreatePlayoffsForm({
 			onChange: schema,
 		},
 		onSubmit: ({
-			value: { teamCount, wildcardCount, matchKind, overwrite },
+			value: { teamCount, wildcardCount, matchKind, assignCourts, overwrite },
 		}) => {
 			mutate({
 				id: division.id,
 				teamCount,
 				wildcardCount,
 				matchKind,
+				assignCourts,
 				overwrite,
 			});
 		},
@@ -150,6 +153,16 @@ export function CreatePlayoffsForm({
 										value: "set-to-21",
 									},
 								]}
+							/>
+						)}
+					/>
+
+					<form.AppField
+						name="assignCourts"
+						children={(field) => (
+							<field.Checkbox
+								label="Assign courts based on pools and seeds"
+								field={field}
 							/>
 						)}
 					/>
