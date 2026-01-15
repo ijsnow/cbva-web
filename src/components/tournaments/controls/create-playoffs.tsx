@@ -9,11 +9,19 @@ import { playoffsQueryOptions } from "@/data/playoffs";
 import {
 	createPlayoffsMutationOptions,
 	createPlayoffsSchema,
-	type MatchKind,
 } from "@/functions/playoffs/create-playoffs";
 import type { Division, TournamentDivision } from "@/db/schema";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { useActiveTeams } from "../context";
+import z from "zod";
+import { Radio } from "@/components/base/radio-group";
+import {
+	Disclosure,
+	DisclosureHeader,
+	DisclosurePanel,
+} from "@/components/base/disclosure";
+
+type MatchKind = "set" | "match";
 
 export type CreatePlayoffsFormProps = {
 	tournamentId: number;
@@ -41,36 +49,76 @@ export function CreatePlayoffsForm({
 		},
 	});
 
-	const schema = createPlayoffsSchema.pick({
-		teamCount: true,
-		wildcardCount: true,
-		matchKind: true,
-		assignCourts: true,
-		overwrite: true,
-	});
+	const schema = createPlayoffsSchema
+		.pick({
+			teamCount: true,
+			wildcardCount: true,
+			sets: true,
+			assignCourts: true,
+			overwrite: true,
+		})
+		.extend({
+			matchKind: z.enum<MatchKind[]>(["set", "match"]),
+		});
 
 	const form = useAppForm({
 		defaultValues: {
 			teamCount: 10,
 			wildcardCount: 2,
-			matchKind: "set-to-28" as MatchKind,
+			matchKind: "set" as MatchKind,
+			sets: [
+				{
+					winScore: 28,
+					switchScore: 7,
+				},
+			],
 			assignCourts: true,
 			overwrite: false,
-		},
+		} as z.infer<typeof schema>,
 		validators: {
 			onMount: schema,
 			onChange: schema,
 		},
+		listeners: {
+			onChange: ({ fieldApi, formApi }) => {
+				if (fieldApi.name === "matchKind") {
+					const sets =
+						fieldApi.state.value === "set"
+							? [
+									{
+										winScore: 28,
+										switchScore: 7,
+									},
+								]
+							: [
+									{
+										winScore: 21,
+										switchScore: 7,
+									},
+									{
+										winScore: 21,
+										switchScore: 7,
+									},
+									{
+										winScore: 15,
+										switchScore: 5,
+									},
+								];
+
+					formApi.setFieldValue("sets", sets);
+				}
+			},
+		},
 		onSubmit: ({
-			value: { teamCount, wildcardCount, matchKind, assignCourts, overwrite },
+			value: { teamCount, wildcardCount, sets, assignCourts, overwrite },
 		}) => {
 			mutate({
 				id: division.id,
 				teamCount,
 				wildcardCount,
-				matchKind,
 				assignCourts,
 				overwrite,
+				sets,
 			});
 		},
 	});
@@ -113,7 +161,7 @@ export function CreatePlayoffsForm({
 					{failureReason && (
 						<form.AppForm>
 							<form.Alert
-								title={"Unable to create pools"}
+								title={"Unable to create playoffs"}
 								description={failureReason.message}
 							/>
 						</form.AppForm>
@@ -133,29 +181,61 @@ export function CreatePlayoffsForm({
 						)}
 					/>
 
-					<form.AppField
-						name="matchKind"
-						children={(field) => (
-							<field.Select
-								label="Match Style"
-								field={field}
-								options={[
-									{
-										display: "Game to 28",
-										value: "set-to-28",
-									},
-									{
-										display: "Best of 3",
-										value: "best-of-3",
-									},
-									{
-										display: "Game to 21",
-										value: "set-to-21",
-									},
-								]}
-							/>
-						)}
-					/>
+					<div className="flex flex-col gap-3">
+						<form.AppField
+							name="matchKind"
+							children={(field) => (
+								<field.RadioGroup
+									label="Match Style"
+									orientation="horizontal"
+									field={field}
+								>
+									<Radio value="set">Single Set</Radio>
+									<Radio value="match">Best of 3</Radio>
+								</field.RadioGroup>
+							)}
+						/>
+
+						<Disclosure card={false}>
+							<DisclosureHeader card={false} size="sm">
+								Score Options
+							</DisclosureHeader>
+							<DisclosurePanel card={false}>
+								<form.AppField name="sets" mode="array">
+									{(field) => (
+										<div className="flex flex-col space-y-2">
+											{field.state.value.map((_, i) => (
+												<div className="grid grid-cols-6 gap-3" key={i}>
+													<form.AppField name={`sets[${i}].winScore`}>
+														{(subField) => (
+															<>
+																<subField.Number
+																	className="col-span-3"
+																	field={subField}
+																	label={i === 0 ? "Win Score" : null}
+																/>
+															</>
+														)}
+													</form.AppField>
+													<form.AppField name={`sets[${i}].switchScore`}>
+														{(subField) => (
+															<>
+																<subField.Number
+																	className="col-span-3"
+																	field={subField}
+																	label={i === 0 ? "Switch Every" : null}
+																/>
+															</>
+														)}
+													</form.AppField>
+												</div>
+											))}
+										</div>
+									)}
+								</form.AppField>
+							</DisclosurePanel>
+						</Disclosure>
+					</div>
 
 					<form.AppField
 						name="assignCourts"

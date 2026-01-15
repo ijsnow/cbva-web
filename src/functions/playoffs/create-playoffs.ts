@@ -15,11 +15,15 @@ import {
 	playoffMatches,
 	selectTournamentDivisionSchema,
 	tournamentDivisionTeams,
+	selectMatchSetSchema,
 } from "@/db/schema";
 import { draftPlayoffs, getFinishForRound, seedPlayoffs } from "@/lib/playoffs";
 import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
 
-export type MatchKind = "set-to-21" | "set-to-28" | "best-of-3";
+export const createSetSchema = selectMatchSetSchema.pick({
+	winScore: true,
+	switchScore: true,
+});
 
 export const createPlayoffsSchema = selectTournamentDivisionSchema
 	.pick({
@@ -28,9 +32,9 @@ export const createPlayoffsSchema = selectTournamentDivisionSchema
 	.extend({
 		teamCount: z.number(),
 		wildcardCount: z.number(),
-		matchKind: z.enum<MatchKind[]>(["set-to-21", "set-to-28", "best-of-3"]),
 		assignCourts: z.boolean(),
 		overwrite: z.boolean(),
+		sets: z.array(createSetSchema),
 	});
 
 export type CreatePlayoffsParams = z.infer<typeof createPlayoffsSchema>;
@@ -40,7 +44,7 @@ export async function createPlayoffsHandler({
 		id: tournamentDivisionId,
 		teamCount,
 		wildcardCount,
-		matchKind,
+		sets,
 		assignCourts,
 		overwrite,
 	},
@@ -371,31 +375,7 @@ export async function createPlayoffsHandler({
 			.flatMap((ids) => ids.filter(isNotNull))
 			.map((id) => id)
 			.flatMap((playoffMatchId) =>
-				matchKind === "best-of-3"
-					? [
-							{
-								playoffMatchId,
-								setNumber: 1,
-								winScore: 21,
-							},
-							{
-								playoffMatchId,
-								setNumber: 2,
-								winScore: 21,
-							},
-							{
-								playoffMatchId,
-								setNumber: 3,
-								winScore: 15,
-							},
-						]
-					: [
-							{
-								playoffMatchId,
-								setNumber: 1,
-								winScore: matchKind === "set-to-28" ? 28 : 21,
-							},
-						],
+				sets.map((set, i) => ({ ...set, playoffMatchId, setNumber: i + 1 })),
 			);
 
 		await txn.insert(matchSets).values(matchSetValues);

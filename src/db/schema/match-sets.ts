@@ -34,6 +34,7 @@ export const matchSets = pgTable(
 		teamAScore: integer().notNull().default(0),
 		teamBScore: integer().notNull().default(0),
 		winScore: integer().notNull().default(21),
+		switchScore: integer(),
 		winnerId: integer().references(() => tournamentDivisionTeams.id, {
 			onDelete: "cascade",
 		}),

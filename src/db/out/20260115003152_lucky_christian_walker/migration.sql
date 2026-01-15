@@ -1,0 +1,1 @@
+ALTER TABLE "match_sets" ADD COLUMN "switch_score" integer;
