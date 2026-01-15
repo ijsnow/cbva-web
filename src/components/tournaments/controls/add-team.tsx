@@ -15,7 +15,7 @@ import {
 	searchProfilesQueryOptions,
 	searchProfilesSchema,
 } from "@/data/profiles";
-import { teamsQueryOptions } from "@/data/teams";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
 import { addTeamOptions } from "@/data/tournaments/teams";
 import type { Division, PlayerProfile, TournamentDivision } from "@/db/schema";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";

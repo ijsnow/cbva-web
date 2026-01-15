@@ -29,6 +29,7 @@ export const relations = defineRelations(tables, (r) => ({
 		pool: r.one.pools({
 			from: r.poolTeams.poolId,
 			to: r.pools.id,
+			optional: false,
 		}),
 		team: r.one.tournamentDivisionTeams({
 			from: r.poolTeams.teamId,
@@ -37,12 +38,24 @@ export const relations = defineRelations(tables, (r) => ({
 		}),
 	},
 	poolMatches: {
+		sets: r.many.matchSets(),
 		pool: r.one.pools({
 			from: r.poolMatches.poolId,
 			to: r.pools.id,
 			optional: false,
 		}),
-		sets: r.many.matchSets(),
+		teamA: r.one.tournamentDivisionTeams({
+			from: r.poolMatches.teamAId,
+			to: r.tournamentDivisionTeams.id,
+		}),
+		teamB: r.one.tournamentDivisionTeams({
+			from: r.poolMatches.teamBId,
+			to: r.tournamentDivisionTeams.id,
+		}),
+		refs: r.many.matchRefs({
+			from: r.poolMatches.id,
+			to: r.matchRefs.poolMatchId,
+		}),
 	},
 	playoffMatches: {
 		sets: r.many.matchSets(),

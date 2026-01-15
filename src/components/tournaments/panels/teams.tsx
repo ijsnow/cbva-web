@@ -11,7 +11,7 @@ import {
 import { TabPanel } from "@/components/base/tabs";
 import { TeamsControlsToolbar } from "@/components/teams/controls/toolbar";
 import { TeamControlsDropdown } from "@/components/teams/controls/dropdown";
-import { teamsQueryOptions } from "@/data/teams";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
 import type { TournamentDivision } from "@/db/schema";
 import { getLevelDisplay } from "@/hooks/tournament";
 import { playerName } from "@/utils/profiles";

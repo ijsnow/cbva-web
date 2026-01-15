@@ -112,8 +112,6 @@ export function SetMatchRefsForm({
 		},
 		listeners: {
 			onChange: ({ formApi, fieldApi }) => {
-				console.log("change", fieldApi.name, fieldApi.state.value);
-
 				if (fieldApi.name.startsWith("profileIds")) {
 					formApi.setFieldValue("profileIds", (value) =>
 						value.filter(isDefined),
@@ -121,13 +119,20 @@ export function SetMatchRefsForm({
 				}
 			},
 		},
-		onSubmit: ({ value: { profileIds, teamId } }) => {
-			mutate({
-				poolMatchId,
-				playoffMatchId,
-				profileIds,
-				teamId,
-			});
+		onSubmit: ({ value: { profileIds, teamId }, formApi }) => {
+			mutate(
+				{
+					poolMatchId,
+					playoffMatchId,
+					profileIds,
+					teamId,
+				},
+				{
+					onSuccess: () => {
+						formApi.reset();
+					},
+				},
+			);
 		},
 	});
 
@@ -151,6 +156,11 @@ export function SetMatchRefsForm({
 						Assign Referee Duties
 					</Heading>
 
+					<p>
+						Assign reffing duties. This action removes any existing refs for
+						this match.
+					</p>
+
 					<form
 						className="flex flex-col space-y-3"
 						onSubmit={(e) => {
@@ -170,16 +180,18 @@ export function SetMatchRefsForm({
 
 						<form.AppField name="picker">
 							{(field) => (
-								<field.RadioGroup field={field}>
+								<field.RadioGroup
+									field={field}
+									orientation="horizontal"
+									className="mb-2"
+								>
 									<Radio value="team">Select a team</Radio>
 									<Radio value="profile">Search profiles</Radio>
 								</field.RadioGroup>
 							)}
 						</form.AppField>
 
-						<form.Subscribe
-							selector={(state) => dbg(state.values, "state").picker}
-						>
+						<form.Subscribe selector={(state) => state.values.picker}>
 							{(picker) =>
 								picker === "team" ? (
 									<form.AppField name="teamId">
@@ -198,20 +210,20 @@ export function SetMatchRefsForm({
 										children={(field) => (
 											<>
 												<form.AppField
-													name={`profileIds[${dbg(field, "profileIds").state.value.length}]`}
+													name={`profileIds[${field.state.value?.length ?? 0}]`}
 												>
 													{(subField) => (
 														<subField.ProfilePicker
 															label="Search Profiles"
 															field={subField}
-															selectedProfileIds={field.state.value.filter(
+															selectedProfileIds={field.state.value?.filter(
 																isDefined,
 															)}
 														/>
 													)}
 												</form.AppField>
 
-												{field.state.value.map((_, i) => (
+												{field.state.value?.map((_, i) => (
 													<form.AppField key={i} name={`profileIds[${i}]`}>
 														{(subField) => (
 															<subField.ProfilePicker

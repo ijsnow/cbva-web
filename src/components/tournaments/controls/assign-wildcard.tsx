@@ -8,8 +8,8 @@ import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
 import { TeamNames } from "@/components/teams/names";
 import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
-import { poolsQueryOptions } from "@/data/pools";
-import { teamsQueryOptions } from "@/data/teams";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
 import {
 	assignWildcardMutationOptions,
 	assignWildcardSchema,
@@ -98,7 +98,7 @@ export function AssignWildcardForm({
 	});
 
 	const { data: stats } = useQuery({
-		...poolsQueryOptions({ tournamentDivisionId: division.id }),
+		...getPoolsQueryOptions({ tournamentDivisionId: division.id }),
 		select: (data) => {
 			const stats = new Map(
 				data

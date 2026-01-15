@@ -4,8 +4,8 @@ import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
-import { poolsQueryOptions } from "@/data/pools";
-import { teamsQueryOptions } from "@/data/teams";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
 import {
 	simulateMatchesMutationOptions,
 	simulateMatchesSchema,
@@ -37,7 +37,7 @@ export function SimulateMatchesForm({
 			});
 
 			queryClient.invalidateQueries({
-				queryKey: poolsQueryOptions({ tournamentDivisionId: division.id })
+				queryKey: getPoolsQueryOptions({ tournamentDivisionId: division.id })
 					.queryKey,
 			});
 

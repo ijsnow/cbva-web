@@ -6,8 +6,12 @@ import {
 	redirect,
 	Scripts,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import type * as React from "react";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { FormDevtoolsPanel } from "@tanstack/react-form-devtools";
+
 import {
 	getViewerFn,
 	viewerIdQueryOptions,
@@ -66,7 +70,25 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 	component: () => (
 		<>
 			<Outlet />
-			<TanStackRouterDevtools />
+			<TanStackDevtools
+				plugins={[
+					{
+						name: "Query",
+						render: <ReactQueryDevtoolsPanel />,
+						defaultOpen: false,
+					},
+					{
+						name: "Router",
+						render: <TanStackRouterDevtoolsPanel />,
+						defaultOpen: false,
+					},
+					// {
+					// 	name: "Form",
+					// 	render: <FormDevtoolsPanel />,
+					// 	defaultOpen: false,
+					// },
+				]}
+			/>
 		</>
 	),
 });

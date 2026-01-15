@@ -1,8 +1,8 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { tournamentQueryOptions } from "@/data/tournaments";
-import { teamsQueryOptions } from "@/data/teams";
-import { poolsQueryOptions } from "@/data/pools";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
 import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
 import { isDefined } from "@/utils/types";
 import { parseDate, today } from "@internationalized/date";
@@ -63,7 +63,7 @@ export function useActiveDivisionId() {
 export function usePoolsQueryOptions() {
 	const tournamentDivisionId = useActiveDivisionId();
 
-	return poolsQueryOptions({
+	return getPoolsQueryOptions({
 		tournamentDivisionId,
 	});
 }
@@ -72,7 +72,7 @@ export function usePoolMatches() {
 	const tournamentDivisionId = useActiveDivisionId();
 
 	const { data } = useQuery({
-		...poolsQueryOptions({
+		...getPoolsQueryOptions({
 			tournamentDivisionId,
 		}),
 		select: (data) => data.flatMap((pool) => pool.matches),
@@ -85,7 +85,7 @@ export function useHasPendingPoolMatches() {
 	const tournamentDivisionId = useActiveDivisionId();
 
 	const { data } = useQuery({
-		...poolsQueryOptions({
+		...getPoolsQueryOptions({
 			tournamentDivisionId,
 		}),
 		select: (data) =>
@@ -205,7 +205,7 @@ export function usePools() {
 	});
 
 	const { data } = useSuspenseQuery({
-		...poolsQueryOptions({
+		...getPoolsQueryOptions({
 			tournamentDivisionId: Number.parseInt(divisionId, 10),
 		}),
 	});

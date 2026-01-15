@@ -217,7 +217,7 @@ export function MatchNode({
 								onPress={() => {
 									setOverrideId(s.id);
 								}}
-								tooltip="Update set score"
+								tooltip="Override score"
 							>
 								<EditIcon size={16} />
 							</Button>

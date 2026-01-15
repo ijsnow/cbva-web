@@ -59,8 +59,6 @@ export async function setMatchRefsHandler({
 
 		assertFound(team);
 
-		console.log("->", teamId, team);
-
 		await db.insert(matchRefs).values(
 			team.players.map(({ profile: { id } }) => ({
 				playoffMatchId,

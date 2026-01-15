@@ -2,7 +2,7 @@ import { ProfilePhoto } from "@/components/profiles/photo";
 import type { FieldProps } from "./shared";
 import { ProfileName } from "@/components/profiles/name";
 import { Button } from "../../button";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { XIcon } from "lucide-react";
 import type { PlayerProfile } from "@/db/schema";
 import {
@@ -16,6 +16,7 @@ import { isDefined } from "@/utils/types";
 import { getProfilesQueryOptions } from "@/functions/profiles/get-profiles";
 
 export type ProfilePickerFieldProps = FieldProps & {
+	isDisabled?: boolean;
 	qualifiesDivision?: number;
 	selectedProfileIds: number[];
 };
@@ -23,6 +24,7 @@ export type ProfilePickerFieldProps = FieldProps & {
 export function ProfilePickerField({
 	label,
 	field,
+	isDisabled,
 	qualifiesDivision,
 	selectedProfileIds,
 }: ProfilePickerFieldProps) {
@@ -63,6 +65,8 @@ export function ProfilePickerField({
 			className="flex-1"
 			label={label}
 			field={field}
+			isDisabled={isDisabled}
+			placeholder="Start typing a name..."
 			onSelectionChange={(next) => {
 				const profile = profiles.current?.find(({ id }) => id === next);
 

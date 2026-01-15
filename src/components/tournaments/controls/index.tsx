@@ -79,9 +79,9 @@ export function TournamentControls({
 
 	const hasPools = pools?.length > 0;
 
-	const poolsComplete = pools?.every((pool) =>
-		pool.teams.every(({ finish }) => isDefined(finish)),
-	);
+	const poolsComplete =
+		hasPools &&
+		pools?.every((pool) => pool.teams.every(({ finish }) => isDefined(finish)));
 
 	const hasPendingPoolMatches = useHasPendingPoolMatches();
 

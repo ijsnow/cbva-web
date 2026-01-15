@@ -11,7 +11,7 @@ import {
 } from "@/components/base/table";
 import { TabPanel } from "@/components/base/tabs";
 import { ProfileName } from "@/components/profiles/name";
-import { poolsQueryOptions } from "@/data/pools";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
 import type { Tournament, TournamentDivision } from "@/db/schema";
 import { getPoolStats } from "@/hooks/matches";
 import { SetCourtForm } from "../controls/set-court";
@@ -37,7 +37,7 @@ export function PoolsPanel({
 	const [editPoolId, setEditPoolId] = useState<number | undefined>(undefined);
 
 	const { data } = useSuspenseQuery(
-		poolsQueryOptions({ tournamentDivisionId }),
+		getPoolsQueryOptions({ tournamentDivisionId }),
 	);
 
 	const pools = useMemo(() => {

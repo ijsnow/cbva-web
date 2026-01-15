@@ -6,8 +6,10 @@ import z from "zod";
 import { requirePermissions } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
+	CreateMatchRef,
 	type CreateMatchSet,
 	type CreatePoolMatch,
+	matchRefs,
 	matchSets,
 	poolMatches,
 	selectTournamentDivisionSchema,
@@ -126,7 +128,15 @@ export const createPoolMatchesFn = createServerFn()
 				},
 				pools: {
 					with: {
-						teams: true,
+						teams: {
+							with: {
+								team: {
+									with: {
+										players: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -155,6 +165,10 @@ export const createPoolMatchesFn = createServerFn()
 		}
 
 		const matchValues: CreatePoolMatch[] = [];
+		const matchRefValues: (CreateMatchRef & {
+			poolId: number;
+			matchNumber: number;
+		})[] = [];
 		const refValues: {
 			poolId: number;
 			matchNumber: number;
@@ -180,11 +194,12 @@ export const createPoolMatchesFn = createServerFn()
 			] of matches.entries()) {
 				const teamAId = teams.find((team) => teamASeed === team.seed)?.teamId;
 				const teamBId = teams.find((team) => teamBSeed === team.seed)?.teamId;
+				const refTeam = teams.find((team) => refTeamSeed === team.seed);
 				const refTeamId = teams.find(
 					(team) => refTeamSeed === team.seed,
 				)?.teamId;
 
-				if (!(teamAId && teamBId && refTeamId)) {
+				if (!(teamAId && teamBId && refTeamId && refTeam)) {
 					throw internalServerError(
 						`Could not find teams for seeds while creating pool matches; pool_size=${teams.length}`,
 					);
@@ -199,6 +214,15 @@ export const createPoolMatchesFn = createServerFn()
 					teamBId,
 					scheduledTime: matchIdx === 0 ? division.tournament.startTime : null,
 				});
+
+				matchRefValues.push(
+					...refTeam.team.players.map(({ playerProfileId }) => ({
+						poolId: id,
+						profileId: playerProfileId,
+						teamId: refTeam.teamId,
+						matchNumber,
+					})),
+				);
 
 				refValues.push({
 					poolId: id,
@@ -219,13 +243,24 @@ export const createPoolMatchesFn = createServerFn()
 				matchNumber: poolMatches.matchNumber,
 			});
 
-		await db.insert(matchRefTeams).values(
-			refValues.map(({ poolId, matchNumber, refTeamId }) => ({
+		// await db.insert(matchRefTeams).values(
+		// 	refValues.map(({ poolId, matchNumber, refTeamId }) => ({
+		// 		poolMatchId: createdMatches.find(
+		// 			(match) =>
+		// 				match.poolId === poolId && match.matchNumber === matchNumber,
+		// 		)?.id,
+		// 		teamId: refTeamId,
+		// 	})),
+		// );
+
+		await db.insert(matchRefs).values(
+			matchRefValues.map(({ poolId, matchNumber, profileId, teamId }) => ({
 				poolMatchId: createdMatches.find(
 					(match) =>
 						match.poolId === poolId && match.matchNumber === matchNumber,
 				)?.id,
-				teamId: refTeamId,
+				profileId,
+				teamId,
 			})),
 		);
 
