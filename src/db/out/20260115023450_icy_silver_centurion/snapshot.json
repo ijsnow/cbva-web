@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "f8ea9389-40bb-479f-9a72-d89c763a0cb4",
+  "id": "1bc93acd-edb8-4177-8bc5-ba9e53c2caff",
   "prevIds": [
     "2c838834-7d5c-411b-a772-d9df96ab36b0"
   ],
@@ -3134,7 +3134,7 @@
       "with": "",
       "method": "btree",
       "concurrently": false,
-      "name": "match_ref_teams_pool_match_idx",
+      "name": "match_ref_pool_match_idx",
       "entityType": "indexes",
       "schema": "public",
       "table": "match_refs"
@@ -3155,7 +3155,7 @@
       "with": "",
       "method": "btree",
       "concurrently": false,
-      "name": "match_ref_teams_playoff_match_idx",
+      "name": "match_ref_playoff_match_idx",
       "entityType": "indexes",
       "schema": "public",
       "table": "match_refs"
@@ -4816,7 +4816,7 @@
     },
     {
       "value": "(\"pool_match_id\" IS NOT NULL AND \"playoff_match_id\" IS NULL) OR (\"pool_match_id\" IS NULL AND \"playoff_match_id\" IS NOT NULL)",
-      "name": "match_ref_teams_type_exclusive",
+      "name": "match_ref_type_exclusive",
       "entityType": "checks",
       "schema": "public",
       "table": "match_refs"

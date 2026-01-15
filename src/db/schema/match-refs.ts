@@ -37,11 +37,11 @@ export const matchRefs = pgTable(
 	},
 	(table) => [
 		check(
-			"match_ref_teams_type_exclusive",
+			"match_ref_type_exclusive",
 			sql`(${table.poolMatchId} IS NOT NULL AND ${table.playoffMatchId} IS NULL) OR (${table.poolMatchId} IS NULL AND ${table.playoffMatchId} IS NOT NULL)`,
 		),
-		index("match_ref_teams_pool_match_idx").on(table.poolMatchId),
-		index("match_ref_teams_playoff_match_idx").on(table.playoffMatchId),
+		index("match_ref_pool_match_idx").on(table.poolMatchId),
+		index("match_ref_playoff_match_idx").on(table.playoffMatchId),
 	],
 );
 
