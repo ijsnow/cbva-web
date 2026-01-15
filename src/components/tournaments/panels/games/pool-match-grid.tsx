@@ -1,23 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import clsx from "clsx";
-import { CircleDot, EditIcon } from "lucide-react";
+import { CircleDot } from "lucide-react";
 import { tv } from "tailwind-variants";
 import { Button } from "@/components/base/button";
 import { ProfileName } from "@/components/profiles/name";
 import type {
 	MatchRef,
-	MatchRefTeam,
 	MatchSet,
 	PlayerProfile,
 	Pool,
 	PoolMatch,
 	PoolTeam,
 	Team,
-	TeamPlayer,
 	TournamentDivisionTeam,
 } from "@/db/schema";
 import { isDefined, isNotNull } from "@/utils/types";
-import { RefTeamsList } from "@/components/refs/ref-teams-list";
 import { useActiveDivisionId, useIsDemoTournament } from "../../context";
 import { RefsList } from "@/components/refs/refs-list";
 import { SimulateMatchModal } from "../../controls/simulate-match";
