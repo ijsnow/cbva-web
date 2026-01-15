@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "ahooks";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { Header } from "react-aria-components";
 import type { Role } from "@/auth/permissions";
 import { UpdateUserForm } from "@/components/admin/update-user-form";

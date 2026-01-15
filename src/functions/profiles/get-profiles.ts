@@ -4,17 +4,36 @@ import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 
 export const getProfilesSchema = z.object({
-	ids: z.array(z.number()),
+	ids: z.array(z.number()).optional(),
+	query: z.string().optional(),
 });
 
 export const getProfilesFn = createServerFn()
 	.inputValidator(getProfilesSchema)
-	.handler(({ data: { ids } }) => {
+	.handler(({ data: { ids, query } }) => {
 		return db.query.playerProfiles.findMany({
+			with: {
+				level: true,
+			},
 			where: {
-				id: {
-					in: ids,
-				},
+				id: ids
+					? {
+							in: ids,
+						}
+					: undefined,
+				RAW: query
+					? (t, { sql, ilike }) =>
+							ilike(
+								sql`
+            CASE
+              WHEN ${t.preferredName} IS NOT NULL
+              THEN ${t.preferredName} || ' ' || ${t.lastName}
+              ELSE ${t.firstName} || ' ' || ${t.lastName}
+            END
+            `,
+								`%${query}%`,
+							)
+					: undefined,
 			},
 		});
 	});

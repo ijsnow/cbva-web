@@ -11,7 +11,11 @@ import { isDefined } from "@/utils/types";
 import { DateFormatter, parseDate } from "@internationalized/date";
 import { getDefaultTimeZone } from "@/lib/dates";
 
-export function getLevelDisplay(level: Level | null) {
+export function getLevelDisplay(level: Level | null, min?: number) {
+	if (isDefined(min) && (!level || level.order <= min)) {
+		return "";
+	}
+
 	return (level?.abbreviated || level?.name)?.toUpperCase() || "N";
 }
 
