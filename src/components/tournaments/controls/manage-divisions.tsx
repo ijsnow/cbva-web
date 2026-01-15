@@ -42,11 +42,6 @@ export function ManageDivisionsForm({
 		onSuccess: () => {
 			queryClient.invalidateQueries(queryOptions);
 
-			// queryClient.invalidateQueries({
-			// 	queryKey: getPoolsQueryOptions({ tournamentDivisionId: division.id })
-			// 		.queryKey,
-			// });
-
 			onOpenChange(false);
 		},
 	});
@@ -68,10 +63,17 @@ export function ManageDivisionsForm({
 			onMount: schema,
 			onChange: schema,
 		},
-		onSubmit: ({ value: { divisions } }) => {
-			mutate({
-				divisions,
-			});
+		onSubmit: ({ value: { divisions }, formApi }) => {
+			mutate(
+				{
+					divisions,
+				},
+				{
+					onSuccess: () => {
+						formApi.reset();
+					},
+				},
+			);
 		},
 	});
 
