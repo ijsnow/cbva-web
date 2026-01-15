@@ -21,6 +21,11 @@ import { isNotNull, isNotNullOrUndefined } from "@/utils/types";
 
 export type MatchKind = "set-to-21" | "set-to-28" | "best-of-3";
 
+export const setSchema = z.object({
+	winScore: z.number(),
+	switchCount: z.number(),
+});
+
 export const createPlayoffsSchema = selectTournamentDivisionSchema
 	.pick({
 		id: true,
@@ -28,9 +33,9 @@ export const createPlayoffsSchema = selectTournamentDivisionSchema
 	.extend({
 		teamCount: z.number(),
 		wildcardCount: z.number(),
-		matchKind: z.enum<MatchKind[]>(["set-to-21", "set-to-28", "best-of-3"]),
 		assignCourts: z.boolean(),
 		overwrite: z.boolean(),
+		sets: z.array(setSchema),
 	});
 
 export type CreatePlayoffsParams = z.infer<typeof createPlayoffsSchema>;
