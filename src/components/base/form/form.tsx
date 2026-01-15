@@ -179,10 +179,10 @@ function StateDebugger({ className }: { className?: string }) {
 
 	return (
 		<form.Subscribe
-			selector={({ values, errors, ...rest }) => [values, errors, rest]}
-			children={([values, errors, rest]) => (
+			selector={({ values, errors }) => [values, errors]}
+			children={([values, errors]) => (
 				<pre className={clsx("col-span-full", className)}>
-					{JSON.stringify({ values, errors, rest }, null, 2)}
+					{JSON.stringify({ values, errors }, null, 2)}
 				</pre>
 			)}
 		/>
