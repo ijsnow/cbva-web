@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Handle, Position } from "@xyflow/react";
 import clsx from "clsx";
-import { CircleDot } from "lucide-react";
+import { CircleDot, EditIcon } from "lucide-react";
 import { tv } from "tailwind-variants";
 import { useViewerHasPermission } from "@/auth/shared";
 import { Button } from "@/components/base/button";
@@ -29,6 +29,8 @@ import {
 } from "@/components/tournaments/context";
 import { RefTeamsList } from "@/components/refs/ref-teams-list";
 import { SetCourtForm } from "@/components/tournaments/controls/set-court";
+import { OverrideScoreForm } from "@/components/matches/director-controls/override-score";
+import { useState } from "react";
 
 export const scoreTextStyles = tv({
 	base: "p-3 text-center flex flex-col justify-center col-span-1 text-xl font-light border-gray-300",
@@ -80,6 +82,8 @@ export function MatchNode({
 }) {
 	const tournament = useTournament();
 	const isDemo = useIsDemoTournament();
+
+	const [overrideId, setOverrideId] = useState<number | undefined>(undefined);
 
 	const {
 		teamA,
@@ -165,7 +169,7 @@ export function MatchNode({
 				<div className="grid grid-cols-6 items-center border-b border-gray-300">
 					<div
 						className={clsx(
-							"p-3 flex flex-row items-center space-x-3",
+							"p-3 flex flex-row items-center space-x-3 whitespace-nowrap",
 							sets.length > 1 ? "col-span-3" : "col-span-5",
 						)}
 					>
@@ -205,8 +209,35 @@ export function MatchNode({
 					</div>
 
 					{sets.map((s) => (
-						<div key={s.id} className="p-3 text-center col-span-1">
-							{sets.length > 1 ? <>Set {s.setNumber}</> : "Score"}
+						<div
+							key={s.id}
+							className="p-3 text-center col-span-1 flex flex-row gap-2 items-center justify-center whitespace-nowrap"
+						>
+							<span>{sets.length > 1 ? <>Set {s.setNumber}</> : "Score"}</span>
+							<Button
+								size="xs"
+								variant="text"
+								className="text-blue-500 hover:text-blue-600 self-end"
+								onPress={() => {
+									setOverrideId(s.id);
+								}}
+								tooltip="Update set score"
+							>
+								<EditIcon size={16} />
+							</Button>
+							<OverrideScoreForm
+								matchId={data.id}
+								matchKind="playoff"
+								setId={s.id}
+								isOpen={overrideId === s.id}
+								onOpenChange={(open) => {
+									if (open) {
+										setOverrideId(s.id);
+									} else {
+										setOverrideId(undefined);
+									}
+								}}
+							/>
 						</div>
 					))}
 				</div>

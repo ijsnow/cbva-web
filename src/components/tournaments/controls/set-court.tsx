@@ -88,7 +88,7 @@ export function SetCourtForm({
 	return (
 		<>
 			{court && (
-				<span className="flex flex-row items-center gap-2">
+				<span className="flex flex-row items-center gap-2 text-ellipsis">
 					{court}
 					{canUpdate && (
 						<Button

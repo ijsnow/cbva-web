@@ -1,72 +1,73 @@
-import { SettingsIcon } from "lucide-react"
-import { useState } from "react"
+import { SettingsIcon } from "lucide-react";
+import { useState } from "react";
 
-import { useViewerHasPermission } from "@/auth/shared"
-import { DropdownMenu, DropdownMenuItem } from "@/components/base/dropdown-menu"
+import { useViewerHasPermission } from "@/auth/shared";
+import {
+	DropdownMenu,
+	DropdownMenuItem,
+} from "@/components/base/dropdown-menu";
 
-import { OverrideScoreForm } from "./override-score"
+import { OverrideScoreForm } from "./override-score";
 
 export type TournamentDirectorMatchControlsProps = {
-  matchId: number
-  matchKind: "pool" | "playoff"
-  setId: number
-}
-
-// type ModalKind = "duplicate" | "add-team" | "calc-seeds" | "gen-pools" | 'gen-pool-matches';
+	matchId: number;
+	matchKind: "pool" | "playoff";
+	setId: number;
+};
 
 enum ModalKind {
-  OverrideScore = 0,
+	OverrideScore = 0,
 }
 
 export function TournamentDirectorMatchControls({
-  matchId,
-  matchKind,
-  setId,
+	matchId,
+	matchKind,
+	setId,
 }: TournamentDirectorMatchControlsProps) {
-  const canCreate = useViewerHasPermission({
-    tournament: ["create"],
-  })
+	const canCreate = useViewerHasPermission({
+		tournament: ["create"],
+	});
 
-  const canUpdate = useViewerHasPermission({
-    tournament: ["update"],
-  })
+	const canUpdate = useViewerHasPermission({
+		tournament: ["update"],
+	});
 
-  const [activeModal, setActiveModal] = useState<ModalKind>()
+	const [activeModal, setActiveModal] = useState<ModalKind>();
 
-  if (![canCreate, canUpdate].some(Boolean)) {
-    return null
-  }
+	if (![canCreate, canUpdate].some(Boolean)) {
+		return null;
+	}
 
-  const makeModalOpenProps = (kind: ModalKind) => ({
-    isOpen: activeModal === kind,
-    onOpenChange: (open: boolean) => {
-      const next = open ? kind : undefined
+	const makeModalOpenProps = (kind: ModalKind) => ({
+		isOpen: activeModal === kind,
+		onOpenChange: (open: boolean) => {
+			const next = open ? kind : undefined;
 
-      setActiveModal(next)
-    },
-  })
+			setActiveModal(next);
+		},
+	});
 
-  return (
-    <>
-      <DropdownMenu
-        buttonClassName="absolute top-6 right-6"
-        buttonIcon={<SettingsIcon />}
-      >
-        {canUpdate && (
-          <DropdownMenuItem
-            onPress={() => setActiveModal(ModalKind.OverrideScore)}
-          >
-            Override Score
-          </DropdownMenuItem>
-        )}
-      </DropdownMenu>
+	return (
+		<>
+			<DropdownMenu
+				buttonClassName="absolute top-6 right-6"
+				buttonIcon={<SettingsIcon />}
+			>
+				{canUpdate && (
+					<DropdownMenuItem
+						onPress={() => setActiveModal(ModalKind.OverrideScore)}
+					>
+						Override Score
+					</DropdownMenuItem>
+				)}
+			</DropdownMenu>
 
-      <OverrideScoreForm
-        matchId={matchId}
-        matchKind={matchKind}
-        setId={setId}
-        {...makeModalOpenProps(ModalKind.OverrideScore)}
-      />
-    </>
-  )
+			<OverrideScoreForm
+				matchId={matchId}
+				matchKind={matchKind}
+				setId={setId}
+				{...makeModalOpenProps(ModalKind.OverrideScore)}
+			/>
+		</>
+	);
 }
