@@ -65,8 +65,6 @@ export function RefsList({
 
 	const groupedRefs = groupBy(refs, "teamId");
 
-	console.log(groupedRefs);
-
 	return (
 		<>
 			{refs.length ? (

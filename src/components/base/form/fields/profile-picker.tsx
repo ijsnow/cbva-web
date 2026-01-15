@@ -61,7 +61,6 @@ export function ProfilePickerField({
 	) : (
 		<AsyncComboBoxField
 			className="flex-1"
-			isRequired
 			label={label}
 			field={field}
 			onSelectionChange={(next) => {

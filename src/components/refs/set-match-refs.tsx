@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { EditIcon, PlusIcon, XIcon } from "lucide-react";
+import { EditIcon } from "lucide-react";
 import { useState } from "react";
 import { Heading } from "react-aria-components";
 import { Button } from "@/components/base/button";
@@ -24,8 +24,8 @@ import {
 } from "../tournaments/context";
 import z from "zod";
 import { playerNames } from "@/utils/profiles";
-
-const EMPTY = null as unknown as number;
+import { Radio } from "../base/radio-group";
+import { dbg } from "@/utils/dbg";
 
 export type SetMatchRefsFormProps = {
 	tournamentDivisionId: number;
@@ -97,14 +97,14 @@ export function SetMatchRefsForm({
 			profileIds: true,
 		})
 		.extend({
-			addAnother: z.boolean(),
+			picker: z.enum(["team", "profile"]),
 		});
 
 	const form = useAppForm({
 		defaultValues: {
 			teamId: null,
 			profileIds: [],
-			addAnother: true,
+			picker: "team",
 		} as z.infer<typeof schema>,
 		validators: {
 			onMount: schema,
@@ -112,6 +112,8 @@ export function SetMatchRefsForm({
 		},
 		listeners: {
 			onChange: ({ formApi, fieldApi }) => {
+				console.log("change", fieldApi.name, fieldApi.state.value);
+
 				if (fieldApi.name.startsWith("profileIds")) {
 					formApi.setFieldValue("profileIds", (value) =>
 						value.filter(isDefined),
@@ -166,49 +168,68 @@ export function SetMatchRefsForm({
 							</form.AppForm>
 						)}
 
-						<form.AppField name="teamId">
+						<form.AppField name="picker">
 							{(field) => (
-								<field.Select
-									label="Select team"
-									field={field}
-									options={teamOptions ?? []}
-								/>
+								<field.RadioGroup field={field}>
+									<Radio value="team">Select a team</Radio>
+									<Radio value="profile">Search profiles</Radio>
+								</field.RadioGroup>
 							)}
 						</form.AppField>
 
-						<form.AppField
-							name="profileIds"
-							mode="array"
-							children={(field) => (
-								<>
-									<form.AppField
-										name={`profileIds[${field.state.value.length}]`}
-									>
-										{(subField) => (
-											<subField.ProfilePicker
-												label="Search Profiles"
-												field={subField}
-												selectedProfileIds={field.state.value.filter(isDefined)}
+						<form.Subscribe
+							selector={(state) => dbg(state.values, "state").picker}
+						>
+							{(picker) =>
+								picker === "team" ? (
+									<form.AppField name="teamId">
+										{(field) => (
+											<field.Select
+												label="Select team"
+												field={field}
+												options={teamOptions ?? []}
 											/>
 										)}
 									</form.AppField>
-
-									{field.state.value.map((_, i) => (
-										<form.AppField key={i} name={`profileIds[${i}]`}>
-											{(subField) => (
-												<subField.ProfilePicker
-													label="Search Profiles"
-													field={subField}
-													selectedProfileIds={field.state.value.filter(
-														isDefined,
+								) : (
+									<form.AppField
+										name="profileIds"
+										mode="array"
+										children={(field) => (
+											<>
+												<form.AppField
+													name={`profileIds[${dbg(field, "profileIds").state.value.length}]`}
+												>
+													{(subField) => (
+														<subField.ProfilePicker
+															label="Search Profiles"
+															field={subField}
+															selectedProfileIds={field.state.value.filter(
+																isDefined,
+															)}
+														/>
 													)}
-												/>
-											)}
-										</form.AppField>
-									))}
-								</>
-							)}
-						/>
+												</form.AppField>
+
+												{field.state.value.map((_, i) => (
+													<form.AppField key={i} name={`profileIds[${i}]`}>
+														{(subField) => (
+															<subField.ProfilePicker
+																label="Search Profiles"
+																field={subField}
+																selectedProfileIds={field.state.value.filter(
+																	isDefined,
+																)}
+															/>
+														)}
+													</form.AppField>
+												))}
+											</>
+										)}
+									/>
+								)
+							}
+						</form.Subscribe>
 
 						<form.AppForm>
 							<form.Footer>
