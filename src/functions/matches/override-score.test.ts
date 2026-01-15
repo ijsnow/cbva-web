@@ -23,7 +23,7 @@ describe("playoff match finish", () => {
 			playoffConfig: {
 				teamCount: 10,
 				wildcardCount: 2,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignWildcards: true,
 			},
@@ -110,7 +110,7 @@ describe("playoff match finish", () => {
 			playoffConfig: {
 				teamCount: 6,
 				wildcardCount: 2,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignWildcards: true,
 			},

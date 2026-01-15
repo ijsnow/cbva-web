@@ -1,0 +1,1 @@
+ALTER TABLE "match_refs" DROP CONSTRAINT "match_refs_team_id_tournament_division_teams_id_fkey", ADD CONSTRAINT "match_refs_team_id_tournament_division_teams_id_fkey" FOREIGN KEY ("team_id") REFERENCES "tournament_division_teams"("id") ON DELETE CASCADE;

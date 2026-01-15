@@ -20,8 +20,6 @@ export async function setMatchRefsHandler({
 }: {
 	data: z.infer<typeof setMatchRefsSchema>;
 }) {
-	console.log("setMatchRefsHandler", data);
-
 	const { profileIds, teamId, playoffMatchId, poolMatchId } = data;
 
 	const match = playoffMatchId

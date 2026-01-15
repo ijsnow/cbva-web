@@ -5,32 +5,11 @@ import { setMatchRefsHandler, setMatchRefsSchema } from "./set-match-refs";
 
 describe("setMatchRefs", () => {
 	describe("schema validation", () => {
-		test("should fail when both poolMatchId and playoffMatchId are provided", () => {
-			const input = {
-				teamId: 1,
-				poolMatchId: 1,
-				playoffMatchId: 1,
-			};
-
-			const result = setMatchRefsSchema.safeParse(input);
-
-			expect(result.success).toBe(false);
-		});
-
-		test("should fail when neither poolMatchId nor playoffMatchId are provided", () => {
-			const input = {
-				teamId: 1,
-			};
-
-			const result = setMatchRefsSchema.safeParse(input);
-
-			expect(result.success).toBe(false);
-		});
-
 		test("should pass when only poolMatchId is provided", () => {
 			const input = {
 				teamId: 1,
 				poolMatchId: 1,
+				profileIds: [],
 			};
 
 			const result = setMatchRefsSchema.safeParse(input);
@@ -40,6 +19,7 @@ describe("setMatchRefs", () => {
 				expect(result.data).toMatchObject({
 					teamId: 1,
 					poolMatchId: 1,
+					profileIds: [],
 				});
 			}
 		});
@@ -48,6 +28,7 @@ describe("setMatchRefs", () => {
 			const input = {
 				teamId: 1,
 				playoffMatchId: 1,
+				profileIds: [],
 			};
 
 			const result = setMatchRefsSchema.safeParse(input);
@@ -57,6 +38,24 @@ describe("setMatchRefs", () => {
 				expect(result.data).toMatchObject({
 					teamId: 1,
 					playoffMatchId: 1,
+					profileIds: [],
+				});
+			}
+		});
+
+		test("should pass with profileIds and no teamId", () => {
+			const input = {
+				poolMatchId: 1,
+				profileIds: [1, 2],
+			};
+
+			const result = setMatchRefsSchema.safeParse(input);
+
+			expect(result.success).toBe(true);
+			if (result.success) {
+				expect(result.data).toMatchObject({
+					poolMatchId: 1,
+					profileIds: [1, 2],
 				});
 			}
 		});
@@ -65,6 +64,7 @@ describe("setMatchRefs", () => {
 			const input = {
 				teamId: 1,
 				poolMatchId: "not-a-number",
+				profileIds: [],
 			};
 
 			const result = setMatchRefsSchema.safeParse(input);
@@ -76,6 +76,18 @@ describe("setMatchRefs", () => {
 			const input = {
 				teamId: 1,
 				playoffMatchId: "not-a-number",
+				profileIds: [],
+			};
+
+			const result = setMatchRefsSchema.safeParse(input);
+
+			expect(result.success).toBe(false);
+		});
+
+		test("should fail when profileIds is missing", () => {
+			const input = {
+				teamId: 1,
+				poolMatchId: 1,
 			};
 
 			const result = setMatchRefsSchema.safeParse(input);
@@ -119,6 +131,9 @@ describe("setMatchRefs", () => {
 
 			// Get a tournament division team to use as ref team
 			const refTeam = await db.query.tournamentDivisionTeams.findFirst({
+				with: {
+					players: true,
+				},
 				where: { tournamentDivisionId: tournament.divisions[0] },
 			});
 
@@ -135,15 +150,17 @@ describe("setMatchRefs", () => {
 
 			expect(result.success).toBe(true);
 
-			// Verify the ref team was created
-			const createdRefTeam = await db.query.matchRefTeams.findFirst({
+			// Verify the match refs were created (one per player on team)
+			const createdRefs = await db.query.matchRefs.findMany({
 				where: { poolMatchId: poolMatch.id },
 			});
 
-			expect(createdRefTeam).toBeDefined();
-			expect(createdRefTeam?.teamId).toBe(refTeam.id);
-			expect(createdRefTeam?.poolMatchId).toBe(poolMatch.id);
-			expect(createdRefTeam?.playoffMatchId).toBeNull();
+			expect(createdRefs).toHaveLength(refTeam.players.length);
+			for (const ref of createdRefs) {
+				expect(ref.teamId).toBe(refTeam.id);
+				expect(ref.poolMatchId).toBe(poolMatch.id);
+				expect(ref.playoffMatchId).toBeNull();
+			}
 		});
 
 		test("should assign ref team to a playoff match", async () => {
@@ -185,6 +202,9 @@ describe("setMatchRefs", () => {
 
 			// Get a tournament division team to use as ref team
 			const refTeam = await db.query.tournamentDivisionTeams.findFirst({
+				with: {
+					players: true,
+				},
 				where: { tournamentDivisionId: tournament.divisions[0] },
 			});
 
@@ -201,15 +221,17 @@ describe("setMatchRefs", () => {
 
 			expect(result.success).toBe(true);
 
-			// Verify the ref team was created
-			const createdRefTeam = await db.query.matchRefTeams.findFirst({
+			// Verify the match refs were created (one per player on team)
+			const createdRefs = await db.query.matchRefs.findMany({
 				where: { playoffMatchId: playoffMatch.id },
 			});
 
-			expect(createdRefTeam).toBeDefined();
-			expect(createdRefTeam?.teamId).toBe(refTeam.id);
-			expect(createdRefTeam?.playoffMatchId).toBe(playoffMatch.id);
-			expect(createdRefTeam?.poolMatchId).toBeNull();
+			expect(createdRefs).toHaveLength(refTeam.players.length);
+			for (const ref of createdRefs) {
+				expect(ref.teamId).toBe(refTeam.id);
+				expect(ref.playoffMatchId).toBe(playoffMatch.id);
+				expect(ref.poolMatchId).toBeNull();
+			}
 		});
 
 		test("should replace existing ref team for a pool match", async () => {
@@ -246,6 +268,9 @@ describe("setMatchRefs", () => {
 
 			// Get two tournament division teams to use as ref teams
 			const teams = await db.query.tournamentDivisionTeams.findMany({
+				with: {
+					players: true,
+				},
 				where: { tournamentDivisionId: tournament.divisions[0] },
 				limit: 2,
 			});
@@ -261,13 +286,15 @@ describe("setMatchRefs", () => {
 				},
 			});
 
-			// Verify first ref team was created
-			let refTeams = await db.query.matchRefTeams.findMany({
+			// Verify first ref team was created (one ref per player)
+			let refs = await db.query.matchRefs.findMany({
 				where: { poolMatchId: poolMatch.id },
 			});
 
-			expect(refTeams).toHaveLength(1);
-			expect(refTeams[0].teamId).toBe(teams[0].id);
+			expect(refs).toHaveLength(teams[0].players.length);
+			for (const ref of refs) {
+				expect(ref.teamId).toBe(teams[0].id);
+			}
 
 			// Replace with second ref team
 			await setMatchRefsHandler({
@@ -278,13 +305,15 @@ describe("setMatchRefs", () => {
 				},
 			});
 
-			// Verify old ref team was deleted and new one created
-			refTeams = await db.query.matchRefTeams.findMany({
+			// Verify old refs were deleted and new ones created
+			refs = await db.query.matchRefs.findMany({
 				where: { poolMatchId: poolMatch.id },
 			});
 
-			expect(refTeams).toHaveLength(1);
-			expect(refTeams[0].teamId).toBe(teams[1].id);
+			expect(refs).toHaveLength(teams[1].players.length);
+			for (const ref of refs) {
+				expect(ref.teamId).toBe(teams[1].id);
+			}
 		});
 
 		test("should replace existing ref team for a playoff match", async () => {
@@ -326,6 +355,9 @@ describe("setMatchRefs", () => {
 
 			// Get two tournament division teams to use as ref teams
 			const teams = await db.query.tournamentDivisionTeams.findMany({
+				with: {
+					players: true,
+				},
 				where: { tournamentDivisionId: tournament.divisions[0] },
 				limit: 2,
 			});
@@ -341,13 +373,15 @@ describe("setMatchRefs", () => {
 				},
 			});
 
-			// Verify first ref team was created
-			let refTeams = await db.query.matchRefTeams.findMany({
+			// Verify first ref team was created (one ref per player)
+			let refs = await db.query.matchRefs.findMany({
 				where: { playoffMatchId: playoffMatch.id },
 			});
 
-			expect(refTeams).toHaveLength(1);
-			expect(refTeams[0].teamId).toBe(teams[0].id);
+			expect(refs).toHaveLength(teams[0].players.length);
+			for (const ref of refs) {
+				expect(ref.teamId).toBe(teams[0].id);
+			}
 
 			// Replace with second ref team
 			await setMatchRefsHandler({
@@ -358,13 +392,15 @@ describe("setMatchRefs", () => {
 				},
 			});
 
-			// Verify old ref team was deleted and new one created
-			refTeams = await db.query.matchRefTeams.findMany({
-				where: { playoffMatchId: playoffMatch!.id },
+			// Verify old refs were deleted and new ones created
+			refs = await db.query.matchRefs.findMany({
+				where: { playoffMatchId: playoffMatch.id },
 			});
 
-			expect(refTeams).toHaveLength(1);
-			expect(refTeams[0].teamId).toBe(teams[1].id);
+			expect(refs).toHaveLength(teams[1].players.length);
+			for (const ref of refs) {
+				expect(ref.teamId).toBe(teams[1].id);
+			}
 		});
 
 		test("should throw notFound error when pool match does not exist", async () => {

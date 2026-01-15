@@ -61,7 +61,12 @@ describe("set match court", () => {
 			playoffConfig: {
 				teamCount: 6,
 				wildcardCount: 2,
-				matchKind: "set-to-28",
+				sets: [
+					{
+						winScore: 28,
+						switchScore: 7,
+					},
+				],
 				overwrite: false,
 				assignWildcards: true,
 			},

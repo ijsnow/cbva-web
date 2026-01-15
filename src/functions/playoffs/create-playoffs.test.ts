@@ -32,7 +32,7 @@ describe("Generating playoffs", () => {
 				id: tournamentDivisionId,
 				teamCount: 16,
 				wildcardCount: 0,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignCourts: true,
 			},
@@ -85,7 +85,7 @@ describe("Generating playoffs", () => {
 				id: tournamentDivisionId,
 				teamCount: 12,
 				wildcardCount: 0,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 			},
 		});
@@ -153,7 +153,7 @@ describe("Generating playoffs", () => {
 				id: tournamentDivisionId,
 				teamCount: 10,
 				wildcardCount: 2,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 			},
 		});
@@ -218,7 +218,7 @@ describe("referee assignments", () => {
 			playoffConfig: {
 				teamCount: 10,
 				wildcardCount: 4,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignWildcards: true,
 			},
@@ -252,7 +252,7 @@ describe("referee assignments", () => {
 
 		const refTeamId = teamAWins ? match.teamBId : match.teamAId;
 
-		const refTeam = await db.query.matchRefTeams.findFirst({
+		const refTeam = await db.query.matchRefs.findFirst({
 			where: {
 				teamId: refTeamId!,
 				playoffMatchId: match.nextMatchId!,
@@ -306,7 +306,7 @@ describe("court assignment", () => {
 				id: tournamentDivisionId,
 				teamCount: 8,
 				wildcardCount: 0,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignCourts: true,
 			},
@@ -440,7 +440,7 @@ describe("court assignment", () => {
 				id: tournamentDivisionId,
 				teamCount: 6,
 				wildcardCount: 0,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignCourts: true,
 			},
@@ -561,7 +561,7 @@ describe("court assignment", () => {
 				id: tournamentDivisionId,
 				teamCount: 16,
 				wildcardCount: 0,
-				matchKind: "set-to-28",
+				sets: [{ winScore: 28, switchScore: 7 }],
 				overwrite: false,
 				assignCourts: true,
 			},

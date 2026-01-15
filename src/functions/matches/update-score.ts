@@ -1,7 +1,7 @@
 import { requireAuthenticated } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
-	matchRefTeams,
+	matchRefs,
 	MatchSet,
 	matchSets,
 	playoffMatches,
@@ -161,13 +161,30 @@ export const handleCompletedPlayoffMatchSet = createServerOnlyFn(
 
 		if (match.nextMatchId) {
 			await txn
-				.delete(matchRefTeams)
-				.where(eq(matchRefTeams.playoffMatchId, match.nextMatchId));
+				.delete(matchRefs)
+				.where(eq(matchRefs.playoffMatchId, match.nextMatchId));
 
-			await txn.insert(matchRefTeams).values({
-				teamId: loserId,
-				playoffMatchId: match.nextMatchId,
+			// Look up the losing team's players to create ref assignments
+			const losingTeam = await txn.query.tournamentDivisionTeams.findFirst({
+				with: {
+					players: {
+						with: {
+							profile: true,
+						},
+					},
+				},
+				where: { id: loserId },
 			});
+
+			if (losingTeam && losingTeam.players.length > 0) {
+				await txn.insert(matchRefs).values(
+					losingTeam.players.map(({ profile }) => ({
+						teamId: loserId,
+						profileId: profile.id,
+						playoffMatchId: match.nextMatchId,
+					})),
+				);
+			}
 
 			await txn
 				.update(tournamentDivisionTeams)
