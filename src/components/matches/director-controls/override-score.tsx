@@ -13,6 +13,8 @@ import {
 import { overrideScoreMutationOptions } from "@/functions/matches";
 import { type MatchIdProps, useMatchSets, useMatchTeams } from "@/lib/matches";
 import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
+import { getMatchQueryOptions } from "@/functions/matches/get-match";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
 
 export type OverrideScoreFormProps = MatchIdProps & {
 	tournamentDivisionId?: number;
@@ -37,16 +39,23 @@ export function OverrideScoreForm({
 	const { mutate, failureReason } = useMutation({
 		...overrideScoreMutationOptions(),
 		onSuccess: () => {
-			if (poolMatchId) {
-				queryClient.invalidateQueries(poolMatchQueryOptions(poolMatchId));
-			} else if (playoffMatchId) {
-				queryClient.invalidateQueries(playoffMatchQueryOptions(playoffMatchId));
+			queryClient.invalidateQueries(
+				getMatchQueryOptions({ poolMatchId, playoffMatchId }),
+			);
 
-				if (tournamentDivisionId) {
-					queryClient.invalidateQueries(
-						playoffsQueryOptions({ tournamentDivisionId }),
-					);
-				}
+			console.log({
+				poolMatchId,
+				tournamentDivisionId,
+			});
+
+			if (poolMatchId && tournamentDivisionId) {
+				queryClient.invalidateQueries(
+					getPoolsQueryOptions({ tournamentDivisionId }),
+				);
+			} else if (playoffMatchId && tournamentDivisionId) {
+				queryClient.invalidateQueries(
+					playoffsQueryOptions({ tournamentDivisionId }),
+				);
 			}
 
 			onOpenChange(false);
@@ -82,20 +91,27 @@ export function OverrideScoreForm({
 
 	const form = useAppForm({
 		defaultValues: {
-			teamAScore: set?.teamAScore as number,
-			teamBScore: set?.teamBScore as number,
+			teamAScore: set?.teamAScore ?? 0,
+			teamBScore: set?.teamBScore ?? 0,
 		},
 		validators: {
 			onMount: schema,
 			onChange: schema,
 		},
-		onSubmit: ({ value: { teamAScore, teamBScore } }) => {
+		onSubmit: ({ value: { teamAScore, teamBScore }, formApi }) => {
 			if (set) {
-				mutate({
-					id: set.id,
-					teamAScore,
-					teamBScore,
-				});
+				mutate(
+					{
+						id: set.id,
+						teamAScore,
+						teamBScore,
+					},
+					{
+						onSuccess: () => {
+							formApi.reset();
+						},
+					},
+				);
 			}
 		},
 	});

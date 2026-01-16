@@ -171,6 +171,7 @@ export function PoolMatchGrid({
 						)}
 
 						<OverrideScoreForm
+							tournamentDivisionId={tournamentDivisionId}
 							poolMatchId={id}
 							setId={s.id}
 							isOpen={overrideId === s.id}

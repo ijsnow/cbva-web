@@ -11,6 +11,7 @@ import type { MatchIdProps } from "@/lib/matches";
 import { OverrideScoreForm } from "./override-score";
 
 export type TournamentDirectorMatchControlsProps = MatchIdProps & {
+	tournamentDivisionId: number;
 	setId: number;
 };
 
@@ -19,6 +20,7 @@ enum ModalKind {
 }
 
 export function TournamentDirectorMatchControls({
+	tournamentDivisionId,
 	poolMatchId,
 	playoffMatchId,
 	setId,
@@ -62,6 +64,7 @@ export function TournamentDirectorMatchControls({
 			</DropdownMenu>
 
 			<OverrideScoreForm
+				tournamentDivisionId={tournamentDivisionId}
 				poolMatchId={poolMatchId}
 				playoffMatchId={playoffMatchId}
 				setId={setId}

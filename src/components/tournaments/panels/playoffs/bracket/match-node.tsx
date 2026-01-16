@@ -33,6 +33,7 @@ import { SetCourtForm } from "@/components/tournaments/controls/set-court";
 import { OverrideScoreForm } from "@/components/matches/director-controls/override-score";
 import { useState } from "react";
 import { RefsList } from "@/components/refs/refs-list";
+import { dbg } from "@/utils/dbg";
 
 export const scoreTextStyles = tv({
 	base: "p-3 text-center flex flex-col justify-center col-span-1 text-xl font-light border-gray-300",

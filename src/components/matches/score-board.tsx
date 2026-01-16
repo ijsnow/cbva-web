@@ -103,8 +103,9 @@ export function ScoreBoard({ poolMatchId, playoffMatchId }: ScoreBoardProps) {
 
 	return (
 		<div>
-			{activeTabKey && (
+			{match && activeTabKey && (
 				<TournamentDirectorMatchControls
+					tournamentDivisionId={match.tournamentDivisionId}
 					poolMatchId={poolMatchId}
 					playoffMatchId={playoffMatchId}
 					setId={activeTabKey}
