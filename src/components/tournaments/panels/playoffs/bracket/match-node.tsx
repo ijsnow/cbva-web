@@ -153,8 +153,7 @@ export function MatchNode({
 					data.status !== "completed" && (
 						<SimulateMatchModal
 							tournamentDivisionId={tournamentDivisionId}
-							matchId={data.id}
-							matchKind="playoff"
+							playoffMatchId={data.id}
 						/>
 					)}
 			</div>
@@ -223,8 +222,7 @@ export function MatchNode({
 							</Button>
 							<OverrideScoreForm
 								tournamentDivisionId={data.tournamentDivisionId}
-								matchId={data.id}
-								matchKind="playoff"
+								playoffMatchId={data.id}
 								setId={s.id}
 								isOpen={overrideId === s.id}
 								onOpenChange={(open) => {

@@ -141,8 +141,7 @@ export function PoolMatchGrid({
 					{canUpdate && isDemo && teamA && teamB && status !== "completed" && (
 						<SimulateMatchModal
 							tournamentDivisionId={tournamentDivisionId}
-							matchId={id}
-							matchKind="pool"
+							poolMatchId={id}
 						/>
 					)}
 				</div>
@@ -170,9 +169,9 @@ export function PoolMatchGrid({
 						) : (
 							<span>{sets.length > 1 ? <>Set {s.setNumber}</> : "Score"}</span>
 						)}
+
 						<OverrideScoreForm
-							matchId={id}
-							matchKind="pool"
+							poolMatchId={id}
 							setId={s.id}
 							isOpen={overrideId === s.id}
 							onOpenChange={(open) => {

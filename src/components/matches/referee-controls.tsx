@@ -8,34 +8,19 @@ import {
 	startMatchMutationOptions,
 	undoSetCompletedMutationOptions,
 } from "@/functions/matches";
-import type {
-	MatchRef,
-	MatchRefTeam,
-	MatchSet,
-	PlayerProfile,
-	PoolMatch,
-	Team,
-	TeamPlayer,
-	TournamentDivisionTeam,
-} from "@/db/schema";
+import type { MatchSet } from "@/db/schema";
 import { Button } from "../base/button";
 import { title } from "../base/primitives";
-import type { MatchTeam } from "../tournaments/panels/games/pool-match-grid";
 import { ServeOrderTracker } from "./serve-order-tracker";
 import { SideSwitchModal } from "./side-switch";
+import type { SharedMatchData } from "@/functions/matches/get-match";
 
 export function RefereeControls({
 	match,
 	set,
 	queryKey,
 }: {
-	match: PoolMatch & {
-		teamA?: Omit<MatchTeam, "poolTeam"> | null;
-		teamB?: Omit<MatchTeam, "poolTeam"> | null;
-		refs: (MatchRef & {
-			profile: PlayerProfile;
-		})[];
-	};
+	match: SharedMatchData;
 	set: MatchSet;
 	queryKey: QueryKey;
 }) {

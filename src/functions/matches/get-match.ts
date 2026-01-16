@@ -3,6 +3,8 @@ import type {
 	MatchRef,
 	MatchSet,
 	PlayerProfile,
+	Team,
+	TeamPlayer,
 	TournamentDivisionTeam,
 } from "@/db/schema";
 import type { MatchStatus } from "@/db/schema/shared";
@@ -12,18 +14,27 @@ import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 
 export const getMatchSchema = z.object({
-	poolMatchId: z.number(),
-	playoffMatchId: z.number(),
+	poolMatchId: z.number().optional(),
+	playoffMatchId: z.number().optional(),
 });
+
+export type SharedMatchTeam = TournamentDivisionTeam & {
+	team: Team & { players: (TeamPlayer & { profile: PlayerProfile })[] };
+};
 
 export type SharedMatchData = {
 	poolMatchId?: number;
 	playoffMatchId?: number;
+	tournamentDivisionId: number;
+	tournamentId: number;
+	winnerId: number | null;
+	court: string | null;
+	matchNumber: number;
 	status: MatchStatus;
 	teamAId: number | null;
-	teamA: TournamentDivisionTeam | null;
+	teamA: SharedMatchTeam | null;
 	teamBId: null | number;
-	teamB: TournamentDivisionTeam | null;
+	teamB: SharedMatchTeam | null;
 	sets: MatchSet[];
 	refs: (MatchRef & { profile: PlayerProfile })[];
 };
@@ -82,6 +93,11 @@ export const getMatch = createServerFn({
 
 				return {
 					playoffMatchId: match.id,
+					tournamentDivisionId: match.tournamentDivisionId,
+					tournamentId: match.tournamentDivision.tournamentId,
+					court: match.court,
+					winnerId: match.winnerId,
+					matchNumber: match.matchNumber,
 					status: match.status,
 					teamAId: match.teamAId,
 					teamA: match.teamA,
@@ -142,6 +158,11 @@ export const getMatch = createServerFn({
 
 				return {
 					poolMatchId: match.id,
+					tournamentDivisionId: match.pool.tournamentDivisionId,
+					tournamentId: match.pool.tournamentDivision.tournamentId,
+					court: match.pool.court,
+					winnerId: match.winnerId,
+					matchNumber: match.matchNumber,
 					status: match.status,
 					teamAId: match.teamAId,
 					teamA: match.teamA,

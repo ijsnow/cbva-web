@@ -11,39 +11,36 @@ import {
 	poolMatchQueryOptions,
 } from "@/data/matches";
 import { overrideScoreMutationOptions } from "@/functions/matches";
-import { useMatchSets, useMatchTeams } from "@/lib/matches";
+import { type MatchIdProps, useMatchSets, useMatchTeams } from "@/lib/matches";
 import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
 
-export type OverrideScoreFormProps = {
+export type OverrideScoreFormProps = MatchIdProps & {
 	tournamentDivisionId?: number;
 	setId: number;
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
-} & (
-	| { matchKind: "pool"; matchId: number }
-	| { matchKind: "playoff"; matchId: number }
-);
+};
 
 export function OverrideScoreForm({
 	tournamentDivisionId,
-	matchId,
-	matchKind,
+	poolMatchId,
+	playoffMatchId,
 	setId,
 	onOpenChange,
 	...props
 }: OverrideScoreFormProps) {
-	const teams = useMatchTeams(matchId, matchKind);
-	const sets = useMatchSets(matchId, matchKind);
+	const teams = useMatchTeams({ poolMatchId, playoffMatchId });
+	const sets = useMatchSets({ poolMatchId, playoffMatchId });
 
 	const queryClient = useQueryClient();
 
 	const { mutate, failureReason } = useMutation({
 		...overrideScoreMutationOptions(),
 		onSuccess: () => {
-			if (matchKind === "pool") {
-				queryClient.invalidateQueries(poolMatchQueryOptions(matchId));
-			} else if (matchKind === "playoff") {
-				queryClient.invalidateQueries(playoffMatchQueryOptions(matchId));
+			if (poolMatchId) {
+				queryClient.invalidateQueries(poolMatchQueryOptions(poolMatchId));
+			} else if (playoffMatchId) {
+				queryClient.invalidateQueries(playoffMatchQueryOptions(playoffMatchId));
 
 				if (tournamentDivisionId) {
 					queryClient.invalidateQueries(
@@ -148,6 +145,7 @@ export function OverrideScoreForm({
 					/>
 
 					<form.AppForm>
+						<form.StateDebugger />
 						<form.Footer>
 							<Button onPress={() => onOpenChange(false)}>Cancel</Button>
 

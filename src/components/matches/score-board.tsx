@@ -3,7 +3,7 @@ import {
 	useQueryClient,
 	useSuspenseQuery,
 } from "@tanstack/react-query";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import clsx from "clsx";
 import { ChevronLeftIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
@@ -14,15 +14,10 @@ import { Tab, TabList, TabPanel, Tabs } from "@/components/base/tabs";
 import { TournamentDirectorMatchControls } from "@/components/matches/director-controls";
 import { RefereeControls } from "@/components/matches/referee-controls";
 import {
-	playoffMatchQueryOptions,
-	poolMatchQueryOptions,
-} from "@/data/matches";
-import {
 	applyMatchSetAction,
 	updateScoreMutationOptions,
 } from "@/functions/matches";
 import { RefsList } from "@/components/refs/refs-list";
-import { MatchSet } from "@/db/schema";
 import { getMatchQueryOptions } from "@/functions/matches/get-match";
 
 const scoreStyles = tv({
@@ -45,16 +40,9 @@ const scoreStyles = tv({
 //
 // - Referees for permission
 
-export type SharedMatchProps = {
-	poolMatchId: number;
-	playoffMatchId: number;
-	sets: MatchSet[];
-};
-
 export type ScoreBoardProps = {
-	poolMatchId: number;
-	playoffMatchId: number;
-	match: SharedMatchProps;
+	poolMatchId?: number;
+	playoffMatchId?: number;
 };
 
 export function ScoreBoard({ poolMatchId, playoffMatchId }: ScoreBoardProps) {
@@ -117,8 +105,8 @@ export function ScoreBoard({ poolMatchId, playoffMatchId }: ScoreBoardProps) {
 		<div>
 			{activeTabKey && (
 				<TournamentDirectorMatchControls
-					matchId={match.id}
-					matchKind="playoff"
+					poolMatchId={poolMatchId}
+					playoffMatchId={playoffMatchId}
 					setId={activeTabKey}
 				/>
 			)}
@@ -127,8 +115,8 @@ export function ScoreBoard({ poolMatchId, playoffMatchId }: ScoreBoardProps) {
 				className="absolute top-6 left-6 flex flex-row space-x-2 items-center"
 				to="/tournaments/$tournamentId/$divisionId/{-$tab}"
 				params={{
-					tournamentId: match?.pool.tournamentDivision.tournamentId.toString(),
-					divisionId: match?.pool.tournamentDivisionId.toString(),
+					tournamentId: match?.tournamentId.toString(),
+					divisionId: match?.tournamentDivisionId.toString(),
 				}}
 			>
 				<ChevronLeftIcon size={16} /> <span>Back to tournament</span>
@@ -186,9 +174,10 @@ export function ScoreBoard({ poolMatchId, playoffMatchId }: ScoreBoardProps) {
 				<div>
 					{match && (
 						<RefsList
-							tournamentDivisionId={match.pool.tournamentDivisionId}
-							poolMatchId={match.id}
-							status={match.status}
+							tournamentDivisionId={match.tournamentDivisionId}
+							poolMatchId={match.poolMatchId}
+							playoffMatchId={match.playoffMatchId}
+							matchStatus={match.status}
 							refs={match.refs}
 						/>
 					)}
@@ -255,7 +244,7 @@ export function ScoreBoard({ poolMatchId, playoffMatchId }: ScoreBoardProps) {
 							<RefereeControls
 								match={match}
 								set={s}
-								queryKey={poolMatchQuery.queryKey}
+								queryKey={queryOptions.queryKey}
 							/>
 						</TabPanel>
 					))}

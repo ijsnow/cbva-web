@@ -14,25 +14,23 @@ import {
 	simulateMatchMutationOptions,
 	simulateMatchSchema,
 } from "@/functions/matches";
-import { useMatchTeams } from "@/lib/matches";
+import { type MatchIdProps, useMatchTeams } from "@/lib/matches";
 import type { MatchTeam } from "../panels/games/pool-match-grid";
 import { usePoolsQueryOptions } from "../context";
 
-export type SimulateMatchModalProps = {
+export type SimulateMatchModalProps = MatchIdProps & {
 	tournamentDivisionId: number;
-	matchId: number;
-	matchKind: "pool" | "playoff";
 	opponent?: MatchTeam | null;
 };
 
 export function SimulateMatchModal({
 	tournamentDivisionId,
-	matchId,
-	matchKind,
+	poolMatchId,
+	playoffMatchId,
 	opponent,
 	...props
 }: SimulateMatchModalProps) {
-	const teams = useMatchTeams(matchId, matchKind);
+	const teams = useMatchTeams({ poolMatchId, playoffMatchId });
 
 	const queryClient = useQueryClient();
 
@@ -47,7 +45,7 @@ export function SimulateMatchModal({
 				teamsQueryOptions({ tournamentDivisionId }),
 			);
 
-			if (matchKind === "playoff") {
+			if (playoffMatchId) {
 				queryClient.invalidateQueries(
 					playoffsQueryOptions({ tournamentDivisionId }),
 				);
@@ -63,16 +61,16 @@ export function SimulateMatchModal({
 
 	const form = useAppForm({
 		defaultValues: {
-			poolMatchId: matchKind === "pool" ? matchId : undefined,
-			playoffMatchId: matchKind === "playoff" ? matchId : undefined,
+			poolMatchId,
+			playoffMatchId,
 		} as z.infer<typeof simulateMatchSchema>,
 		validators: {
 			onMount: schema,
 		},
 		onSubmit: () => {
 			mutate({
-				poolMatchId: matchKind === "pool" ? matchId : undefined,
-				playoffMatchId: matchKind === "playoff" ? matchId : undefined,
+				poolMatchId,
+				playoffMatchId,
 			});
 		},
 	});

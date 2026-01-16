@@ -6,12 +6,11 @@ import {
 	DropdownMenu,
 	DropdownMenuItem,
 } from "@/components/base/dropdown-menu";
+import type { MatchIdProps } from "@/lib/matches";
 
 import { OverrideScoreForm } from "./override-score";
 
-export type TournamentDirectorMatchControlsProps = {
-	matchId: number;
-	matchKind: "pool" | "playoff";
+export type TournamentDirectorMatchControlsProps = MatchIdProps & {
 	setId: number;
 };
 
@@ -20,8 +19,8 @@ enum ModalKind {
 }
 
 export function TournamentDirectorMatchControls({
-	matchId,
-	matchKind,
+	poolMatchId,
+	playoffMatchId,
 	setId,
 }: TournamentDirectorMatchControlsProps) {
 	const canCreate = useViewerHasPermission({
@@ -63,8 +62,8 @@ export function TournamentDirectorMatchControls({
 			</DropdownMenu>
 
 			<OverrideScoreForm
-				matchId={matchId}
-				matchKind={matchKind}
+				poolMatchId={poolMatchId}
+				playoffMatchId={playoffMatchId}
 				setId={setId}
 				{...makeModalOpenProps(ModalKind.OverrideScore)}
 			/>

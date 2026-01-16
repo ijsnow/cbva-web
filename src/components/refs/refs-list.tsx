@@ -1,19 +1,11 @@
 import { useViewerHasPermission } from "@/auth/shared";
-import type {
-	MatchRef,
-	MatchRefTeam,
-	PlayerProfile,
-	Team,
-	TeamPlayer,
-	TournamentDivisionTeam,
-} from "@/db/schema";
+import type { MatchRef, PlayerProfile } from "@/db/schema";
 import { AbandonRefForm } from "../teams/controls/abandon-ref";
 import { RemoveRefForm } from "../teams/controls/remove-ref";
 import { TeamNames } from "../teams/names";
-import { EditMatchRefsForm } from "../tournaments/controls/edit-playoff-match-refs";
-import { ProfileName } from "../profiles/name";
 import { groupBy } from "lodash-es";
 import { SetMatchRefsForm } from "./set-match-refs";
+import type { MatchStatus } from "@/db/schema/shared";
 
 // TODO: match ref teams -> match refs
 // - change this (or new) file to modify refs. if refs have same teamId, operate on them equally
@@ -24,33 +16,17 @@ import { SetMatchRefsForm } from "./set-match-refs";
 // - undo abandon ref "
 
 export type RefsListProps = {
+	poolMatchId?: number;
+	playoffMatchId?: number;
 	tournamentDivisionId: number;
-	matchStatus: string | "completed" | "tbd";
+	matchStatus: MatchStatus | "tbd";
 	refs: (MatchRef & {
 		profile: Pick<
 			PlayerProfile,
 			"id" | "preferredName" | "firstName" | "lastName"
 		>;
 	})[];
-	// refTeams: (MatchRefTeam & {
-	// 	team: Pick<TournamentDivisionTeam, "id"> & {
-	// 		team: Pick<Team, "id"> & {
-	// 			players: (TeamPlayer & {
-	// 				profile: Pick<
-	// 					PlayerProfile,
-	// 					"id" | "preferredName" | "firstName" | "lastName"
-	// 				>;
-	// 			})[];
-	// 		};
-	// 	};
-	// })[];
-} & (
-	| {
-			poolMatchId: number;
-			playoffMatchId?: never;
-	  }
-	| { playoffMatchId: number; poolMatchId?: never }
-);
+};
 
 export function RefsList({
 	tournamentDivisionId,

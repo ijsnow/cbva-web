@@ -1,50 +1,53 @@
-import { useQuery } from "@tanstack/react-query"
-import { playoffMatchQueryOptions, poolMatchQueryOptions } from "@/data/matches"
+import { useQuery } from "@tanstack/react-query";
+import {
+	playoffMatchQueryOptions,
+	poolMatchQueryOptions,
+} from "@/data/matches";
+import { getMatchQueryOptions } from "@/functions/matches/get-match";
 
 export function isSetDone(
-  teamAScore: number,
-  teamBScore: number,
-  winScore: number
+	teamAScore: number,
+	teamBScore: number,
+	winScore: number,
 ) {
-  return (
-    (teamAScore >= winScore && teamAScore - teamBScore >= 2) ||
-    (teamBScore >= winScore && teamBScore - teamAScore >= 2)
-  )
+	return (
+		(teamAScore >= winScore && teamAScore - teamBScore >= 2) ||
+		(teamBScore >= winScore && teamBScore - teamAScore >= 2)
+	);
 }
 
-export function useMatchTeams(id: number, kind: "pool" | "playoff") {
-  const { data: poolMatch } = useQuery({
-    ...poolMatchQueryOptions(id),
-    enabled: kind === "pool",
-  })
+export type MatchIdProps = {
+	poolMatchId?: number;
+	playoffMatchId?: number;
+};
 
-  const { data: playoffMatch } = useQuery({
-    ...playoffMatchQueryOptions(id),
-    enabled: kind === "playoff",
-  })
+export function useMatchTeams({ poolMatchId, playoffMatchId }: MatchIdProps) {
+	const { data: poolMatch } = useQuery({
+		...poolMatchQueryOptions(poolMatchId ?? 0),
+		enabled: poolMatchId !== undefined,
+	});
 
-  const match = kind === "pool" ? poolMatch : playoffMatch
+	const { data: playoffMatch } = useQuery({
+		...playoffMatchQueryOptions(playoffMatchId ?? 0),
+		enabled: playoffMatchId !== undefined,
+	});
 
-  if (!match) {
-    return undefined
-  }
+	const match = poolMatchId ? poolMatch : playoffMatch;
 
-  return {
-    teamA: match.teamA,
-    teamB: match.teamB,
-  }
+	if (!match) {
+		return undefined;
+	}
+
+	return {
+		teamA: match.teamA,
+		teamB: match.teamB,
+	};
 }
 
-export function useMatchSets(id: number, kind: "pool" | "playoff") {
-  const { data: poolMatch } = useQuery({
-    ...poolMatchQueryOptions(id),
-    enabled: kind === "pool",
-  })
+export function useMatchSets({ poolMatchId, playoffMatchId }: MatchIdProps) {
+	const { data: match } = useQuery(
+		getMatchQueryOptions({ poolMatchId, playoffMatchId }),
+	);
 
-  const { data: playoffMatch } = useQuery({
-    ...playoffMatchQueryOptions(id),
-    enabled: kind === "playoff",
-  })
-
-  return kind === "pool" ? poolMatch?.sets : playoffMatch?.sets
+	return match?.sets;
 }
