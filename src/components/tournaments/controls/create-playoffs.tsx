@@ -12,7 +12,7 @@ import {
 } from "@/functions/playoffs/create-playoffs";
 import type { Division, TournamentDivision } from "@/db/schema";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
-import { useActiveTeams } from "../context";
+import { useActiveTeamsFromUrl } from "../context";
 import z from "zod";
 import { Radio } from "@/components/base/radio-group";
 import {
@@ -123,7 +123,7 @@ export function CreatePlayoffsForm({
 		},
 	});
 
-	const teams = useActiveTeams();
+	const teams = useActiveTeamsFromUrl();
 
 	const teamCount = teams?.length ?? "loading...";
 

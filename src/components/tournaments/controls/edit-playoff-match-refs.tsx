@@ -18,7 +18,7 @@ import {
 	poolMatchQueryOptions,
 } from "@/data/matches";
 import {
-	useActiveTeams,
+	useActiveTeamsFromUrl,
 	usePlayoffsQueryOptions,
 	usePoolsQueryOptions,
 	useTeamsQueryOptions,
@@ -98,7 +98,7 @@ export function EditMatchRefsForm({
 		},
 	});
 
-	const teams = useActiveTeams();
+	const teams = useActiveTeamsFromUrl();
 
 	const { data: stats } = useQuery({
 		...poolsQueryOptions,

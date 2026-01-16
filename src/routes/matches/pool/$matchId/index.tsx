@@ -13,7 +13,6 @@ import { subtitle, title } from "@/components/base/primitives";
 import { Tab, TabList, TabPanel, Tabs } from "@/components/base/tabs";
 import { TournamentDirectorMatchControls } from "@/components/matches/director-controls";
 import { RefereeControls } from "@/components/matches/referee-controls";
-import { TeamNames } from "@/components/teams/names";
 import { poolMatchQueryOptions } from "@/data/matches";
 import {
 	applyMatchSetAction,
@@ -23,6 +22,7 @@ import { DefaultLayout } from "@/layouts/default";
 import { playerNames } from "@/utils/profiles";
 import { isNotNull } from "@/utils/types";
 import { RefsList } from "@/components/refs/refs-list";
+import { ScoreBoard } from "@/components/matches/score-board";
 
 export const Route = createFileRoute("/matches/pool/$matchId/")({
 	loader: async ({ params: { matchId }, context: { queryClient } }) => {
@@ -79,213 +79,15 @@ const scoreStyles = tv({
 // - Referees for permission
 
 function RouteComponent() {
-	const { matchId } = Route.useParams();
+	const { matchId: matchIdStr } = Route.useParams();
 
-	const queryClient = useQueryClient();
+	const matchId = Number.parseInt(matchIdStr, 10);
 
-	const poolMatchQuery = poolMatchQueryOptions(Number.parseInt(matchId, 10));
-
-	const { mutate, isPending } = useMutation({
-		// TODO: optimistically update score
-		...updateScoreMutationOptions(),
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: poolMatchQuery.queryKey,
-			});
-		},
-	});
-
-	const makeUpdateScoreHandler =
-		(action: "increment" | "decrement") =>
-		(matchSetId: number, teamA: boolean) => {
-			const actionPayload = {
-				id: matchSetId,
-				action,
-				teamA,
-			};
-
-			mutate(actionPayload);
-
-			queryClient.setQueryData(poolMatchQuery.queryKey, (data) => {
-				if (!data) {
-					return undefined;
-				}
-
-				return {
-					...data,
-					sets: data?.sets.map((set) =>
-						set.id === matchSetId
-							? applyMatchSetAction(actionPayload, set)
-							: set,
-					),
-				};
-			});
-		};
-
-	const handleIncrement = makeUpdateScoreHandler("increment");
-	const handleDecrement = makeUpdateScoreHandler("decrement");
-
-	const { data, isLoading } = useSuspenseQuery(poolMatchQuery);
-
-	const [activeTabKey, setActiveTabKey] = useState<number | undefined>(
-		data?.sets[0]?.id,
-	);
-
-	const isDone = data?.status === "completed";
-
-	const isActionDisabled = isLoading || isPending;
+	const { data, isLoading } = useSuspenseQuery(poolMatchQueryOptions(matchId));
 
 	return (
 		<DefaultLayout>
-			{data && activeTabKey && (
-				<TournamentDirectorMatchControls
-					matchId={data.id}
-					matchKind="playoff"
-					setId={activeTabKey}
-				/>
-			)}
-
-			<Link
-				className="absolute top-6 left-6 flex flex-row space-x-2 items-center"
-				to="/tournaments/$tournamentId/$divisionId/{-$tab}"
-				params={{
-					tournamentId: data?.pool.tournamentDivision.tournamentId.toString(),
-					divisionId: data?.pool.tournamentDivisionId.toString(),
-				}}
-			>
-				<ChevronLeftIcon size={16} /> <span>Back to tournament</span>
-			</Link>
-
-			<div className="w-full max-w-3xl mx-auto flex flex-col space-y-8">
-				<div className="flex flex-row items-center">
-					<div className="flex-1 flex items-center justify-center">
-						<span
-							className={title({
-								size: "sm",
-								className: clsx(
-									"text-center max-w-lg leading-tight",
-									isDone &&
-										data?.winnerId === data?.teamAId &&
-										"font-normal text-gray-500",
-								),
-							})}
-						>
-							{data?.teamA?.team.players
-								.map(
-									({ profile: { firstName, preferredName, lastName } }) =>
-										`${preferredName || firstName} ${lastName}`,
-								)
-								.join(" & ")}
-						</span>
-					</div>
-					<span className={subtitle({ class: "flex-0 italic" })}>vs</span>
-					<div className="flex-1 flex items-center justify-center">
-						<span
-							className={title({
-								size: "sm",
-								className: clsx(
-									"text-center max-w-lg leading-tight",
-									isDone &&
-										data?.winnerId === data?.teamBId &&
-										"font-normal text-gray-500",
-								),
-							})}
-						>
-							{data?.teamB?.team.players
-								.map(
-									({ profile: { firstName, preferredName, lastName } }) =>
-										`${preferredName || firstName} ${lastName}`,
-								)
-								.join(" & ")}
-						</span>
-					</div>
-				</div>
-				{data?.court && (
-					<h2 className={title({ size: "xs", class: "text-center" })}>
-						Court {data.court}
-					</h2>
-				)}
-				<div>
-					Refs: {/* {data && ( */}
-					{/* 	<RefsList */}
-					{/* 		tournamentDivisionId={data.pool.tournamentDivisionId} */}
-					{/* 		poolMatchId={data.id} */}
-					{/* 		status={data.status} */}
-					{/* 		refs={data.refs} */}
-					{/* 	/> */}
-					{/* )} */}
-					<TeamNames players={data?.refs} />
-					{/* {data?.refTeams.map(({ team }) => ( */}
-					{/* 	<TeamNames key={team.id} players={team.team.players} /> */}
-					{/* ))} */}
-				</div>
-			</div>
-
-			<Tabs
-				defaultSelectedKey={data?.sets.at(1)?.id}
-				onSelectionChange={(key) => setActiveTabKey(key)}
-			>
-				<div
-					className={clsx("overflow-x-auto", data?.sets.length === 1 && "h-0")}
-				>
-					<TabList aria-label="Match Sets" className="px-6 min-w-max">
-						{data?.sets.map((s, i) => (
-							<Tab
-								key={s.id}
-								id={s.id}
-								isDisabled={Boolean(isDone && !s.startedAt)}
-							>
-								Set {i + 1}
-							</Tab>
-						))}
-					</TabList>
-				</div>
-
-				{data?.sets
-					.sort((a, b) => a.setNumber - b.setNumber)
-					.map((s) => (
-						<TabPanel key={s.id} id={s.id}>
-							<div className="flex flex-row justify-around py-18 w-full max-w-3xl mx-auto">
-								{[
-									[data?.teamAId, s.teamAScore],
-									[data?.teamBId, s.teamBScore],
-								].map(([key, score], i) => (
-									<div key={key} className="flex flex-row gap-3">
-										<div
-											className={scoreStyles({
-												variant: i === 0 ? "a" : "b",
-											})}
-										>
-											{score ?? "-"}
-										</div>
-										{s.status === "in_progress" && (
-											<div className="flex flex-col gap-3 justify-center">
-												<Button
-													onPress={() => handleIncrement(s.id, i === 0)}
-													isDisabled={isActionDisabled}
-												>
-													<PlusIcon size={28} />
-												</Button>
-												<Button
-													onPress={() => handleDecrement(s.id, i === 0)}
-													isDisabled={isActionDisabled}
-												>
-													<MinusIcon size={28} />
-												</Button>
-											</div>
-										)}
-									</div>
-								))}
-							</div>
-
-							<RefereeControls
-								match={data}
-								set={s}
-								queryKey={poolMatchQuery.queryKey}
-							/>
-						</TabPanel>
-					))}
-			</Tabs>
+			<ScoreBoard {...data} />
 		</DefaultLayout>
 	);
 }

@@ -21,7 +21,7 @@ import { EditGeneralInfoForm } from "./edit-general-info";
 import { FillTournamentForm } from "./fill-tournament";
 import { SimulateMatchesForm } from "./simulate-matches";
 import {
-	useActiveTeams,
+	useActiveTeamsFromUrl,
 	useHasPendingPoolMatches,
 	useIsDemoTournament,
 	useIsPlayoffsComplete,
@@ -69,7 +69,7 @@ export function TournamentControls({
 
 	const isDemo = useIsDemoTournament();
 
-	const teams = useActiveTeams();
+	const teams = useActiveTeamsFromUrl();
 
 	const allTeamsHaveSeeds = teams?.every(({ seed }) => isDefined(seed));
 

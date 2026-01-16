@@ -13,7 +13,7 @@ import {
 } from "@/functions/pools";
 import type { Division, TournamentDivision } from "@/db/schema";
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
-import { useActiveTeams } from "../context";
+import { useActiveTeamsFromUrl } from "../context";
 
 export type CreatePoolsFormProps = {
 	tournamentId: number;
@@ -70,7 +70,7 @@ export function CreatePoolsForm({
 		},
 	});
 
-	const teams = useActiveTeams();
+	const teams = useActiveTeamsFromUrl();
 
 	const teamCount = teams?.length ?? "loading...";
 

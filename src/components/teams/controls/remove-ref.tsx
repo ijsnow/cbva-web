@@ -8,35 +8,45 @@ import {
 	removeRefMutationOptions,
 	removeRefSchema,
 } from "@/functions/refs/remove-ref";
-import {
-	usePlayoffsQueryOptions,
-	usePoolsQueryOptions,
-	useTeamsQueryOptions,
-} from "@/components/tournaments/context";
+// import {
+// 	usePlayoffsQueryOptions,
+// 	usePoolsQueryOptions,
+// 	useTeamsQueryOptions,
+// } from "@/components/tournaments/context";
 import { DeleteIcon } from "lucide-react";
 import { useState } from "react";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
+import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
 
 export type RemoveRefFormProps = {
+	tournamentDivisionId: number;
 	ids?: number[];
 	teamId?: number | null;
 };
 
-export function RemoveRefForm({ ids, teamId, ...props }: RemoveRefFormProps) {
+export function RemoveRefForm({
+	tournamentDivisionId,
+	ids,
+	teamId,
+	...props
+}: RemoveRefFormProps) {
 	const [open, setOpen] = useState(false);
 
 	const queryClient = useQueryClient();
 
-	// TODO: get rid of this
-	const teamsQueryOptions = useTeamsQueryOptions();
-	const poolsQueryOptions = usePoolsQueryOptions();
-	const playoffsQueryOptions = usePlayoffsQueryOptions();
-
 	const { mutate, failureReason } = useMutation({
 		...removeRefMutationOptions(),
 		onSuccess: () => {
-			queryClient.invalidateQueries(teamsQueryOptions);
-			queryClient.invalidateQueries(poolsQueryOptions);
-			queryClient.invalidateQueries(playoffsQueryOptions);
+			queryClient.invalidateQueries(
+				teamsQueryOptions({ tournamentDivisionId }),
+			);
+			queryClient.invalidateQueries(
+				getPoolsQueryOptions({ tournamentDivisionId }),
+			);
+			queryClient.invalidateQueries(
+				playoffsQueryOptions({ tournamentDivisionId }),
+			);
 
 			setOpen(false);
 		},

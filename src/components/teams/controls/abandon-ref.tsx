@@ -8,34 +8,40 @@ import {
 	abandonRefMutationOptions,
 	abandonRefSchema,
 } from "@/functions/teams/abandon-ref";
-import {
-	usePlayoffsQueryOptions,
-	usePoolsQueryOptions,
-	useTeamsQueryOptions,
-} from "@/components/tournaments/context";
 import { FlagIcon } from "lucide-react";
 import { useState } from "react";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
+import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
 
 export type AbandonRefFormProps = {
+	tournamentDivisionId: number;
 	id?: number;
 	teamId?: number;
 };
 
-export function AbandonRefForm({ id, teamId, ...props }: AbandonRefFormProps) {
+export function AbandonRefForm({
+	tournamentDivisionId,
+	id,
+	teamId,
+	...props
+}: AbandonRefFormProps) {
 	const [open, setOpen] = useState(false);
 
 	const queryClient = useQueryClient();
 
-	const teamsQueryOptions = useTeamsQueryOptions();
-	const poolsQueryOptions = usePoolsQueryOptions();
-	const playoffsQueryOptions = usePlayoffsQueryOptions();
-
 	const { mutate, failureReason } = useMutation({
 		...abandonRefMutationOptions(),
 		onSuccess: () => {
-			queryClient.invalidateQueries(teamsQueryOptions);
-			queryClient.invalidateQueries(poolsQueryOptions);
-			queryClient.invalidateQueries(playoffsQueryOptions);
+			queryClient.invalidateQueries(
+				teamsQueryOptions({ tournamentDivisionId }),
+			);
+			queryClient.invalidateQueries(
+				getPoolsQueryOptions({ tournamentDivisionId }),
+			);
+			queryClient.invalidateQueries(
+				playoffsQueryOptions({ tournamentDivisionId }),
+			);
 
 			setOpen(false);
 		},

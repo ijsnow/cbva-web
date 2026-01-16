@@ -146,16 +146,20 @@ export function useTeamsQueryOptions() {
 	});
 }
 
-export function useActiveTeams() {
-	const query = useTeamsQueryOptions();
-
+export function useActiveTeams(tournamentDivisionId: number) {
 	const { data: teams } = useQuery({
-		...query,
+		...teamsQueryOptions({ tournamentDivisionId }),
 		select: (data) =>
 			data.filter(({ status }) => ["confirmed", "registered"].includes(status)),
 	});
 
 	return teams;
+}
+
+export function useActiveTeamsFromUrl() {
+	const id = useActiveDivisionId();
+
+	return useActiveTeams(id);
 }
 
 export function useTeam(id: number) {

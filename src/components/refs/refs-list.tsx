@@ -82,11 +82,17 @@ export function RefsList({
 								{canEdit && matchStatus !== "completed" && (
 									<>
 										<RemoveRefForm
+											tournamentDivisionId={tournamentDivisionId}
 											ids={refs.map(({ id }) => id)}
 											teamId={teamId}
 										/>
 
-										{teamId && <AbandonRefForm teamId={teamId} />}
+										{teamId && (
+											<AbandonRefForm
+												tournamentDivisionId={tournamentDivisionId}
+												teamId={teamId}
+											/>
+										)}
 									</>
 								)}
 							</span>

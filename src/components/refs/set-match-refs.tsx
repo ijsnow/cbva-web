@@ -16,16 +16,13 @@ import {
 	playoffMatchQueryOptions,
 	poolMatchQueryOptions,
 } from "@/data/matches";
-import {
-	useActiveTeams,
-	usePlayoffsQueryOptions,
-	usePoolsQueryOptions,
-	useTeamsQueryOptions,
-} from "../tournaments/context";
+import { useActiveTeams } from "../tournaments/context";
 import z from "zod";
 import { playerNames } from "@/utils/profiles";
 import { Radio } from "../base/radio-group";
-import { dbg } from "@/utils/dbg";
+import { teamsQueryOptions } from "@/functions/teams/get-teams";
+import { getPoolsQueryOptions } from "@/functions/pools/get-pools";
+import { playoffsQueryOptions } from "@/functions/playoffs/get-playoffs";
 
 export type SetMatchRefsFormProps = {
 	tournamentDivisionId: number;
@@ -65,7 +62,7 @@ export function SetMatchRefsForm({
 				: []
 	).filter(isDefined);
 
-	const teams = useActiveTeams();
+	const teams = useActiveTeams(tournamentDivisionId);
 
 	const teamOptions = teams
 		?.map(({ id, team }) => ({
@@ -76,16 +73,18 @@ export function SetMatchRefsForm({
 		}))
 		.filter(({ value }) => !matchTeams.includes(value));
 
-	const teamsQueryOptions = useTeamsQueryOptions();
-	const poolsQueryOptions = usePoolsQueryOptions();
-	const playoffsQueryOptions = usePlayoffsQueryOptions();
-
 	const { mutate, failureReason } = useMutation({
 		...setMatchRefMutationOptions(),
 		onSuccess: () => {
-			queryClient.invalidateQueries(teamsQueryOptions);
-			queryClient.invalidateQueries(poolsQueryOptions);
-			queryClient.invalidateQueries(playoffsQueryOptions);
+			queryClient.invalidateQueries(
+				teamsQueryOptions({ tournamentDivisionId }),
+			);
+			queryClient.invalidateQueries(
+				getPoolsQueryOptions({ tournamentDivisionId }),
+			);
+			queryClient.invalidateQueries(
+				playoffsQueryOptions({ tournamentDivisionId }),
+			);
 
 			setOpen(false);
 		},
