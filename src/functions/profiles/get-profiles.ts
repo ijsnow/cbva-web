@@ -39,7 +39,6 @@ export const getProfilesFn = createServerFn()
 							)
 					: undefined,
 			},
-			limit: 25,
 		});
 	});
 

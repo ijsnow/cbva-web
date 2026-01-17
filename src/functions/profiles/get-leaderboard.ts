@@ -15,7 +15,7 @@ export const getLeaderboardSchema = z.object({
 
 export const getLeaderboardFn = createServerFn()
 	.inputValidator(getLeaderboardSchema)
-	.handler(({ data: { gender, levels, page, pageSize } }) => {
+	.handler(({ data: { query, gender, levels, page, pageSize } }) => {
 		return findPaged(db, "playerProfiles", {
 			paging: {
 				page,
@@ -34,6 +34,19 @@ export const getLeaderboardFn = createServerFn()
 									in: levels,
 								}
 							: undefined,
+					RAW: query
+						? (t, { sql, ilike }) =>
+								ilike(
+									sql`
+            CASE
+              WHEN ${t.preferredName} IS NOT NULL and ${t.preferredName} != ''
+              THEN ${t.preferredName} || ' ' || ${t.lastName}
+              ELSE ${t.firstName} || ' ' || ${t.lastName}
+            END
+            `,
+									`%${query}%`,
+								)
+						: undefined,
 				},
 				orderBy: (t, { asc }) => [asc(t.rank), asc(t.ratedPoints)],
 			},
