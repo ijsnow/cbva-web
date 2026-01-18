@@ -24,12 +24,14 @@ type TableNames = keyof typeof db._query;
 type Schema = NonNullable<typeof db._.schema>;
 type Relations = NonNullable<typeof db._.relations>;
 
+export type QueryConfig<TTableName extends TableNames> = Omit<
+	DBQueryConfig<"many", Relations, Relations[TTableName]>,
+	"limit" | "offset"
+>;
+
 export interface FindPagedOptions<
 	TTableName extends TableNames,
-	TConfig extends Omit<
-		DBQueryConfig<"many", Relations, Relations[TTableName]>,
-		"limit" | "offset"
-	>,
+	TConfig extends Omit<QueryConfig<TTableName>, "limit" | "offset">,
 	TCountColumn extends keyof Relations[TTableName]["table"]["$inferSelect"],
 > {
 	paging: PagingOptions;
