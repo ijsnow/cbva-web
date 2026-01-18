@@ -15,7 +15,6 @@ import { z } from "zod";
 import { users } from "./auth";
 import { levels } from "./levels";
 import { genderEnum, playerRoleEnum, rightLeftEnum } from "./shared";
-import { tables } from ".";
 
 const { createInsertSchema, createSelectSchema, createUpdateSchema } =
 	createSchemaFactory({ zodInstance: z });

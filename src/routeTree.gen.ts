@@ -39,6 +39,7 @@ import { Route as ProfileProfileIdIndexRouteImport } from './routes/profile/$pro
 import { Route as AccountVerifyIndexRouteImport } from './routes/account/verify/index'
 import { Route as TournamentsTournamentIdEditRouteImport } from './routes/tournaments/$tournamentId/edit'
 import { Route as ProfileProfileIdEditRouteImport } from './routes/profile/$profileId/edit'
+import { Route as JuniorsLeaderboardChar123GenderChar125RouteImport } from './routes/juniors/leaderboard.{-$gender}'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AccountVerifySuccessRouteImport } from './routes/account/verify/success'
 import { Route as MatchesPoolMatchIdIndexRouteImport } from './routes/matches/pool/$matchId/index'
@@ -199,6 +200,12 @@ const ProfileProfileIdEditRoute = ProfileProfileIdEditRouteImport.update({
   path: '/profile/$profileId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JuniorsLeaderboardChar123GenderChar125Route =
+  JuniorsLeaderboardChar123GenderChar125RouteImport.update({
+    id: '/{-$gender}',
+    path: '/{-$gender}',
+    getParentRoute: () => JuniorsLeaderboardRoute,
+  } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -249,7 +256,7 @@ export interface FileRoutesByFullPath {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
-  '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
+  '/juniors/leaderboard': typeof JuniorsLeaderboardRouteWithChildren
   '/leaderboard/{-$gender}': typeof LeaderboardChar123GenderChar125Route
   '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsIndexRoute
   '/account/verify/success': typeof AccountVerifySuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/juniors/leaderboard/{-$gender}': typeof JuniorsLeaderboardChar123GenderChar125Route
   '/profile/$profileId/edit': typeof ProfileProfileIdEditRoute
   '/tournaments/$tournamentId/edit': typeof TournamentsTournamentIdEditRoute
   '/account/verify': typeof AccountVerifyIndexRoute
@@ -287,7 +295,7 @@ export interface FileRoutesByTo {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
-  '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
+  '/juniors/leaderboard': typeof JuniorsLeaderboardRouteWithChildren
   '/leaderboard/{-$gender}': typeof LeaderboardChar123GenderChar125Route
   '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
@@ -298,6 +306,7 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsIndexRoute
   '/account/verify/success': typeof AccountVerifySuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/juniors/leaderboard/{-$gender}': typeof JuniorsLeaderboardChar123GenderChar125Route
   '/profile/$profileId/edit': typeof ProfileProfileIdEditRoute
   '/tournaments/$tournamentId/edit': typeof TournamentsTournamentIdEditRoute
   '/account/verify': typeof AccountVerifyIndexRoute
@@ -326,7 +335,7 @@ export interface FileRoutesById {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
-  '/juniors/leaderboard': typeof JuniorsLeaderboardRoute
+  '/juniors/leaderboard': typeof JuniorsLeaderboardRouteWithChildren
   '/leaderboard/{-$gender}': typeof LeaderboardChar123GenderChar125Route
   '/tournaments/create': typeof TournamentsCreateRoute
   '/venues/$venueId': typeof VenuesVenueIdRoute
@@ -337,6 +346,7 @@ export interface FileRoutesById {
   '/tournaments/': typeof TournamentsIndexRoute
   '/account/verify/success': typeof AccountVerifySuccessRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/juniors/leaderboard/{-$gender}': typeof JuniorsLeaderboardChar123GenderChar125Route
   '/profile/$profileId/edit': typeof ProfileProfileIdEditRoute
   '/tournaments/$tournamentId/edit': typeof TournamentsTournamentIdEditRoute
   '/account/verify/': typeof AccountVerifyIndexRoute
@@ -377,6 +387,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/account/verify/success'
     | '/api/auth/$'
+    | '/juniors/leaderboard/{-$gender}'
     | '/profile/$profileId/edit'
     | '/tournaments/$tournamentId/edit'
     | '/account/verify'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/account/verify/success'
     | '/api/auth/$'
+    | '/juniors/leaderboard/{-$gender}'
     | '/profile/$profileId/edit'
     | '/tournaments/$tournamentId/edit'
     | '/account/verify'
@@ -453,6 +465,7 @@ export interface FileRouteTypes {
     | '/tournaments/'
     | '/account/verify/success'
     | '/api/auth/$'
+    | '/juniors/leaderboard/{-$gender}'
     | '/profile/$profileId/edit'
     | '/tournaments/$tournamentId/edit'
     | '/account/verify/'
@@ -481,7 +494,7 @@ export interface RootRouteChildren {
   AdminScheduleRoute: typeof AdminScheduleRoute
   AdminUsersRoute: typeof AdminUsersRoute
   ApiPingRoute: typeof ApiPingRoute
-  JuniorsLeaderboardRoute: typeof JuniorsLeaderboardRoute
+  JuniorsLeaderboardRoute: typeof JuniorsLeaderboardRouteWithChildren
   LeaderboardChar123GenderChar125Route: typeof LeaderboardChar123GenderChar125Route
   TournamentsCreateRoute: typeof TournamentsCreateRoute
   VenuesVenueIdRoute: typeof VenuesVenueIdRoute
@@ -715,6 +728,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileProfileIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/juniors/leaderboard/{-$gender}': {
+      id: '/juniors/leaderboard/{-$gender}'
+      path: '/{-$gender}'
+      fullPath: '/juniors/leaderboard/{-$gender}'
+      preLoaderRoute: typeof JuniorsLeaderboardChar123GenderChar125RouteImport
+      parentRoute: typeof JuniorsLeaderboardRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -760,6 +780,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface JuniorsLeaderboardRouteChildren {
+  JuniorsLeaderboardChar123GenderChar125Route: typeof JuniorsLeaderboardChar123GenderChar125Route
+}
+
+const JuniorsLeaderboardRouteChildren: JuniorsLeaderboardRouteChildren = {
+  JuniorsLeaderboardChar123GenderChar125Route:
+    JuniorsLeaderboardChar123GenderChar125Route,
+}
+
+const JuniorsLeaderboardRouteWithChildren =
+  JuniorsLeaderboardRoute._addFileChildren(JuniorsLeaderboardRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HealthRoute: HealthRoute,
@@ -777,7 +809,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminScheduleRoute: AdminScheduleRoute,
   AdminUsersRoute: AdminUsersRoute,
   ApiPingRoute: ApiPingRoute,
-  JuniorsLeaderboardRoute: JuniorsLeaderboardRoute,
+  JuniorsLeaderboardRoute: JuniorsLeaderboardRouteWithChildren,
   LeaderboardChar123GenderChar125Route: LeaderboardChar123GenderChar125Route,
   TournamentsCreateRoute: TournamentsCreateRoute,
   VenuesVenueIdRoute: VenuesVenueIdRoute,

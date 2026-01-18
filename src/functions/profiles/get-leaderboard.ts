@@ -9,13 +9,21 @@ export const getLeaderboardSchema = z.object({
 	gender: genderSchema.optional(),
 	query: z.string().optional(),
 	levels: z.array(z.number()).optional(),
+	juniors: z.enum(["true", "12", "14", "16", "18"]).optional(),
 	page: z.number(),
 	pageSize: z.number(),
 });
 
+// Divisions go by high school graduation year and update 9/1. Until 9/1/26, they are:
+//
+// 12u: 2032 or after
+// 14u: 2030 or after
+// 16u: 2028 or after
+// 18u: 2026 or after
+
 export const getLeaderboardFn = createServerFn()
 	.inputValidator(getLeaderboardSchema)
-	.handler(({ data: { query, gender, levels, page, pageSize } }) => {
+	.handler(({ data: { query, gender, levels, juniors, page, pageSize } }) => {
 		return findPaged(db, "playerProfiles", {
 			paging: {
 				page,
@@ -38,17 +46,20 @@ export const getLeaderboardFn = createServerFn()
 						? (t, { sql, ilike }) =>
 								ilike(
 									sql`
-            CASE
-              WHEN ${t.preferredName} IS NOT NULL and ${t.preferredName} != ''
-              THEN ${t.preferredName} || ' ' || ${t.lastName}
-              ELSE ${t.firstName} || ' ' || ${t.lastName}
-            END
-            `,
+                  CASE
+                    WHEN ${t.preferredName} IS NOT NULL and ${t.preferredName} != ''
+                    THEN ${t.preferredName} || ' ' || ${t.lastName}
+                    ELSE ${t.firstName} || ' ' || ${t.lastName}
+                  END
+                  `,
 									`%${query}%`,
 								)
 						: undefined,
 				},
-				orderBy: (t, { asc }) => [asc(t.rank), asc(t.ratedPoints)],
+				orderBy: (t, { asc }) => [
+					asc(t.rank),
+					asc(juniors ? t.juniorsPoints : t.ratedPoints),
+				],
 			},
 		});
 	});
