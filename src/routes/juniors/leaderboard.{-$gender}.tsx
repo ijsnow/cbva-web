@@ -14,9 +14,9 @@ import {
 } from "@/components/base/table";
 import { ProfileName } from "@/components/profiles/name";
 import {
-	getLeaderboardQueryOptions,
-	juniorsDivisionSchema,
-} from "@/functions/profiles/get-leaderboard";
+	getJuniorsLeaderboardQueryOptions,
+	getJuniorsLeaderboardSchema,
+} from "@/functions/profiles/get-juniors-leaderboard";
 import { zodValidator } from "@tanstack/zod-adapter";
 import z from "zod";
 import { Pagination } from "@/components/base/pagination";
@@ -25,6 +25,7 @@ import { ToggleButtonLink } from "@/components/base/toggle-button";
 import { SearchField } from "@/components/base/search-field";
 import { assert } from "@/utils/assert";
 import { useDebounce } from "ahooks";
+import { Information } from "@/components/base/information";
 
 function displayToGender(display: string): Gender | null {
 	const gender: Gender | null =
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/juniors/leaderboard/{-$gender}")({
 	validateSearch: zodValidator(
 		z.object({
 			query: z.string().default(""),
-			division: juniorsDivisionSchema.default(true),
+			division: getJuniorsLeaderboardSchema.shape.juniors.default(true),
 			page: z.number().default(1),
 			pageSize: z.number().default(25),
 		}),
@@ -66,7 +67,7 @@ export const Route = createFileRoute("/juniors/leaderboard/{-$gender}")({
 		}
 
 		const profiles = await queryClient.ensureQueryData(
-			getLeaderboardQueryOptions({
+			getJuniorsLeaderboardQueryOptions({
 				query,
 				gender,
 				juniors: division,
@@ -98,7 +99,7 @@ function RouteComponent() {
 	const navigate = useNavigate();
 
 	const { data } = useQuery(
-		getLeaderboardQueryOptions({
+		getJuniorsLeaderboardQueryOptions({
 			gender,
 			query,
 			juniors: division,
@@ -140,23 +141,28 @@ function RouteComponent() {
 					</RadioLink>
 				</RadioGroup>
 
-				<ToggleButtonGroup>
-					{divisions.map(({ value, label }) => (
-						<ToggleButtonLink
-							key={value}
-							to="/juniors/leaderboard/{-$gender}"
-							params={{ gender: genderStr }}
-							search={(prev) => ({
-								...prev,
-								page: 1,
-								division: division === value ? undefined : value,
-							})}
-							isSelected={division === value}
-						>
-							{label}
-						</ToggleButtonLink>
-					))}
-				</ToggleButtonGroup>
+				<div className="relative">
+					<ToggleButtonGroup>
+						{divisions.map(({ value, label }) => (
+							<ToggleButtonLink
+								key={value}
+								to="/juniors/leaderboard/{-$gender}"
+								params={{ gender: genderStr }}
+								search={(prev) => ({
+									...prev,
+									page: 1,
+									division: division === value ? undefined : value,
+								})}
+								isSelected={division === true ? true : division >= value}
+							>
+								{label}
+							</ToggleButtonLink>
+						))}
+					</ToggleButtonGroup>
+					<Information triggerClassName="absolute left-full top-1/2 -translate-y-1/2 ml-2">
+						Each division includes the younger divisions.
+					</Information>
+				</div>
 
 				<SearchField
 					value={query}
@@ -198,7 +204,7 @@ function RouteComponent() {
 					{(profile) => (
 						<TableRow key={profile.id}>
 							<TableCell className="whitespace-nowrap">
-								{profile.rank}
+								{profile.odRank}
 							</TableCell>
 							<TableCell className="whitespace-nowrap">
 								{Math.round(profile.juniorsPoints)}
