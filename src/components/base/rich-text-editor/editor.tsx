@@ -7,8 +7,8 @@
  */
 
 import { LinkNode } from "@lexical/link";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import {
 	type InitialConfigType,
 	LexicalComposer,
