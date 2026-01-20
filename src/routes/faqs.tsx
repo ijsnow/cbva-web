@@ -31,6 +31,7 @@ import {
 } from "@/functions/faqs/update-faq";
 import { LexicalState } from "@/db/schema/shared";
 import { OrderingTable } from "@/components/base/ordering-table";
+import { OrderingList } from "@/components/base/ordering-list";
 
 export const Route = createFileRoute("/faqs")({
 	loader: async ({ context: { queryClient } }) => {
@@ -342,9 +343,10 @@ function ReorderFaqsButton() {
 		},
 	});
 
-	const { data: faqs } = useQuery({
+	const { data: items } = useQuery({
 		...getFaqsQueryOptions(),
-		select: (data) => data.find((v) => v.id === id),
+		select: (data) =>
+			data.map(({ id, question }) => ({ value: id, display: question })),
 	});
 
 	const form = useAppForm({
@@ -377,7 +379,7 @@ function ReorderFaqsButton() {
 						}}
 					>
 						<form.AppField name="order">
-							{(field) => <OrderingTable />}
+							{(field) => <OrderingList items={items} />}
 						</form.AppField>
 						<form.AppForm>
 							<form.Footer>

@@ -7,29 +7,16 @@ import {
 	TableRow,
 	TableCell,
 } from "./table";
-import { DragAndDropHooks } from "react-aria-components";
+import { DragAndDropHooks, Key } from "react-aria-components";
+import { Option } from "./select";
 
-export type Pokemon = {
-	id: number;
-	name: string;
-	type: string;
-	level?: number;
+type OrderingTableProps<V extends Key> = {
+	items?: Option<V>[];
+	dragAndDropHooks?: DragAndDropHooks<V>;
 };
 
-type OrderingTableProps = {
-	items?: Pokemon[];
-	dragAndDropHooks?: DragAndDropHooks<Pokemon>;
-};
-
-export const defaultItems: Pokemon[] = [
-	{ id: 1, name: "Charizard", type: "Fire, Flying", level: 67 },
-	{ id: 2, name: "Blastoise", type: "Water", level: 56 },
-	{ id: 3, name: "Venusaur", type: "Grass, Poison", level: 83 },
-	{ id: 4, name: "Pikachu", type: "Electric", level: 100 },
-];
-
-export function OrderingTable(props: OrderingTableProps) {
-	const { items = defaultItems, dragAndDropHooks } = props;
+export function OrderingTable<V extends Key>(props: OrderingTableProps<V>) {
+	const { items, dragAndDropHooks } = props;
 
 	return (
 		<Table
@@ -38,20 +25,18 @@ export function OrderingTable(props: OrderingTableProps) {
 			dragAndDropHooks={dragAndDropHooks}
 		>
 			<TableHeader>
-				<TableColumn width={1} />
-				<TableColumn isRowHeader>Name</TableColumn>
-				<TableColumn>Type</TableColumn>
-				<TableColumn>Level</TableColumn>
+				<TableColumn width={48} minWidth={48} />
+				<TableColumn isRowHeader width="1fr">
+					Name
+				</TableColumn>
 			</TableHeader>
 			<TableBody items={items}>
 				{(item) => (
-					<TableRow>
+					<TableRow id={item.value}>
 						<TableCell>
 							<GripVerticalIcon />
 						</TableCell>
-						<TableCell>{item.name}</TableCell>
-						<TableCell>{item.type}</TableCell>
-						<TableCell>{item.level}</TableCell>
+						<TableCell>{item.value}</TableCell>
 					</TableRow>
 				)}
 			</TableBody>
