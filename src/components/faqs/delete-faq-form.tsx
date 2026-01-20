@@ -12,11 +12,11 @@ import { deleteFaqMutationOptions } from "@/functions/faqs/delete-faq";
 export function DeleteFaqForm({
 	id,
 	question,
-	key,
+	groupKey,
 }: {
 	id: number;
 	question: string;
-	key: string;
+	groupKey?: string;
 }) {
 	const [isOpen, setOpen] = useState(false);
 
@@ -25,7 +25,7 @@ export function DeleteFaqForm({
 	const { mutateAsync: deleteFaq } = useMutation({
 		...deleteFaqMutationOptions(),
 		onSuccess: () => {
-			queryClient.invalidateQueries(getFaqsQueryOptions(key));
+			queryClient.invalidateQueries(getFaqsQueryOptions(groupKey));
 		},
 	});
 

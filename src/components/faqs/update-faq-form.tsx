@@ -19,7 +19,13 @@ import {
 } from "@/functions/faqs/update-faq";
 import { LexicalState } from "@/db/schema/shared";
 
-export function UpdateFaqForm({ id, key }: { id: number; key: string }) {
+export function UpdateFaqForm({
+	id,
+	groupKey,
+}: {
+	id: number;
+	groupKey: string;
+}) {
 	const [isOpen, setOpen] = useState(false);
 
 	const queryClient = useQueryClient();
@@ -27,12 +33,12 @@ export function UpdateFaqForm({ id, key }: { id: number; key: string }) {
 	const { mutateAsync: updateFaq } = useMutation({
 		...updateFaqMutationOptions(),
 		onSuccess: () => {
-			queryClient.invalidateQueries(getFaqsQueryOptions(key));
+			queryClient.invalidateQueries(getFaqsQueryOptions(groupKey));
 		},
 	});
 
 	const { data } = useQuery({
-		...getFaqsQueryOptions(),
+		...getFaqsQueryOptions(groupKey),
 		select: (data) => data.find((v) => v.id === id),
 	});
 

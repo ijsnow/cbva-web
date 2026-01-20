@@ -33,7 +33,7 @@ export function ReorderFaqsForm({ groupKey }: { groupKey: string }) {
 			order: items?.map(({ value }) => value) ?? [],
 		},
 		onSubmit: async ({ value: { order }, formApi }) => {
-			await setFaqOrder({ order, groupKey });
+			await setFaqOrder({ order, key: groupKey });
 			formApi.reset();
 			setOpen(false);
 		},

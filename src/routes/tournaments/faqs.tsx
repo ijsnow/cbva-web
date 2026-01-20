@@ -61,8 +61,12 @@ function RouteComponent() {
 									<span>{question}</span>
 
 									<span className="flex flex-row space-x-2 items-center">
-										<UpdateFaqForm id={id} />
-										<DeleteFaqForm id={id} question={question} />
+										<UpdateFaqForm id={id} groupKey="tournaments" />
+										<DeleteFaqForm
+											id={id}
+											question={question}
+											groupKey="tournaments"
+										/>
 									</span>
 								</DisclosureHeader>
 								<DisclosurePanel color="alt">
