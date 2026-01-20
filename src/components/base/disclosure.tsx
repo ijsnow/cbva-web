@@ -27,7 +27,7 @@ const disclosure = tv({
 			false: "",
 		},
 		isInGroup: {
-			true: "border-0 border-b rounded-t-none first:rounded-t-lg last:border-b-0 rounded-b-none last:rounded-b-lg",
+			true: "border-0 border-b rounded-t-none first:rounded-t-lg last:border-b-0 rounded-b-none last:rounded-b-lg overflow-hidden",
 		},
 	},
 	defaultVariants: {
@@ -101,6 +101,9 @@ const headerStyles = tv({
 			true: "rounded-t-md rounded-b-none",
 			false: "rounded-md",
 		},
+		isInGroup: {
+			true: "rounded-none",
+		},
 	},
 	defaultVariants: {
 		size: "lg",
@@ -133,7 +136,8 @@ export function DisclosureHeader({
 				className,
 				size,
 				color,
-				isExpanded,
+				isExpanded: isExpanded && !isInGroup,
+				isInGroup,
 			})}
 		>
 			<Button
