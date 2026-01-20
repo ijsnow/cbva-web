@@ -8,6 +8,7 @@ const { createInsertSchema, createSelectSchema, createUpdateSchema } =
 
 export const faqs = pgTable("faqs", {
 	id: serial(),
+	key: text(),
 	question: text().notNull(),
 	answer: richText().notNull(),
 	order: integer(),
