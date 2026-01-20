@@ -20,6 +20,7 @@ import { TextField } from "./fields/text";
 import { TextAreaField } from "./fields/text-area";
 import { TimeField } from "./fields/time";
 import { RadioGroupField } from "./fields/radio-group";
+import { RichTextField } from "./fields/rich-text";
 import { ProfilePickerField } from "./fields/profile-picker";
 import { dbg } from "@/utils/dbg";
 
@@ -208,6 +209,7 @@ export const { useAppForm } = createFormHook({
 		Time: TimeField,
 		MultiSelect: MultiSelectField,
 		ProfilePicker: ProfilePickerField,
+		RichText: RichTextField,
 	},
 	formComponents: {
 		Alert,

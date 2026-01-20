@@ -34,6 +34,7 @@ import {
 import { tournamentRelations, tournaments } from "./tournaments";
 import { venueDirectorRelations, venueDirectors } from "./venue-directors";
 import { venuesRelations, venues } from "./venues";
+import { faqs } from "./faqs";
 import type { relations } from "./relations";
 
 export * from "./relations";
@@ -61,6 +62,7 @@ export * from "./tournament-divisions";
 export * from "./tournaments";
 export * from "./venue-directors";
 export * from "./venues";
+export * from "./faqs";
 
 export const tables = {
 	blocks,
@@ -88,6 +90,7 @@ export const tables = {
 	venues,
 	venueDirectors,
 	rateLimiterFlexibleSchema,
+	faqs,
 };
 
 export const relationships = {
