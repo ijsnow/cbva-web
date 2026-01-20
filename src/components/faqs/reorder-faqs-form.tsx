@@ -10,7 +10,7 @@ import { getFaqsQueryOptions } from "@/functions/faqs/get-faqs";
 import { OrderingList } from "@/components/base/ordering-list";
 import { setFaqsOrderMutationOptions } from "@/functions/faqs/set-faqs-order";
 
-export function ReorderFaqsForm({ groupKey }: { groupKey: string }) {
+export function ReorderFaqsForm({ groupKey }: { groupKey?: string }) {
 	const [isOpen, setOpen] = useState(false);
 
 	const queryClient = useQueryClient();

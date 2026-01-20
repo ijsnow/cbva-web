@@ -9,12 +9,37 @@ import {
 	DisclosureHeader,
 	DisclosurePanel,
 } from "@/components/base/disclosure";
-import { RichTextDisplay } from "@/components/base/rich-text-editor/display";
+// import { RichTextDisplay } from "@/components/base/rich-text-editor/display";
 import { useViewerHasPermission } from "@/auth/shared";
 import { ReorderFaqsForm } from "@/components/faqs/reorder-faqs-form";
-import { CreateFaqForm } from "@/components/faqs/create-faq-form";
+// import { CreateFaqForm } from "@/components/faqs/create-faq-form";
 import { DeleteFaqForm } from "@/components/faqs/delete-faq-form";
-import { UpdateFaqForm } from "@/components/faqs/update-faq-form";
+// import { UpdateFaqForm } from "@/components/faqs/update-faq-form";
+import { lazy } from "react";
+
+const CreateFaqForm = lazy(async () => {
+	const mod = await import("@/components/faqs/create-faq-form");
+
+	return {
+		default: mod.CreateFaqForm,
+	};
+});
+
+const UpdateFaqForm = lazy(async () => {
+	const mod = await import("@/components/faqs/update-faq-form");
+
+	return {
+		default: mod.UpdateFaqForm,
+	};
+});
+
+const RichTextDisplay = lazy(async () => {
+	const mod = await import("@/components/base/rich-text-editor/display");
+
+	return {
+		default: mod.RichTextDisplay,
+	};
+});
 
 export const Route = createFileRoute("/tournaments/faqs")({
 	loader: async ({ context: { queryClient } }) => {
@@ -60,14 +85,16 @@ function RouteComponent() {
 								>
 									<span>{question}</span>
 
-									<span className="flex flex-row space-x-2 items-center">
-										<UpdateFaqForm id={id} groupKey="tournaments" />
-										<DeleteFaqForm
-											id={id}
-											question={question}
-											groupKey="tournaments"
-										/>
-									</span>
+									{canUpdate && (
+										<span className="flex flex-row space-x-2 items-center">
+											<UpdateFaqForm id={id} groupKey="tournaments" />
+											<DeleteFaqForm
+												id={id}
+												question={question}
+												groupKey="tournaments"
+											/>
+										</span>
+									)}
 								</DisclosureHeader>
 								<DisclosurePanel color="alt">
 									<RichTextDisplay

@@ -1,3 +1,3 @@
-import { startMockDb } from "./db"
+import { startMockDb } from "./db";
 
-await startMockDb()
+await startMockDb();

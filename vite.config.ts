@@ -13,6 +13,9 @@ const config = defineConfig({
 	build: {
 		sourcemap: true, // Source map generation must be turned on
 	},
+	ssr: {
+		noExternal: ["@lexical/react"], // Force bundling instead of externalizing
+	},
 	plugins: [
 		devtools(),
 		viteTsConfigPaths({

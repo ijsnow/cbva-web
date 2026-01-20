@@ -24,7 +24,7 @@ export function UpdateFaqForm({
 	groupKey,
 }: {
 	id: number;
-	groupKey: string;
+	groupKey?: string;
 }) {
 	const [isOpen, setOpen] = useState(false);
 

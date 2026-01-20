@@ -6,12 +6,12 @@ import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
-import { createFaqSchema, Faq } from "@/db/schema";
+import { createFaqSchema, type Faq } from "@/db/schema";
 import { createFaqMutationOptions } from "@/functions/faqs/create-faq";
 import { getFaqsQueryOptions } from "@/functions/faqs/get-faqs";
 
 export type CreateFaqFormProps = {
-	groupKey: Faq["key"];
+	groupKey?: Faq["key"];
 };
 
 export function CreateFaqForm({ groupKey }: CreateFaqFormProps) {

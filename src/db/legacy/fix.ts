@@ -1,20 +1,20 @@
-import createClient from "gel"
+import createClient from "gel";
 
 async function main() {
-  console.log("connecting...")
+	console.log("connecting...");
 
-  const gelClient = createClient({
-    instanceName: "drizzle",
-  })
+	const gelClient = createClient({
+		instanceName: "drizzle",
+	});
 
-  console.log("connected")
+	console.log("connected");
 
-  const res = await gelClient.query<{
-    elements: {
-      id: string
-      teams: { id: string }
-    }[]
-  }>(`
+	const res = await gelClient.query<{
+		elements: {
+			id: string;
+			teams: { id: string };
+		}[];
+	}>(`
     with
       tournaments := (
         select Tournament
@@ -42,23 +42,23 @@ async function main() {
       dup_count := count(.elements)
     }
       filter count(.elements) > 1;
-  `)
+  `);
 
-  if (res.length === 0) {
-    console.log("all good")
-    return
-  }
+	if (res.length === 0) {
+		console.log("all good");
+		return;
+	}
 
-  console.log(`found ${res.length}`)
+	console.log(`found ${res.length}`);
 
-  await gelClient.transaction(async (txn) => {
-    for (const group of res) {
-      const [keep, ...rest] = group.elements
+	await gelClient.transaction(async (txn) => {
+		for (const group of res) {
+			const [keep, ...rest] = group.elements;
 
-      for (const { id } of rest.flatMap(({ teams }) => teams)) {
-        // insert team, set old to transferred
-        await txn.execute(
-          `
+			for (const { id } of rest.flatMap(({ teams }) => teams)) {
+				// insert team, set old to transferred
+				await txn.execute(
+					`
 					with
 					  team := (select Team filter .id = <uuid>$teamId),
 						tournament := (select Tournament filter .id = <uuid>$tournamentId limit 1),
@@ -75,29 +75,29 @@ async function main() {
 					  players := team.players
 					}
 					`,
-          {
-            teamId: id,
-            tournamentId: keep.id,
-          }
-        )
-      }
+					{
+						teamId: id,
+						tournamentId: keep.id,
+					},
+				);
+			}
 
-      for (const { id } of rest) {
-        await txn.execute(
-          `
+			for (const { id } of rest) {
+				await txn.execute(
+					`
 			  update Tournament
 				filter .id = <uuid>$id
 				set {
 				  status := TournamentStatus.Cancelled
 				}
 				`,
-          {
-            id,
-          }
-        )
-      }
-    }
-  })
+					{
+						id,
+					},
+				);
+			}
+		}
+	});
 }
 
-await main()
+await main();

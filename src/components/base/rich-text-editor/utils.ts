@@ -1,44 +1,44 @@
-import { $generateHtmlFromNodes } from "@lexical/html"
-import type { EditorState, LexicalEditor } from "lexical"
+import { $generateHtmlFromNodes } from "@lexical/html";
+import type { EditorState, LexicalEditor } from "lexical";
 
 /**
  * Convert EditorState to HTML string for database storage
  */
 export function editorStateToHtml(
-  editorState: EditorState,
-  editor: LexicalEditor
+	editorState: EditorState,
+	editor: LexicalEditor,
 ): string {
-  return editorState.read(() => {
-    return $generateHtmlFromNodes(editor, null)
-  })
+	return editorState.read(() => {
+		return $generateHtmlFromNodes(editor, null);
+	});
 }
 
 /**
  * Helper function to create an onChange handler that converts to HTML
  */
 export function createHtmlOnChangeHandler(
-  onHtmlChange: (html: string) => void
+	onHtmlChange: (html: string) => void,
 ) {
-  return (editorState: EditorState, editor: LexicalEditor) => {
-    const html = editorStateToHtml(editorState, editor)
-    onHtmlChange(html)
-  }
+	return (editorState: EditorState, editor: LexicalEditor) => {
+		const html = editorStateToHtml(editorState, editor);
+		onHtmlChange(html);
+	};
 }
 
 /**
  * Debounced version for auto-save functionality
  */
 export function createDebouncedHtmlOnChangeHandler(
-  onHtmlChange: (html: string) => void,
-  delay = 500
+	onHtmlChange: (html: string) => void,
+	delay = 500,
 ) {
-  let timeoutId: NodeJS.Timeout
+	let timeoutId: NodeJS.Timeout;
 
-  return (editorState: EditorState, editor: LexicalEditor) => {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => {
-      const html = editorStateToHtml(editorState, editor)
-      onHtmlChange(html)
-    }, delay)
-  }
+	return (editorState: EditorState, editor: LexicalEditor) => {
+		clearTimeout(timeoutId);
+		timeoutId = setTimeout(() => {
+			const html = editorStateToHtml(editorState, editor);
+			onHtmlChange(html);
+		}, delay);
+	};
 }
