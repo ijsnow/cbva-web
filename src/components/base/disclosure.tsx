@@ -113,6 +113,7 @@ const headerStyles = tv({
 export type DisclosureHeaderProps = {
 	onPress?: () => void;
 	className?: string;
+	contentClassName?: string;
 	children: React.ReactNode;
 	info?: React.ReactNode;
 } & VariantProps<typeof headerStyles> &
@@ -121,6 +122,7 @@ export type DisclosureHeaderProps = {
 export function DisclosureHeader({
 	onPress,
 	className,
+	contentClassName,
 	children,
 	card,
 	size = "lg",
@@ -160,7 +162,7 @@ export function DisclosureHeader({
 								}[size]
 							}
 						/>
-						{children}
+						<span className={contentClassName}>{children}</span>
 						{info && <Information>{info}</Information>}
 					</>
 				)}
