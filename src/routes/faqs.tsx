@@ -1,4 +1,8 @@
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
@@ -38,7 +42,7 @@ function RouteComponent() {
 				<DisclosureGroup>
 					{faqs.map(({ id, question, answer }) => (
 						<Disclosure key={id}>
-							<DisclosureHeader>{question}</DisclosureHeader>
+							<DisclosureHeader color="alt">{question}</DisclosureHeader>
 							<DisclosurePanel>
 								<RichTextDisplay
 									name="faq-answer"
@@ -58,8 +62,13 @@ function RouteComponent() {
 function CreateFaqButton() {
 	const [isOpen, setOpen] = useState(false);
 
+	const queryClient = useQueryClient();
+
 	const { mutateAsync: createFaq } = useMutation({
 		mutationFn: createFaqFn,
+		onSuccess: () => {
+			queryClient.invalidateQueries(getFaqsQueryOptions());
+		},
 	});
 
 	const form = useAppForm({
@@ -72,10 +81,9 @@ function CreateFaqButton() {
 			onChange: createFaqSchema,
 		},
 		onSubmit: async ({ value, formApi }) => {
-			console.log(value);
-			// await createFaq({ data: value });
-			// formApi.reset();
-			// setOpen(false);
+			await createFaq({ data: value });
+			formApi.reset();
+			setOpen(false);
 		},
 	});
 

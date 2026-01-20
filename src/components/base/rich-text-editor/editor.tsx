@@ -58,6 +58,7 @@ export type RichTextEditorProps = {
 export function RichTextEditor({
 	name,
 	initialValue,
+	onChange,
 	onSave,
 	onClose,
 	placeholder: customPlaceholder = placeholder,
@@ -141,8 +142,9 @@ export function RichTextEditor({
 						<TablePlugin hasCellMerge={true} hasCellBackgroundColor={true} />
 						{anchorElem && <TableActionMenuPlugin anchorElem={anchorElem} />}
 						<OnChangePlugin
-							onChange={(state) => {
+							onChange={(state, editor) => {
 								setEditorState(state);
+								onChange?.(state, editor);
 							}}
 						/>
 					</div>
