@@ -1,12 +1,5 @@
+import { ArrowDownIcon, ArrowUpIcon, GripVerticalIcon } from "lucide-react";
 import {
-	ArrowDownIcon,
-	ArrowDownWideNarrowIcon,
-	ArrowUpIcon,
-	ArrowUpWideNarrowIcon,
-	GripVerticalIcon,
-} from "lucide-react";
-import {
-	type DragAndDropHooks,
 	DropIndicator,
 	type Key,
 	Text,
@@ -16,19 +9,56 @@ import { useListData } from "react-stately";
 import { ListBox, ListBoxItem } from "./list-box";
 import type { Option } from "./select";
 import { Button } from "./button";
+import { useCallback, useEffect } from "react";
+import { isEqual } from "lodash-es";
 
 type ListBoxProps<V extends Key> = {
-	items?: Option<V>[];
-	dragAndDropHooks?: DragAndDropHooks<Option<V>>;
+	items: Option<V>[];
+	onChange: (keys: V[]) => void;
 };
 
 export function OrderingList<V extends Key>(props: ListBoxProps<V>) {
-	const { items: defaultItems } = props;
+	const { items: defaultItems, onChange } = props;
 
 	const list = useListData({
 		initialItems: defaultItems,
 		getKey: (item) => item.value,
 	});
+
+	useEffect(() => {
+		const ordered = list.items.map(({ value }) => value);
+
+		if (!isEqual(defaultItems, ordered)) {
+			onChange(ordered);
+		}
+	}, [list, defaultItems, onChange]);
+
+	const isFirst = (value: V) => list.items[0].value === value;
+	const isLast = (value: V) =>
+		list.items[list.items.length - 1].value === value;
+
+	const moveUp = useCallback(
+		(key: Key) => {
+			const index = list.items.findIndex((item) => item.value === key);
+
+			if (index > 0) {
+				const previousKey = list.items[index - 1].value;
+				list.moveBefore(previousKey, new Set([key]));
+			}
+		},
+		[list],
+	);
+
+	const moveDown = useCallback(
+		(key: Key) => {
+			const index = list.items.findIndex((item) => item.value === key);
+			if (index < list.items.length - 1) {
+				const nextKey = list.items[index + 1].value;
+				list.moveAfter(nextKey, new Set([key]));
+			}
+		},
+		[list],
+	);
 
 	const { dragAndDropHooks } = useDragAndDrop<Option<V>>({
 		getItems(keys, items) {
@@ -66,6 +96,7 @@ export function OrderingList<V extends Key>(props: ListBoxProps<V>) {
 			items={list.items}
 			renderEmptyState={() => "Drop items here"}
 			dragAndDropHooks={dragAndDropHooks}
+			dependencies={[list]}
 		>
 			{(item) => (
 				<ListBoxItem id={item.value} textValue={item.display}>
@@ -76,10 +107,20 @@ export function OrderingList<V extends Key>(props: ListBoxProps<V>) {
 						<Text slot="label">{item.display}</Text>
 					</span>
 					<span className="flex flex-row gap-2">
-						<Button variant="icon" size="sm">
-							<ArrowUpIcon size={24} />
+						<Button
+							variant="icon"
+							size="sm"
+							onPress={() => moveUp(item.value)}
+							isDisabled={isFirst(item.value)}
+						>
+							<ArrowUpIcon />
 						</Button>
-						<Button variant="icon" size="sm">
+						<Button
+							variant="icon"
+							size="sm"
+							onPress={() => moveDown(item.value)}
+							isDisabled={isLast(item.value)}
+						>
 							<ArrowDownIcon />
 						</Button>
 					</span>

@@ -32,6 +32,7 @@ import {
 import { LexicalState } from "@/db/schema/shared";
 import { OrderingTable } from "@/components/base/ordering-table";
 import { OrderingList } from "@/components/base/ordering-list";
+import { setFaqsOrderMutationOptions } from "@/functions/faqs/set-faqs-order";
 
 export const Route = createFileRoute("/faqs")({
 	loader: async ({ context: { queryClient } }) => {
@@ -332,12 +333,12 @@ function DeleteFaqButton({ id, question }: { id: number; question: string }) {
 }
 
 function ReorderFaqsButton() {
-	const [isOpen, setOpen] = useState(true);
+	const [isOpen, setOpen] = useState(false);
 
 	const queryClient = useQueryClient();
 
-	const { mutateAsync: deleteFaq } = useMutation({
-		...deleteFaqMutationOptions(),
+	const { mutateAsync: setFaqOrder } = useMutation({
+		...setFaqsOrderMutationOptions(),
 		onSuccess: () => {
 			queryClient.invalidateQueries(getFaqsQueryOptions());
 		},
@@ -350,10 +351,11 @@ function ReorderFaqsButton() {
 	});
 
 	const form = useAppForm({
-		onSubmit: async ({ value, formApi }) => {
-			console.log(value);
-
-			// await deleteFaq({ id });
+		defaultValues: {
+			order: items?.map(({ value }) => value) ?? [],
+		},
+		onSubmit: async ({ value: { order }, formApi }) => {
+			await setFaqOrder({ order });
 			formApi.reset();
 			setOpen(false);
 		},
@@ -379,7 +381,12 @@ function ReorderFaqsButton() {
 						}}
 					>
 						<form.AppField name="order">
-							{(field) => <OrderingList items={items} />}
+							{(field) => (
+								<OrderingList
+									items={items ?? []}
+									onChange={(order) => field.handleChange(order)}
+								/>
+							)}
 						</form.AppField>
 						<form.AppForm>
 							<form.Footer>
