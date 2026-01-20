@@ -21,6 +21,7 @@ import { tournamentDivisions } from "./tournament-divisions";
 import { tournaments } from "./tournaments";
 import { venueDirectors } from "./venue-directors";
 import { venues } from "./venues";
+import { faqs } from "./faqs";
 
 export const tables = {
 	blocks,
@@ -48,4 +49,5 @@ export const tables = {
 	venues,
 	venueDirectors,
 	rateLimiterFlexibleSchema,
+	faqs,
 };
