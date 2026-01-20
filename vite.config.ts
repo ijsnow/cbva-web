@@ -14,7 +14,7 @@ const config = defineConfig({
 		sourcemap: true, // Source map generation must be turned on
 	},
 	ssr: {
-		noExternal: ["@lexical/react"], // Force bundling instead of externalizing
+		noExternal: [/^@?lexical/],
 	},
 	plugins: [
 		devtools(),
@@ -30,11 +30,11 @@ const config = defineConfig({
 		//   template: "network",
 		// }),
 		nitro(), // { compatibilityDate: '2025-11-11', preset: "vercel" }),
-		sentryVitePlugin({
-			authToken: process.env.SENTRY_AUTH_TOKEN,
-			org: "isaac-snow",
-			project: "cbva-vercel",
-		}),
+		// sentryVitePlugin({
+		// 	authToken: process.env.SENTRY_AUTH_TOKEN,
+		// 	org: "isaac-snow",
+		// 	project: "cbva-vercel",
+		// }),
 	],
 	nitro: {
 		compatibilityDate: "latest",
