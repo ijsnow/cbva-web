@@ -329,7 +329,7 @@ export function Navbar() {
 												<ChevronDownIcon className="ml-2" />
 											</Text>
 										</MenuItem>
-										<Popover>
+										<Popover placement="bottom">
 											<Menu className="bg-navbar-background border border-navbar-border p-2 flex flex-col gap-2 rounded-lg">
 												{rest.children.map(
 													({
