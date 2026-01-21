@@ -29,6 +29,7 @@ import { Route as TournamentsFaqsRouteImport } from './routes/tournaments/faqs'
 import { Route as TournamentsCreateRouteImport } from './routes/tournaments/create'
 import { Route as LeaderboardChar123GenderChar125RouteImport } from './routes/leaderboard.{-$gender}'
 import { Route as JuniorsCalCupRouteImport } from './routes/juniors/cal-cup'
+import { Route as InfoCedarsRouteImport } from './routes/info/cedars'
 import { Route as ApiPingRouteImport } from './routes/api/ping'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminScheduleRouteImport } from './routes/admin/schedule'
@@ -150,6 +151,11 @@ const JuniorsCalCupRoute = JuniorsCalCupRouteImport.update({
   path: '/juniors/cal-cup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InfoCedarsRoute = InfoCedarsRouteImport.update({
+  id: '/info/cedars',
+  path: '/info/cedars',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPingRoute = ApiPingRouteImport.update({
   id: '/api/ping',
   path: '/api/ping',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
+  '/info/cedars': typeof InfoCedarsRoute
   '/juniors/cal-cup': typeof JuniorsCalCupRoute
   '/leaderboard/{-$gender}': typeof LeaderboardChar123GenderChar125Route
   '/tournaments/create': typeof TournamentsCreateRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
+  '/info/cedars': typeof InfoCedarsRoute
   '/juniors/cal-cup': typeof JuniorsCalCupRoute
   '/leaderboard/{-$gender}': typeof LeaderboardChar123GenderChar125Route
   '/tournaments/create': typeof TournamentsCreateRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
+  '/info/cedars': typeof InfoCedarsRoute
   '/juniors/cal-cup': typeof JuniorsCalCupRoute
   '/leaderboard/{-$gender}': typeof LeaderboardChar123GenderChar125Route
   '/tournaments/create': typeof TournamentsCreateRoute
@@ -395,6 +404,7 @@ export interface FileRouteTypes {
     | '/admin/schedule'
     | '/admin/users'
     | '/api/ping'
+    | '/info/cedars'
     | '/juniors/cal-cup'
     | '/leaderboard/{-$gender}'
     | '/tournaments/create'
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/admin/schedule'
     | '/admin/users'
     | '/api/ping'
+    | '/info/cedars'
     | '/juniors/cal-cup'
     | '/leaderboard/{-$gender}'
     | '/tournaments/create'
@@ -477,6 +488,7 @@ export interface FileRouteTypes {
     | '/admin/schedule'
     | '/admin/users'
     | '/api/ping'
+    | '/info/cedars'
     | '/juniors/cal-cup'
     | '/leaderboard/{-$gender}'
     | '/tournaments/create'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   AdminScheduleRoute: typeof AdminScheduleRoute
   AdminUsersRoute: typeof AdminUsersRoute
   ApiPingRoute: typeof ApiPingRoute
+  InfoCedarsRoute: typeof InfoCedarsRoute
   JuniorsCalCupRoute: typeof JuniorsCalCupRoute
   LeaderboardChar123GenderChar125Route: typeof LeaderboardChar123GenderChar125Route
   TournamentsCreateRoute: typeof TournamentsCreateRoute
@@ -685,6 +698,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JuniorsCalCupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/info/cedars': {
+      id: '/info/cedars'
+      path: '/info/cedars'
+      fullPath: '/info/cedars'
+      preLoaderRoute: typeof InfoCedarsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ping': {
       id: '/api/ping'
       path: '/api/ping'
@@ -839,6 +859,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminScheduleRoute: AdminScheduleRoute,
   AdminUsersRoute: AdminUsersRoute,
   ApiPingRoute: ApiPingRoute,
+  InfoCedarsRoute: InfoCedarsRoute,
   JuniorsCalCupRoute: JuniorsCalCupRoute,
   LeaderboardChar123GenderChar125Route: LeaderboardChar123GenderChar125Route,
   TournamentsCreateRoute: TournamentsCreateRoute,
