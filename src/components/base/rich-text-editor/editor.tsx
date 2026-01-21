@@ -43,6 +43,7 @@ import { TableActionMenuPlugin } from "./plugins/table-action-menu";
 import { ToolbarPlugin } from "./plugins/toolbar";
 import { parseAllowedColor, parseAllowedFontSize } from "./style-config";
 import Theme from "./theme";
+import { twMerge } from "tailwind-merge";
 
 const placeholder = "Enter some rich text...";
 
@@ -53,6 +54,7 @@ export type RichTextEditorProps = {
 	onSave?: (state: SerializedEditorState) => Promise<void>;
 	onClose?: () => void;
 	placeholder?: string;
+	height?: "md" | "sm" | "xs";
 };
 
 export function RichTextEditor({
@@ -62,6 +64,7 @@ export function RichTextEditor({
 	onSave,
 	onClose,
 	placeholder: customPlaceholder = placeholder,
+	height = "md",
 }: RichTextEditorProps) {
 	const editorContainerRef = useRef<HTMLDivElement>(null);
 	const [anchorElem, setAnchorElem] = useState<HTMLElement | null>(null);
@@ -122,8 +125,11 @@ export function RichTextEditor({
 							contentEditable={
 								<ContentEditable
 									contentEditable={true}
-									className={clsx(
-										"editor-input resize-none text-md caret-black relative outline-0 py-5 px-3 min-h-96",
+									className={twMerge(
+										"editor-input resize-none text-md caret-black relative outline-0 py-5 px-3",
+										height === "md" && "min-h-96",
+										height === "sm" && "min-h-64",
+										height === "xs" && "min-h-32",
 									)}
 									aria-placeholder={customPlaceholder}
 									placeholder={

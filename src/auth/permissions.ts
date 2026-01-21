@@ -10,6 +10,7 @@ export const statement = {
 	files: ["create", "delete"],
 	profiles: ["create", "update"],
 	faqs: ["create", "update", "delete"],
+	blogs: ["create", "update", "delete"],
 	...defaultStatements,
 } as const;
 
@@ -30,6 +31,7 @@ export const admin = ac.newRole({
 	files: ["create", "delete"],
 	profiles: ["create", "update"],
 	faqs: ["create", "update", "delete"],
+	blogs: ["create", "update", "delete"],
 	...adminAc.statements,
 });
 

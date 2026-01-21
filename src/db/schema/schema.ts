@@ -22,4 +22,5 @@ export * from "./tournaments";
 export * from "./venue-directors";
 export * from "./venues";
 export * from "./faqs";
+export * from "./blogs";
 export * from "./shared";

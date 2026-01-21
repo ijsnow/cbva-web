@@ -35,6 +35,7 @@ import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminScheduleRouteImport } from './routes/admin/schedule'
 import { Route as AccountSetupRouteImport } from './routes/account/setup'
 import { Route as AccountResetPasswordRouteImport } from './routes/account/reset-password'
+import { Route as AccountRegistrationsRouteImport } from './routes/account/registrations'
 import { Route as AccountForgotPasswordRouteImport } from './routes/account/forgot-password'
 import { Route as AccountChangePasswordRouteImport } from './routes/account/change-password'
 import { Route as TournamentsTournamentIdIndexRouteImport } from './routes/tournaments/$tournamentId/index'
@@ -182,6 +183,11 @@ const AccountResetPasswordRoute = AccountResetPasswordRouteImport.update({
   path: '/account/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRegistrationsRoute = AccountRegistrationsRouteImport.update({
+  id: '/account/registrations',
+  path: '/account/registrations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountForgotPasswordRoute = AccountForgotPasswordRouteImport.update({
   id: '/account/forgot-password',
   path: '/account/forgot-password',
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/account/change-password': typeof AccountChangePasswordRoute
   '/account/forgot-password': typeof AccountForgotPasswordRoute
+  '/account/registrations': typeof AccountRegistrationsRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
   '/admin/schedule': typeof AdminScheduleRoute
@@ -312,6 +319,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/account/change-password': typeof AccountChangePasswordRoute
   '/account/forgot-password': typeof AccountForgotPasswordRoute
+  '/account/registrations': typeof AccountRegistrationsRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
   '/admin/schedule': typeof AdminScheduleRoute
@@ -355,6 +363,7 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/account/change-password': typeof AccountChangePasswordRoute
   '/account/forgot-password': typeof AccountForgotPasswordRoute
+  '/account/registrations': typeof AccountRegistrationsRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
   '/admin/schedule': typeof AdminScheduleRoute
@@ -399,6 +408,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/account/change-password'
     | '/account/forgot-password'
+    | '/account/registrations'
     | '/account/reset-password'
     | '/account/setup'
     | '/admin/schedule'
@@ -441,6 +451,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/account/change-password'
     | '/account/forgot-password'
+    | '/account/registrations'
     | '/account/reset-password'
     | '/account/setup'
     | '/admin/schedule'
@@ -483,6 +494,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/account/change-password'
     | '/account/forgot-password'
+    | '/account/registrations'
     | '/account/reset-password'
     | '/account/setup'
     | '/admin/schedule'
@@ -526,6 +538,7 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   AccountChangePasswordRoute: typeof AccountChangePasswordRoute
   AccountForgotPasswordRoute: typeof AccountForgotPasswordRoute
+  AccountRegistrationsRoute: typeof AccountRegistrationsRoute
   AccountResetPasswordRoute: typeof AccountResetPasswordRoute
   AccountSetupRoute: typeof AccountSetupRoute
   AdminScheduleRoute: typeof AdminScheduleRoute
@@ -741,6 +754,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/account/registrations': {
+      id: '/account/registrations'
+      path: '/account/registrations'
+      fullPath: '/account/registrations'
+      preLoaderRoute: typeof AccountRegistrationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/forgot-password': {
       id: '/account/forgot-password'
       path: '/account/forgot-password'
@@ -854,6 +874,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   AccountChangePasswordRoute: AccountChangePasswordRoute,
   AccountForgotPasswordRoute: AccountForgotPasswordRoute,
+  AccountRegistrationsRoute: AccountRegistrationsRoute,
   AccountResetPasswordRoute: AccountResetPasswordRoute,
   AccountSetupRoute: AccountSetupRoute,
   AdminScheduleRoute: AdminScheduleRoute,

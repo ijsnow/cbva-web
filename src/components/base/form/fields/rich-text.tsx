@@ -1,6 +1,9 @@
 import clsx from "clsx";
 import type { SerializedEditorState } from "lexical";
-import { RichTextEditor } from "@/components/base/rich-text-editor/editor";
+import {
+	RichTextEditor,
+	RichTextEditorProps,
+} from "@/components/base/rich-text-editor/editor";
 import { useIsMounted } from "@/lib/dom";
 import type { FieldProps } from "./shared";
 import { Description, Errors, Label } from "./shared";
@@ -8,7 +11,7 @@ import { Description, Errors, Label } from "./shared";
 export type RichTextFieldProps = FieldProps & {
 	className?: string;
 	isRequired?: boolean;
-};
+} & Pick<RichTextEditorProps, "height">;
 
 export function RichTextField({
 	className,
@@ -17,14 +20,13 @@ export function RichTextField({
 	placeholder,
 	field,
 	isRequired,
+	height,
 }: RichTextFieldProps) {
 	const isMounted = useIsMounted();
 
 	const value = field.state.value as SerializedEditorState | undefined;
 
 	const handleChange = (state: SerializedEditorState) => {
-		console.log("change");
-
 		field.handleChange(state);
 	};
 
@@ -40,6 +42,7 @@ export function RichTextField({
 						handleChange(editorState.toJSON());
 					}}
 					placeholder={placeholder}
+					height={height}
 				/>
 			)}
 
