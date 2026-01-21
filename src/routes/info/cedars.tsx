@@ -37,8 +37,6 @@ function RouteComponent() {
 			<div className="flex flex-col space-y-6 text-center">
 				<div className="flex justify-center items-center gap-2">
 					<h1 className={title()}>Injury Prevention and Wellness</h1>
-					{canUpdate && <ReorderBlogsForm tag="cedars" />}
-					{canCreate && <CreateBlogForm tag="cedars" />}
 				</div>
 				<p className={subtitle()}>Sponsored Content From</p>
 				<a
@@ -54,12 +52,16 @@ function RouteComponent() {
 					/>
 				</a>
 			</div>
-			<div className="flex bg-sand max-w-[500px] mx-auto items-center justify-center">
+			<div className="flex flex-col bg-sand max-w-[500px] mx-auto items-center justify-center">
+				<div className="self-end flex flex-row gap-2 px-6">
+					{canUpdate && <ReorderBlogsForm tag="cedars" />}
+					{canCreate && <CreateBlogForm tag="cedars" />}
+				</div>
 				<ul>
 					{blogs?.map(({ id, title, summary, imageSource, link }) => (
 						<li
 							key={id}
-							className="bg-white my-8 mx-6 rounded-xl overflow-hidden group"
+							className="relative bg-white my-8 mx-6 rounded-xl overflow-hidden group"
 						>
 							<a href={link} target="_blank" rel="noreferrer">
 								{imageSource && (
@@ -81,7 +83,7 @@ function RouteComponent() {
 								</div>
 							</a>
 							{canUpdate && (
-								<div className="flex justify-end gap-2 p-2 border-t">
+								<div className="flex justify-end gap-2 px-2 py-1 rounded-md bg-white/50 absolute top-3 right-3">
 									<UpdateBlogForm id={id} tag="cedars" />
 									<DeleteBlogForm id={id} blogTitle={title} tag="cedars" />
 								</div>
