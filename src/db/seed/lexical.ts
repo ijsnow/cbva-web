@@ -1,4 +1,5 @@
 // lexical-editor.ts
+import "dotenv/config";
 
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
@@ -267,6 +268,62 @@ export async function seedRatingsPage() {
 	const serializedSeeds: CreateBlock[] = [];
 
 	for (const { path, key, content } of seeds) {
+		await editor.injectHTML(await Promise.resolve(marked.parse(content)));
+		const state = editor.getEditorStateJSON();
+
+		serializedSeeds.push({
+			page: path,
+			key,
+			content: state,
+		});
+	}
+
+	await db.insert(blocks).values(serializedSeeds).onConflictDoNothing();
+}
+
+const juniorsSeeds = [
+	{
+		path: "juniors",
+		key: "juniors",
+		content: `Juniors.
+`,
+	},
+];
+
+export async function seedJuniorsPage() {
+	const editor = new LexicalEditorService();
+
+	const serializedSeeds: CreateBlock[] = [];
+
+	for (const { path, key, content } of juniorsSeeds) {
+		await editor.injectHTML(await Promise.resolve(marked.parse(content)));
+		const state = editor.getEditorStateJSON();
+
+		serializedSeeds.push({
+			page: path,
+			key,
+			content: state,
+		});
+	}
+
+	await db.insert(blocks).values(serializedSeeds).onConflictDoNothing();
+}
+
+const calcupSeeds = [
+	{
+		path: "cal-cup",
+		key: "cal-cup",
+		content: `Cal Cup.
+`,
+	},
+];
+
+export async function seedCalCupPage() {
+	const editor = new LexicalEditorService();
+
+	const serializedSeeds: CreateBlock[] = [];
+
+	for (const { path, key, content } of calcupSeeds) {
 		await editor.injectHTML(await Promise.resolve(marked.parse(content)));
 		const state = editor.getEditorStateJSON();
 

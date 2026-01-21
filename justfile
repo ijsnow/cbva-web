@@ -10,5 +10,8 @@ db_restore:
 fix script:
   pnpm tsx src/db/fix/{{script}}.ts
 
+seed:
+  pnpm tsx src/db/seed/bin.ts
+
 sb *args:
   supabase --workdir .supabase {{args}}

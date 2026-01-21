@@ -3,7 +3,7 @@ import "dotenv/config";
 import { db } from "../connection";
 
 import { pages } from "../schema";
-import { seedRatingsPage } from "./lexical";
+import { seedCalCupPage, seedJuniorsPage, seedRatingsPage } from "./lexical";
 import { seedVenues } from "./venues";
 
 async function main() {
@@ -11,19 +11,24 @@ async function main() {
 		.insert(pages)
 		.values([
 			{
-				path: "ratings",
+				path: "cal-cup",
 			},
-			{
-				path: "juniors",
-			},
-			{
-				path: "sanctioning",
-			},
+			// {
+			// 	path: "ratings",
+			// },
+			// {
+			// 	path: "juniors",
+			// },
+			// {
+			// 	path: "sanctioning",
+			// },
 		])
 		.onConflictDoNothing();
 
-	await seedRatingsPage();
-	await seedVenues();
+	// await seedRatingsPage();
+	// await seedJuniorsPage();
+	await seedCalCupPage();
+	// await seedVenues();
 }
 
 main()

@@ -15,10 +15,10 @@ import type { CreateBlock } from "@/db/schema";
 import type { LexicalState } from "@/db/schema/shared";
 import { DefaultLayout } from "@/layouts/default";
 
-export const Route = createFileRoute("/juniors/")({
+export const Route = createFileRoute("/juniors/cal-cup")({
 	loader: async ({ context: { queryClient } }) => {
 		await Promise.all([
-			queryClient.ensureQueryData(contentPageBlocksQueryOptions("juniors")),
+			queryClient.ensureQueryData(contentPageBlocksQueryOptions("cal-cup")),
 			queryClient.ensureQueryData(divisionsQueryOptions(false)),
 		]);
 	},
@@ -31,7 +31,7 @@ function RouteComponent() {
 	});
 
 	const { data: blocks } = useSuspenseQuery({
-		...contentPageBlocksQueryOptions("juniors"),
+		...contentPageBlocksQueryOptions("cal-cup"),
 		select: (data) => new Map(data.map(({ key, content }) => [key, content])),
 	});
 
@@ -43,7 +43,7 @@ function RouteComponent() {
 		mutationFn: async (input: Pick<CreateBlock, "content" | "key">) => {
 			return mutationFn({
 				data: {
-					page: "juniors",
+					page: "cal-cup",
 					...input,
 				},
 			});
@@ -62,24 +62,22 @@ function RouteComponent() {
 			}}
 		>
 			<Suspense>
-				<h1
-					className={title({
-						class: "w-full text-center ",
-					})}
-				>
-					Juniors
-				</h1>
+				<img
+					src="/logos/cal-cup.svg"
+					alt="Cal Cup"
+					className="max-w-md mx-auto"
+				/>
 
 				<div>
-					{blocks?.has("juniors") && (
+					{blocks?.has("cal-cup") && (
 						<RichTextDisplay
 							name="juniors"
-							content={blocks.get("juniors")}
+							content={blocks.get("cal-cup")}
 							onSave={
 								canEdit
 									? async (state) => {
 											await mutateAsync({
-												key: "juniors",
+												key: "cal-cup",
 												content: state as LexicalState,
 											});
 										}

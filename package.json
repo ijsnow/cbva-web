@@ -11,8 +11,6 @@
 		"serve": "vite preview",
 		"test": "vitest run",
 		"test:e2e": "playwright test",
-		"lint:check": "eslint .",
-		"lint": "eslint . --fix",
 		"fmt": "biome format --write .",
 		"test:browser": "vitest --config=vitest.browser.config.ts"
 	},
