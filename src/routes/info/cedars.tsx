@@ -160,7 +160,7 @@ function RouteComponent() {
 				content: "py-12 px-2 max-w-2xl mx-auto flex flex-col space-y-12",
 			}}
 		>
-			<div className="flex flex-col space-y-6">
+			<div className="flex flex-col space-y-6 text-center">
 				<h1 className={title()}>Injury Prevention and Wellness</h1>
 				<p className={subtitle()}>Sponsored Content From</p>
 				<a
