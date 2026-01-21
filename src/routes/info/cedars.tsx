@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DefaultLayout } from "@/layouts/default";
+import { subtitle, title } from "@/components/base/primitives";
 
 export const Route = createFileRoute("/info/cedars")({
 	component: RouteComponent,
@@ -159,22 +160,22 @@ function RouteComponent() {
 				content: "py-12 px-2 max-w-2xl mx-auto flex flex-col space-y-12",
 			}}
 		>
-			<h1 className="text-3xl font-panton text-center pt-[60px]">
-				INJURY PREVENTION AND WELLNESS
-			</h1>
-			<p className="text-xl text-center py-3">Sponsored Content From</p>
-			<a
-				className="mx-auto"
-				href="https://www.cedars-sinai.org/programs/ortho/specialties/sports-medicine.html"
-				target="_blank"
-				rel="noreferrer"
-			>
-				<img
-					src="/svgs/cedars-sinai.svg"
-					className="mx-auto w-[270px]"
-					alt="Cedars-Sinai"
-				/>
-			</a>
+			<div className="flex flex-col space-y-6">
+				<h1 className={title()}>Injury Prevention and Wellness</h1>
+				<p className={subtitle()}>Sponsored Content From</p>
+				<a
+					className="mx-auto"
+					href="https://www.cedars-sinai.org/programs/ortho/specialties/sports-medicine.html"
+					target="_blank"
+					rel="noreferrer"
+				>
+					<img
+						src="/logos/cedars-sinai.svg"
+						className="mx-auto w-[270px]"
+						alt="Cedars-Sinai"
+					/>
+				</a>
+			</div>
 			<div className="flex bg-sand max-w-[500px] mx-auto items-center justify-center">
 				<ul>
 					{BLOGS.map(([title, text, img, link]) => (
