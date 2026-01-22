@@ -1,0 +1,89 @@
+/* <div id="payjs-container" class="payjs-container payjs-hidden"> */
+/*     <svg id="payjs-input-icon"class="payjs-input-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="24"> */
+/*         <use id="payjs-cc-icon-use" xlink:href="#payjs-card-icon"></use> */
+/*     </svg> */
+/*     <div id="payjs-cnum-wrapper" class="payjs-wrapper"> */
+/*         <label id="payjs-cnum-label" class="payjs-label payjs-hidden" for="payjs-cnum" aria-hidden="true">Card Number</label> */
+/*         <input id="payjs-cnum" class="payjs-cnum payjs-base" type="text" maxlength=22 placeholder="Card Number" autocomplete="off" value="" */
+/*             inputmode="numeric" pattern="[0-9]*" aria-required="true" aria-label="Card Number"> */
+/*         <p id="payjs-cnum-error" class="payjs-error payjs-hidden" aria-hidden="true" aria-role="alert"></p> */
+/*     </div> */
+/*     <div id="payjs-exp-wrapper" class="payjs-wrapper"> */
+/*         <label id="payjs-exp-label" class="payjs-label payjs-hidden" for="payjs-exp" aria-hidden="true">Expiration Date</label> */
+/*         <input id="payjs-exp" class="payjs-exp payjs-base" type="text" maxlength=5 placeholder="MM/YY" autocomplete="off" value="" */
+/*             inputmode="numeric" pattern="[0-9]*" aria-required="true" aria-label="Expiration Date"> */
+/*         <p id="payjs-exp-error" class="payjs-error payjs-hidden" aria-hidden="true" aria-role="alert"></p> */
+/*     </div> */
+/*     <div id="payjs-cvv-wrapper" class="payjs-wrapper"> */
+/*         <label id="payjs-cvv-label" class="payjs-label payjs-hidden" for="payjs-cvv" aria-hidden="true">CVV</label> */
+/*         <input id="payjs-cvv" class="payjs-cvv payjs-base" type="text" maxlength=4 placeholder="CVV" autocomplete="off" value="" */
+/*             inputmode="numeric" pattern="[0-9]*" aria-required="true" aria-label="CVV"> */
+/*         <p id="payjs-cvv-error" class="payjs-error payjs-hidden" aria-hidden="true" aria-role="alert"></p> */
+/*     </div> */
+/* </div> */
+
+#payjs-container {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	gap: calc(var(--spacing) * 2);
+
+	--radius: 0.375rem; /* local scope */
+	--text-sm: 0.875rem;
+	--text-sm--line-height: calc(1.25 / 0.875);
+	--spacing: 0.25rem;
+}
+
+#payjs-input-icon {
+	grid-column: 8 / -1;
+	order: 2;
+	/* padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2); */
+	/* border-top: solid 1px black; */
+	/* border-left: solid 1px black; */
+	/* border-bottom: solid 1px black; */
+	/* border-radius: var(--radius) 0px 0px var(--radius); */
+
+	margin-bottom: var(--spacing);
+	border-bottom-width: 1px;
+
+	height: var(--tw-leading, var(--text-sm--line-height));
+	align-self: end;
+}
+
+#payjs-cnum-wrapper {
+	order: 1;
+	grid-column: 1 / span 7;
+	width: auto;
+	padding: 0;
+}
+
+#payjs-cnum,
+#payjs-exp,
+#payjs-cvv {
+	height: auto;
+	width: 100%;
+
+	border: solid 1px black;
+	/* border-top: solid 1px black; */
+	/* border-right: solid 1px black; */
+	/* border-bottom: solid 1px black; */
+	/* border-radius: 0px var(--radius) var(--radius) 0px; */
+	border-radius: var(--radius);
+
+	font-size: var(--text-sm);
+	line-height: var(--tw-leading, var(--text-sm--line-height));
+	padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2);
+	/* padding-block: calc(var(--spacing) * 1.5); */
+	/* padding-inline: calc(var(--spacing) * 2); */
+}
+
+#payjs-exp-wrapper {
+	order: 3;
+	grid-column: 1 / span 4;
+	width: auto;
+}
+
+#payjs-cvv-wrapper {
+	order: 4;
+	grid-column: 5 / -1;
+	width: auto;
+}
