@@ -17,6 +17,11 @@ export const getProfilesFn = createServerFn()
 		return db.query.playerProfiles.findMany({
 			with: {
 				level: true,
+				activeMembership: {
+					columns: {
+						id: true,
+					},
+				},
 			},
 			where: {
 				id: ids
