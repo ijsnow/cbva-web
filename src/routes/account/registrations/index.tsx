@@ -5,12 +5,14 @@ import { title } from "@/components/base/primitives";
 import { Radio } from "@/components/base/radio-group";
 import { ProfileName } from "@/components/profiles/name";
 import { ProfilePhoto } from "@/components/profiles/photo";
-import { PlayerProfile } from "@/db/schema";
-import { getProfilesQueryOptions } from "@/functions/profiles/get-profiles";
-import { getViewerProfilesQueryOptions } from "@/functions/profiles/get-viewer-profiles";
+import { Cart } from "@/components/registrations/cart";
+import {
+	registrationPageSchema,
+	useCartProfiles,
+} from "@/components/registrations/context";
+import type { PlayerProfile } from "@/db/schema";
 import { DefaultLayout } from "@/layouts/default";
 import { isDefined } from "@/utils/types";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { uniq, without } from "lodash-es";
 import { GripVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react";
@@ -24,13 +26,8 @@ import {
 } from "react-aria-components";
 import z from "zod";
 
-const searchSchema = z.object({
-	profiles: z.array(z.number()).default([]),
-	memberships: z.array(z.number()).default([]),
-});
-
 export const Route = createFileRoute("/account/registrations/")({
-	validateSearch: searchSchema,
+	validateSearch: registrationPageSchema,
 	beforeLoad: ({ search: { profiles, memberships } }) => {
 		const extras = without(memberships, ...profiles);
 
@@ -43,43 +40,27 @@ export const Route = createFileRoute("/account/registrations/")({
 				},
 			});
 		}
+
+		const deduped = uniq(profiles);
+
+		if (deduped.length !== profiles.length) {
+			throw redirect({
+				to: "/account/registrations",
+				search: {
+					profiles: deduped,
+					memberships,
+				},
+			});
+		}
 	},
 	component: RouteComponent,
 });
-
-function useProfiles() {
-	const { profiles: profileIds } = Route.useSearch();
-
-	const { data: viewerProfiles } = useSuspenseQuery({
-		...getViewerProfilesQueryOptions(),
-		select: (data) => {
-			return data.map((profile) => ({
-				...profile,
-				registrations: 0,
-			}));
-		},
-	});
-
-	const { data: otherProfiles } = useSuspenseQuery({
-		...getProfilesQueryOptions({
-			ids: profileIds,
-		}),
-		select: (data) => {
-			return data.map((profile) => ({
-				...profile,
-				registrations: 0,
-			}));
-		},
-	});
-
-	return viewerProfiles.concat(otherProfiles);
-}
 
 function RouteComponent() {
 	const { memberships } = Route.useSearch();
 	const navigate = useNavigate();
 
-	const profiles = useProfiles();
+	const profiles = useCartProfiles();
 
 	const membershipProfiles = memberships
 		.map((id) => profiles.find((profile) => profile.id === id))
@@ -104,18 +85,22 @@ function RouteComponent() {
 			replace: true,
 			search: (search) => ({
 				...search,
-				memberships: memberships.filter((id) => id !== profileId),
+				memberships: without(memberships, profileId),
 			}),
 		});
 	};
 
 	return (
-		<DefaultLayout>
+		<DefaultLayout
+			classNames={{
+				content: "flex flex-col py-8 space-y-6",
+			}}
+		>
 			<div className="text-center py-8">
 				<h1 className={title()}>Registration</h1>
 			</div>
 
-			<div className="grid grid-cols-6 gap-x-3 px-3 min-h-screen max-w-6xl mx-auto">
+			<div className="grid grid-cols-6 gap-x-3 px-3 max-w-6xl mx-auto flex-1">
 				<div className="col-span-4 bg-white rounded-lg grid grid-cols-10">
 					<div className="col-span-3 border-r border-gray-200">
 						<div className="py-3 px-4 flex flex-row items-center justify-between">
@@ -148,9 +133,7 @@ function RouteComponent() {
 					</div>
 				</div>
 
-				<div className="col-span-2 min-h-screen bg-white rounded-lg p-3">
-					Cart
-				</div>
+				<Cart />
 			</div>
 		</DefaultLayout>
 	);
@@ -211,6 +194,8 @@ function DroppableMembershipsList({
 	onProfileDrop: (profileId: number) => void;
 	onProfileRemove: (profileId: number) => void;
 }) {
+	const { memberships } = Route.useSearch();
+
 	const [isDragOver, setIsDragOver] = useState(false);
 
 	const { dragAndDropHooks } = useDragAndDrop({
@@ -238,6 +223,7 @@ function DroppableMembershipsList({
 			items={profiles}
 			dragAndDropHooks={dragAndDropHooks}
 			selectionMode="single"
+			dependencies={[memberships]}
 			renderEmptyState={() => (
 				<div
 					className={`p-4 border-2 border-dashed rounded-md text-sm text-center transition-colors ${
@@ -347,7 +333,7 @@ function AddPlayerForm() {
 function AddMembershipForm() {
 	const { memberships } = Route.useSearch();
 
-	const profiles = useProfiles();
+	const profiles = useCartProfiles();
 
 	const availableProfiles = profiles.filter(
 		({ id, activeMembership }) =>
@@ -360,16 +346,21 @@ function AddMembershipForm() {
 
 	const form = useAppForm({
 		defaultValues: {
-			profileId: null as number | null,
+			profileIds: [] as number[],
 		},
-		onSubmit: ({ value: { profileId }, formApi }) => {
-			if (profileId) {
+		validators: {
+			onChange: z.object({
+				profileIds: z.array(z.number()),
+			}),
+		},
+		onSubmit: ({ value: { profileIds }, formApi }) => {
+			if (profileIds.length) {
 				navigate({
 					replace: true,
 					to: "/account/registrations",
 					search: (search) => ({
 						...search,
-						memberships: uniq((search.profiles ?? []).concat(profileId)),
+						memberships: uniq((search.memberships ?? []).concat(profileIds)),
 					}),
 				});
 			}
@@ -399,13 +390,13 @@ function AddMembershipForm() {
 							form.handleSubmit();
 						}}
 					>
-						<form.AppField name="profileId">
+						<form.AppField name="profileIds">
 							{(field) => (
-								<field.RadioGroup field={field}>
+								<field.RadioGroup mode="int" field={field}>
 									{availableProfiles.map((profile) => (
 										<Radio key={profile.id} value={profile.id.toString()}>
 											<ProfilePhoto {...profile} />
-											<ProfileName {...profile} />
+											<ProfileName {...profile} link={false} />
 										</Radio>
 									))}
 								</field.RadioGroup>
@@ -416,14 +407,12 @@ function AddMembershipForm() {
 							<span className="text-gray-500 text-lg">OR</span>
 							<hr className="flex-1 border-gray-300" />
 						</div>
-						<form.AppField name="profileId">
+						<form.AppField name="profileIds" mode="array">
 							{(field) => (
 								<field.ProfilePicker
 									label="Search"
 									field={field}
-									selectedProfileIds={
-										field.state.value ? [field.state.value] : []
-									}
+									selectedProfileIds={field.state.value}
 								/>
 							)}
 						</form.AppField>

@@ -2,7 +2,10 @@ import { useIsMounted } from "@/lib/dom";
 import type { FieldProps } from "./shared";
 import { RadioGroup, RadioGroupProps } from "../../radio-group";
 
-export type RadioGroupFieldProps = FieldProps & RadioGroupProps;
+export type RadioGroupFieldProps = FieldProps &
+	RadioGroupProps & {
+		mode: "string" | "int";
+	};
 
 export function RadioGroupField({
 	className,
@@ -10,27 +13,10 @@ export function RadioGroupField({
 	placeholder,
 	field,
 	children,
+	mode = "string",
 	...props
 }: RadioGroupFieldProps) {
 	const isMounted = useIsMounted();
-
-	// return (
-	//   <AriaTextField
-	//     {...props}
-	//     className={clsx("flex flex-col gap-1", className)}
-	//     name={field.name}
-	//     value={field.state.value ?? ""}
-	//     onChange={field.handleChange}
-	//     onBlur={field.handleBlur}
-	//     isInvalid={field.state.meta.isBlurred && !field.state.meta.isValid}
-	//     isDisabled={!isMounted || props.isDisabled}
-	//   >
-	//     {label && <Label isRequired={props.isRequired}>{label}</Label>}
-	//     <Input placeholder={placeholder} className={inputStyles} />
-	//     {description && <Description>{description}</Description>}
-	//     <Errors field={field} />
-	//   </AriaTextField>
-	// )
 
 	return (
 		<RadioGroup
@@ -38,7 +24,9 @@ export function RadioGroupField({
 			isDisabled={!isMounted || props.isDisabled}
 			isInvalid={field.state.meta.isBlurred && !field.state.meta.isValid}
 			value={field.state.value}
-			onChange={field.handleChange}
+			onChange={(v) =>
+				field.handleChange(mode === "string" ? v : Number.parseInt(v, 10))
+			}
 		>
 			{children}
 		</RadioGroup>

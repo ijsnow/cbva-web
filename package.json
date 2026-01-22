@@ -25,6 +25,7 @@
 		"@lexical/tailwind": "^0.39.0",
 		"@lexical/utils": "^0.39.0",
 		"@react-aria/i18n": "^3.12.13",
+		"@react-stately/utils": "^3.11.0",
 		"@sendgrid/mail": "^8.1.6",
 		"@sentry/react": "^10.28.0",
 		"@sentry/tanstackstart-react": "^10.28.0",

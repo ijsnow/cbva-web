@@ -16,6 +16,7 @@ import {
 	Group,
 	Label,
 } from "./shared";
+import { composeTailwindRenderProps } from "../../utils";
 
 export type PasswordFieldProps = FieldProps & RACTextFieldProps;
 
@@ -33,7 +34,10 @@ export function PasswordField({
 	return (
 		<AriaTextField
 			{...props}
-			className="flex flex-col gap-1"
+			className={composeTailwindRenderProps(
+				props.className,
+				"flex flex-col gap-1",
+			)}
 			name={field.name}
 			onChange={field.handleChange}
 			onBlur={field.handleBlur}

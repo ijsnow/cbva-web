@@ -22,7 +22,8 @@ import { TimeField } from "./fields/time";
 import { RadioGroupField } from "./fields/radio-group";
 import { RichTextField } from "./fields/rich-text";
 import { ProfilePickerField } from "./fields/profile-picker";
-import { dbg } from "@/utils/dbg";
+import { PaymentCardField } from "./fields/payment-card";
+import { ExpiryField } from "./fields/expiry";
 
 function Alert({ className, ...props }: AlertProps) {
 	return <BaseAlert className={className} {...props} />;
@@ -210,6 +211,8 @@ export const { useAppForm } = createFormHook({
 		MultiSelect: MultiSelectField,
 		ProfilePicker: ProfilePickerField,
 		RichText: RichTextField,
+		PaymentCard: PaymentCardField,
+		Expiry: ExpiryField,
 	},
 	formComponents: {
 		Alert,
