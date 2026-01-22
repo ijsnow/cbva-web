@@ -12,6 +12,7 @@ import {
 import { DefaultLayout } from "@/layouts/default";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import type z from "zod";
 
 export const Route = createFileRoute("/account/registrations/checkout")({
 	validateSearch: registrationPageSchema,
@@ -47,7 +48,7 @@ function RouteComponent() {
 				expiry: "",
 				securityCode: "",
 			},
-		},
+		} as z.infer<typeof schema>,
 		validators: {
 			onMount: schema,
 			onChange: schema,
