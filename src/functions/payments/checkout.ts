@@ -73,8 +73,6 @@ export const checkoutFn = createServerFn()
 			},
 			context: { viewer },
 		}) => {
-			console.log(paymentKey, memberships, billingInformation);
-
 			await createMemberships(
 				viewer.id,
 				memberships.map((id, i) => ({
