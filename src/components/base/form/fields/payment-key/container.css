@@ -1,0 +1,5 @@
+#paymentCardContainer iframe,
+#paymentCardContainer iframe:focus-within,
+#paymentCardContainer iframe:focus {
+	outline: none;
+}

@@ -16,12 +16,13 @@ export const checkoutSchema = z.object({
 		state: z.string().nonempty(),
 		postalCode: z.string().nonempty(),
 	}),
-	paymentInfo: z.object({
-		cardNumber: z.string().nonempty(),
-		name: z.string().nonempty(),
-		expiry: z.string().nonempty(),
-		securityCode: z.string().nonempty(),
-	}),
+	paymentKey: z.string(),
+	// paymentInfo: z.object({
+	// 	cardNumber: z.string().nonempty(),
+	// 	name: z.string().nonempty(),
+	// 	expiry: z.string().nonempty(),
+	// 	securityCode: z.string().nonempty(),
+	// }),
 	cart: cartSchema,
 });
 

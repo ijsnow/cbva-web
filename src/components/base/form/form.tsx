@@ -24,6 +24,8 @@ import { RichTextField } from "./fields/rich-text";
 import { ProfilePickerField } from "./fields/profile-picker";
 import { PaymentCardField } from "./fields/payment-card";
 import { ExpiryField } from "./fields/expiry";
+import { PaymentKeyField } from "./fields/payment-key";
+import { dbg } from "@/utils/dbg";
 
 function Alert({ className, ...props }: AlertProps) {
 	return <BaseAlert className={className} {...props} />;
@@ -76,7 +78,7 @@ function SubmitButton({
 	return (
 		<form.Subscribe
 			selector={(state) => [
-				state.canSubmit,
+				dbg(state).canSubmit,
 				state.isDefaultValue,
 				state.isSubmitting,
 			]}
@@ -85,6 +87,11 @@ function SubmitButton({
 					type="submit"
 					color="primary"
 					className={clsx(className)}
+					data-can-submit={canSubmit}
+					data-is-submitting={isSubmitting}
+					data-is-disabled={isDisabled}
+					data-require-change={requireChange}
+					data-is-default-value={isDefaultValue}
 					isDisabled={
 						!canSubmit ||
 						isSubmitting ||
@@ -182,10 +189,10 @@ function StateDebugger({ className }: { className?: string }) {
 
 	return (
 		<form.Subscribe
-			selector={({ values, errors }) => [values, errors]}
-			children={([values, errors]) => (
+			selector={({ values, errors, ...rest }) => [values, errors, rest]}
+			children={([values, errors, rest]) => (
 				<pre className={clsx("col-span-full", className)}>
-					{JSON.stringify({ values, errors }, null, 2)}
+					{JSON.stringify({ values, errors, ...rest }, null, 2)}
 				</pre>
 			)}
 		/>
@@ -213,6 +220,7 @@ export const { useAppForm } = createFormHook({
 		RichText: RichTextField,
 		PaymentCard: PaymentCardField,
 		Expiry: ExpiryField,
+		PaymentKey: PaymentKeyField,
 	},
 	formComponents: {
 		Alert,

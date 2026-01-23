@@ -1,0 +1,17 @@
+paymentCard.invalid cnum
+paymentCard.error {"code":"11","message":"Please enter a credit card number.","reason":"card number not given","type":"cnum"}
+paymentCard.invalid cnum
+paymentCard.error {"code":"11","message":"Please enter a credit card number.","reason":"card number not given","type":"cnum"}
+paymentCard.invalid cnum
+paymentCard.error {"code":"11","message":"Please enter a credit card number.","reason":"card number not given","type":"cnum"}
+paymentCard.invalid cnum
+paymentCard.error {"code":"11","message":"Please enter a credit card number.","reason":"card number not given","type":"cnum"}
+paymentCard.valid cnum
+paymentCard.error {"code":"0","message":"","reason":"clear error","type":"cnum"}
+paymentCard.valid cnum
+paymentCard.error {"code":"0","message":"","reason":"clear error","type":"cnum"}
+paymentCard.valid exp
+paymentCard.error {"code":"0","message":"","reason":"clear error","type":"exp"}
+paymentCard.valid cvv
+paymentCard.error {"code":"0","message":"","reason":"clear error","type":"cvv"}
+
