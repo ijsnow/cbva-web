@@ -1,4 +1,4 @@
-import { defineRelations, sql } from "drizzle-orm";
+import { defineRelations } from "drizzle-orm";
 import { tables } from "./tables";
 
 export const relations = defineRelations(tables, (r) => ({
