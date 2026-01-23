@@ -64,6 +64,7 @@ const paymentCardConfig = {
 		cvv: "123",
 	},
 	styles: usaepayStyles,
+	display_errors: true,
 };
 
 export const paymentCardSchema = z.object({

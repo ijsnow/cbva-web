@@ -2,7 +2,7 @@ import { requireAuthenticated } from "@/auth/shared";
 import { db } from "@/db/connection";
 import { memberships } from "@/db/schema";
 import { getDefaultTimeZone } from "@/lib/dates";
-import { parseDate, today } from "@internationalized/date";
+import { today } from "@internationalized/date";
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import z from "zod";
@@ -15,8 +15,7 @@ export const checkoutSchema = z.object({
 	billingInformation: z.object({
 		firstName: z.string().nonempty(),
 		lastName: z.string().nonempty(),
-		street: z.string().nonempty(),
-		street2: z.string().optional(),
+		address: z.array(z.string()).min(1).max(2),
 		city: z.string().nonempty(),
 		state: z.string().nonempty(),
 		postalCode: z.string().nonempty(),
@@ -69,10 +68,13 @@ export const checkoutFn = createServerFn()
 		async ({
 			data: {
 				paymentKey,
+				billingInformation,
 				cart: { memberships },
 			},
 			context: { viewer },
 		}) => {
+			console.log(paymentKey, memberships, billingInformation);
+
 			await createMemberships(
 				viewer.id,
 				memberships.map((id, i) => ({

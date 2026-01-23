@@ -63,8 +63,7 @@ function RouteComponent() {
 			billingInformation: {
 				firstName: "",
 				lastName: "",
-				street: "",
-				street2: "",
+				address: ["", ""],
 				city: "",
 				state: "",
 				postalCode: "",
@@ -137,24 +136,29 @@ function RouteComponent() {
 						)}
 					</form.AppField>
 
-					<form.AppField name="billingInformation.street">
+					<form.AppField name="billingInformation.address" mode="array">
 						{(field) => (
-							<field.Text
-								className="col-span-full"
-								field={field}
-								label="Address"
-								isRequired={true}
-							/>
-						)}
-					</form.AppField>
-
-					<form.AppField name="billingInformation.street2">
-						{(field) => (
-							<field.Text
-								className="col-span-full"
-								field={field}
-								label="Apartment, suite, etc"
-							/>
+							<>
+								<form.AppField name="billingInformation.address[0]">
+									{(subField) => (
+										<field.Text
+											className="col-span-full"
+											field={subField}
+											label="Address"
+											isRequired={true}
+										/>
+									)}
+								</form.AppField>
+								<form.AppField name="billingInformation.address[1]">
+									{(subField) => (
+										<field.Text
+											className="col-span-full"
+											field={subField}
+											label="Apartment, suite, etc"
+										/>
+									)}
+								</form.AppField>
+							</>
 						)}
 					</form.AppField>
 
@@ -208,8 +212,6 @@ function RouteComponent() {
 					<form.SubmitButton size="lg" radius="full">
 						Pay ${total}
 					</form.SubmitButton>
-
-					<form.StateDebugger />
 				</form.AppForm>
 			</form>
 		</DefaultLayout>

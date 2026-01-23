@@ -78,7 +78,7 @@ function SubmitButton({
 	return (
 		<form.Subscribe
 			selector={(state) => [
-				dbg(state).canSubmit,
+				state.canSubmit,
 				state.isDefaultValue,
 				state.isSubmitting,
 			]}
