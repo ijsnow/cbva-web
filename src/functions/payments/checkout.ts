@@ -2,6 +2,7 @@ import { requireAuthenticated } from "@/auth/shared";
 import { db } from "@/db/connection";
 import { memberships } from "@/db/schema";
 import { getDefaultTimeZone } from "@/lib/dates";
+import { postSale } from "@/services/usaepay";
 import { today } from "@internationalized/date";
 import { mutationOptions } from "@tanstack/react-query";
 import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
@@ -21,12 +22,6 @@ export const checkoutSchema = z.object({
 		postalCode: z.string().nonempty(),
 	}),
 	paymentKey: z.string(),
-	// paymentInfo: z.object({
-	// 	cardNumber: z.string().nonempty(),
-	// 	name: z.string().nonempty(),
-	// 	expiry: z.string().nonempty(),
-	// 	securityCode: z.string().nonempty(),
-	// }),
 	cart: cartSchema,
 });
 
@@ -61,6 +56,8 @@ const createMemberships = createServerOnlyFn(
 	},
 );
 
+const MEMBERSHIP_PRICE = 100;
+
 export const checkoutFn = createServerFn()
 	.middleware([requireAuthenticated])
 	.inputValidator(checkoutSchema)
@@ -73,16 +70,42 @@ export const checkoutFn = createServerFn()
 			},
 			context: { viewer },
 		}) => {
+			if (memberships.length === 0) {
+				throw new Error("No memberships in cart");
+			}
+
+			const amount = memberships.length * MEMBERSHIP_PRICE;
+
+			const transaction = await postSale({
+				paymentKey,
+				amount,
+				billingAddress: {
+					firstName: billingInformation.firstName,
+					lastName: billingInformation.lastName,
+					street: billingInformation.address.filter(Boolean).join(", "),
+					city: billingInformation.city,
+					state: billingInformation.state,
+					postalCode: billingInformation.postalCode,
+				},
+				description: `CBVA Membership (${memberships.length})`,
+			});
+
+			if (transaction.result_code !== "A") {
+				throw new Error(transaction.error || `Payment declined: ${transaction.result}`);
+			}
+
 			await createMemberships(
 				viewer.id,
-				memberships.map((id, i) => ({
-					profileId: id,
-					transactionKey: `txn-${i}`,
+				memberships.map((profileId) => ({
+					profileId,
+					transactionKey: transaction.key,
 				})),
 			);
 
 			return {
 				success: true,
+				transactionKey: transaction.key,
+				refnum: transaction.refnum,
 			};
 		},
 	);
