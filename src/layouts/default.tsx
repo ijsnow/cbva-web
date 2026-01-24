@@ -9,15 +9,17 @@ import { ImpersonatorControls } from "@/components/impersonator/controls";
 import { Navbar } from "@/components/navbar";
 import { ToastRegion } from "@/components/base/toast";
 
+export type DefaultLayoutProps = {
+	classNames?: { content?: string };
+	children: ReactNode;
+	sideNavItems?: SideNavItemProps[];
+};
+
 export function DefaultLayout({
 	classNames = { content: "pt-18 px-3 pb-12 space-y-12 w-full" },
 	children,
 	sideNavItems,
-}: {
-	classNames?: { content?: string };
-	children: ReactNode;
-	sideNavItems?: SideNavItemProps[];
-}) {
+}: DefaultLayoutProps) {
 	return (
 		<div className="w-full min-h-screen flex flex-col bg-content-background text-content-foreground">
 			<header>

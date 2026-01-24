@@ -144,11 +144,11 @@ importers:
         specifier: ^17.2.3
         version: 17.2.3
       drizzle-orm:
-        specifier: 1.0.0-beta.10-9f1399e
-        version: 1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)
+        specifier: 1.0.0-beta.12-a5629fb
+        version: 1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)
       drizzle-zod:
         specifier: ^0.8.3
-        version: 0.8.3(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(zod@4.3.5)
+        version: 0.8.3(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(zod@4.3.5)
       file-type:
         specifier: ^21.1.1
         version: 21.1.1
@@ -166,7 +166,7 @@ importers:
         version: 16.4.1
       nitro:
         specifier: 3.0.1-alpha.1
-        version: 3.0.1-alpha.1(@azure/identity@4.13.0)(@electric-sql/pglite@0.3.14)(chokidar@4.0.3)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.2)(rollup@4.55.2)(vite@7.3.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0))
+        version: 3.0.1-alpha.1(@azure/identity@4.13.0)(@electric-sql/pglite@0.3.14)(chokidar@4.0.3)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.2)(rollup@4.55.2)(vite@7.3.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0))
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -286,8 +286,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       drizzle-kit:
-        specifier: 1.0.0-beta.10-9f1399e
-        version: 1.0.0-beta.10-9f1399e
+        specifier: 1.0.0-beta.12-a5629fb
+        version: 1.0.0-beta.12-a5629fb
       gel:
         specifier: ^2.1.1
         version: 2.1.1
@@ -4002,12 +4002,12 @@ packages:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
 
-  drizzle-kit@1.0.0-beta.10-9f1399e:
-    resolution: {integrity: sha512-kNtl3YrPnfmGo5EUpmSn783/MvClD8mm+qo+CSDlcU3yquePShY64tXFZrPgox53gMdc04mw4LKvTX6nKPI/ug==}
+  drizzle-kit@1.0.0-beta.12-a5629fb:
+    resolution: {integrity: sha512-l+p4QOMvPGYBYEE9NBlU7diu+NSlxuOUwi0I7i01Uj1PpfU0NxhPzaks/9q1MDw4FAPP8vdD0dOhoqosKtRWWQ==}
     hasBin: true
 
-  drizzle-orm@1.0.0-beta.10-9f1399e:
-    resolution: {integrity: sha512-JD1SjVY5HyLajCUdUVDw+MRsQpFQTNO7BgOhLN1eSIwfR70yilyBhf9LWNo7orMBjARpoYfr+swO1NNW+aC/5g==}
+  drizzle-orm@1.0.0-beta.12-a5629fb:
+    resolution: {integrity: sha512-wyOAgr9Cy9oEN6z5S0JGhfipLKbRRJtQKgbDO9SXGR9swMBbGNIlXkeMqPRrqYQ8k70mh+7ZJ/eVmJ2F7zR3Vg==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -10561,10 +10561,10 @@ snapshots:
 
   dayjs@1.11.19: {}
 
-  db0@0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)):
+  db0@0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)):
     optionalDependencies:
       '@electric-sql/pglite': 0.3.14
-      drizzle-orm: 1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)
+      drizzle-orm: 1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)
 
   debug@4.4.1:
     dependencies:
@@ -10664,14 +10664,14 @@ snapshots:
 
   dotenv@17.2.3: {}
 
-  drizzle-kit@1.0.0-beta.10-9f1399e:
+  drizzle-kit@1.0.0-beta.12-a5629fb:
     dependencies:
       '@drizzle-team/brocli': 0.11.0
       '@js-temporal/polyfill': 0.5.1
       esbuild: 0.25.12
       tsx: 4.20.6
 
-  drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7):
+  drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7):
     dependencies:
       '@types/mssql': 9.1.8
       mssql: 11.0.1
@@ -10683,9 +10683,9 @@ snapshots:
       pg: 8.16.3
       postgres: 3.4.7
 
-  drizzle-zod@0.8.3(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(zod@4.3.5):
+  drizzle-zod@0.8.3(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(zod@4.3.5):
     dependencies:
-      drizzle-orm: 1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)
+      drizzle-orm: 1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)
       zod: 4.3.5
 
   dunder-proto@1.0.1:
@@ -11577,11 +11577,11 @@ snapshots:
 
   nf3@0.1.12: {}
 
-  nitro@3.0.1-alpha.1(@azure/identity@4.13.0)(@electric-sql/pglite@0.3.14)(chokidar@4.0.3)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.2)(rollup@4.55.2)(vite@7.3.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0)):
+  nitro@3.0.1-alpha.1(@azure/identity@4.13.0)(@electric-sql/pglite@0.3.14)(chokidar@4.0.3)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))(ioredis@5.8.2)(lru-cache@11.2.2)(rollup@4.55.2)(vite@7.3.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0)):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.1(srvx@0.9.7)
-      db0: 0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))
+      db0: 0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))
       h3: 2.0.1-rc.5(crossws@0.4.1(srvx@0.9.7))
       jiti: 2.6.1
       nf3: 0.1.12
@@ -11592,7 +11592,7 @@ snapshots:
       srvx: 0.9.7
       undici: 7.16.0
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.4(@azure/identity@4.13.0)(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.2)(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.4(@azure/identity@4.13.0)(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.2)(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       rollup: 4.55.2
       vite: 7.3.1(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(tsx@4.20.6)(yaml@2.8.0)
@@ -12611,11 +12611,11 @@ snapshots:
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
 
-  unstorage@2.0.0-alpha.4(@azure/identity@4.13.0)(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.2)(ofetch@2.0.0-alpha.3):
+  unstorage@2.0.0-alpha.4(@azure/identity@4.13.0)(chokidar@4.0.3)(db0@0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7)))(ioredis@5.8.2)(lru-cache@11.2.2)(ofetch@2.0.0-alpha.3):
     optionalDependencies:
       '@azure/identity': 4.13.0
       chokidar: 4.0.3
-      db0: 0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.10-9f1399e(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))
+      db0: 0.3.4(@electric-sql/pglite@0.3.14)(drizzle-orm@1.0.0-beta.12-a5629fb(@electric-sql/pglite@0.3.14)(@opentelemetry/api@1.9.0)(@types/mssql@9.1.8)(@types/pg@8.15.6)(gel@2.1.1)(mssql@11.0.1)(pg@8.16.3)(postgres@3.4.7))
       ioredis: 5.8.2
       lru-cache: 11.2.2
       ofetch: 2.0.0-alpha.3

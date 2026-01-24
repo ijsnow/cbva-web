@@ -33,6 +33,7 @@ import { Route as FaqsChar123SubjectChar125RouteImport } from './routes/faqs.{-$
 import { Route as ApiPingRouteImport } from './routes/api/ping'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AdminScheduleRouteImport } from './routes/admin/schedule'
+import { Route as AdminInvoicesRouteImport } from './routes/admin/invoices'
 import { Route as AccountSetupRouteImport } from './routes/account/setup'
 import { Route as AccountResetPasswordRouteImport } from './routes/account/reset-password'
 import { Route as AccountForgotPasswordRouteImport } from './routes/account/forgot-password'
@@ -174,6 +175,11 @@ const AdminScheduleRoute = AdminScheduleRouteImport.update({
   path: '/admin/schedule',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminInvoicesRoute = AdminInvoicesRouteImport.update({
+  id: '/admin/invoices',
+  path: '/admin/invoices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountSetupRoute = AccountSetupRouteImport.update({
   id: '/account/setup',
   path: '/account/setup',
@@ -286,6 +292,7 @@ export interface FileRoutesByFullPath {
   '/account/forgot-password': typeof AccountForgotPasswordRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
+  '/admin/invoices': typeof AdminInvoicesRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/account/forgot-password': typeof AccountForgotPasswordRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
+  '/admin/invoices': typeof AdminInvoicesRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
@@ -375,6 +383,7 @@ export interface FileRoutesById {
   '/account/forgot-password': typeof AccountForgotPasswordRoute
   '/account/reset-password': typeof AccountResetPasswordRoute
   '/account/setup': typeof AccountSetupRoute
+  '/admin/invoices': typeof AdminInvoicesRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/users': typeof AdminUsersRoute
   '/api/ping': typeof ApiPingRoute
@@ -421,6 +430,7 @@ export interface FileRouteTypes {
     | '/account/forgot-password'
     | '/account/reset-password'
     | '/account/setup'
+    | '/admin/invoices'
     | '/admin/schedule'
     | '/admin/users'
     | '/api/ping'
@@ -465,6 +475,7 @@ export interface FileRouteTypes {
     | '/account/forgot-password'
     | '/account/reset-password'
     | '/account/setup'
+    | '/admin/invoices'
     | '/admin/schedule'
     | '/admin/users'
     | '/api/ping'
@@ -509,6 +520,7 @@ export interface FileRouteTypes {
     | '/account/forgot-password'
     | '/account/reset-password'
     | '/account/setup'
+    | '/admin/invoices'
     | '/admin/schedule'
     | '/admin/users'
     | '/api/ping'
@@ -554,6 +566,7 @@ export interface RootRouteChildren {
   AccountForgotPasswordRoute: typeof AccountForgotPasswordRoute
   AccountResetPasswordRoute: typeof AccountResetPasswordRoute
   AccountSetupRoute: typeof AccountSetupRoute
+  AdminInvoicesRoute: typeof AdminInvoicesRoute
   AdminScheduleRoute: typeof AdminScheduleRoute
   AdminUsersRoute: typeof AdminUsersRoute
   ApiPingRoute: typeof ApiPingRoute
@@ -755,6 +768,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/invoices': {
+      id: '/admin/invoices'
+      path: '/admin/invoices'
+      fullPath: '/admin/invoices'
+      preLoaderRoute: typeof AdminInvoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account/setup': {
       id: '/account/setup'
       path: '/account/setup'
@@ -898,6 +918,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountForgotPasswordRoute: AccountForgotPasswordRoute,
   AccountResetPasswordRoute: AccountResetPasswordRoute,
   AccountSetupRoute: AccountSetupRoute,
+  AdminInvoicesRoute: AdminInvoicesRoute,
   AdminScheduleRoute: AdminScheduleRoute,
   AdminUsersRoute: AdminUsersRoute,
   ApiPingRoute: ApiPingRoute,

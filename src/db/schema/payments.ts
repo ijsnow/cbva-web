@@ -9,15 +9,19 @@ import { tournamentDivisionTeams } from "./tournament-division-teams";
 const { createSelectSchema } = createSchemaFactory({ zodInstance: z });
 
 export const invoices = pgTable("invoices", {
-	id: serial(),
+	id: serial().primaryKey(),
 	transactionKey: text().notNull(),
 	purchaserId: text()
 		.notNull()
 		.references(() => users.id),
 });
 
+export const selectInvoiceSchema = createSelectSchema(invoices);
+
+export type Invoice = z.infer<typeof selectInvoiceSchema>;
+
 export const memberships = pgTable("memberships", {
-	id: serial(),
+	id: serial().primaryKey(),
 	validUntil: date().notNull(),
 	profileId: integer()
 		.notNull()
@@ -33,7 +37,7 @@ export const selectMembershipSchema = createSelectSchema(memberships);
 export type Membership = z.infer<typeof selectMembershipSchema>;
 
 export const tournamentRegistrations = pgTable("tournamentRegistrations", {
-	id: serial(),
+	id: serial().primaryKey(),
 	tournamentDivisionTeamId: integer()
 		.notNull()
 		.references(() => tournamentDivisionTeams.id),

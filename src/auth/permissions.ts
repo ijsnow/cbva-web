@@ -11,6 +11,7 @@ export const statement = {
 	profiles: ["create", "update"],
 	faqs: ["create", "update", "delete"],
 	blogs: ["create", "update", "delete"],
+	invoices: ["read"],
 	...defaultStatements,
 } as const;
 
@@ -32,6 +33,7 @@ export const admin = ac.newRole({
 	profiles: ["create", "update"],
 	faqs: ["create", "update", "delete"],
 	blogs: ["create", "update", "delete"],
+	invoices: ["read"],
 	...adminAc.statements,
 });
 

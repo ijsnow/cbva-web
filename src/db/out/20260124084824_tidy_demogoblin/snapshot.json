@@ -1,7 +1,7 @@
 {
   "version": "8",
   "dialect": "postgres",
-  "id": "40aea23a-421c-4841-9536-789355c51b6c",
+  "id": "618f995e-e437-47f2-a458-4d17f4ae8350",
   "prevIds": [
     "62e7c997-5d75-499a-9ef5-0fd3d38a70a5"
   ],
@@ -5040,6 +5040,36 @@
       "name": "venues_pkey",
       "schema": "public",
       "table": "venues",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "invoices_pkey",
+      "schema": "public",
+      "table": "invoices",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "memberships_pkey",
+      "schema": "public",
+      "table": "memberships",
+      "entityType": "pks"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "tournamentRegistrations_pkey",
+      "schema": "public",
+      "table": "tournamentRegistrations",
       "entityType": "pks"
     },
     {
