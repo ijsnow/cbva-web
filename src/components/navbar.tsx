@@ -76,7 +76,7 @@ const links: (NavbarItem | NavbarGroupItem)[] = [
 			{
 				kind: "item",
 				to: "/ratings",
-				label: "About",
+				label: "Ratings",
 			},
 			{
 				kind: "item",
@@ -86,7 +86,7 @@ const links: (NavbarItem | NavbarGroupItem)[] = [
 			},
 			{
 				kind: "item",
-				to: "/faqs",
+				to: "/faqs/{-$subject}",
 				label: "FAQs",
 			},
 		],
