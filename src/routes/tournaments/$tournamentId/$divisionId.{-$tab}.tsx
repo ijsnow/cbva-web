@@ -1,10 +1,4 @@
-import {
-	CalendarDateTime,
-	DateFormatter,
-	parseDate,
-	parseDateTime,
-	today,
-} from "@internationalized/date";
+import { DateFormatter, parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import {
@@ -43,14 +37,17 @@ import {
 	useIsRegistrationOpen,
 } from "@/components/registrations/context";
 import { button, Button } from "@/components/base/button";
+import { Link } from "@/components/base/link";
 
 const shortDateFormatter = new DateFormatter("EN-US", {
 	dateStyle: "short",
+	timeZone: getDefaultTimeZone(),
 });
 
 const shortDateTimeFormatter = new DateFormatter("EN-US", {
 	dateStyle: "short",
 	timeStyle: "short",
+	timeZone: getDefaultTimeZone(),
 });
 
 const moneyFormatter = new Intl.NumberFormat("EN-US", {
@@ -275,7 +272,7 @@ function RouteComponent() {
 
 	const isRegistrationOpen = useIsRegistrationOpen({
 		registrationPrice: activeDivision.registrationPrice,
-		registrationOpenDate: tournament.registrationOpenDate,
+		registrationOpenAt: tournament.registrationOpenAt,
 	});
 
 	const defaultPrice = useDefaultTournamentPrice();
@@ -314,9 +311,19 @@ function RouteComponent() {
 									price: P.number,
 								},
 								({ price }) => (
-									<Button color="primary" radius="full">
+									<Link
+										to="/account/registrations"
+										params={{
+											divisions: [activeDivision],
+										}}
+										variant="alt"
+										className={button({
+											color: "primary",
+											radius: "full",
+										})}
+									>
 										Register — {moneyFormatter.format(price)}
-									</Button>
+									</Link>
 								),
 							)
 							.with(
@@ -324,11 +331,7 @@ function RouteComponent() {
 									isOpen: false,
 									openAt: P.when(
 										(ts: Date | null): ts is Date =>
-											ts !== null &&
-											ts >
-												today(getDefaultTimeZone()).toDate(
-													getDefaultTimeZone(),
-												),
+											ts !== null && ts > new Date(),
 									),
 								},
 								({ openAt }) => (
