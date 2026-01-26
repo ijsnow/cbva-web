@@ -7,7 +7,10 @@ import { ProfileName } from "@/components/profiles/name";
 import { ProfilePhoto } from "@/components/profiles/photo";
 import { Cart } from "@/components/registrations/cart";
 import {
+	type DivisionRegistration,
 	registrationPageSchema,
+	useCartDivisionRegistrations,
+	useCartDivisions,
 	useCartProfiles,
 } from "@/components/registrations/context";
 import type { PlayerProfile } from "@/db/schema";
@@ -62,10 +65,12 @@ export const Route = createFileRoute("/account/registrations/")({
 });
 
 function RouteComponent() {
-	const { memberships } = Route.useSearch();
+	const { memberships, divisions } = Route.useSearch();
 	const navigate = useNavigate();
 
 	const profiles = useCartProfiles();
+	const divisionRegistrations = useCartDivisionRegistrations();
+	const cartDivisions = useCartDivisions();
 
 	const membershipProfiles = memberships
 		.map((id) => profiles.find((profile) => profile.id === id))
@@ -95,6 +100,66 @@ function RouteComponent() {
 		});
 	};
 
+	const addToDivision = (divisionId: number, profileId: number) => {
+		navigate({
+			to: "/account/registrations",
+			replace: true,
+			search: (search) => {
+				const existing = search.divisions.find(
+					(d) => d.divisionId === divisionId,
+				);
+				if (existing) {
+					if (existing.profileIds.includes(profileId)) {
+						return search;
+					}
+					return {
+						...search,
+						divisions: search.divisions.map((d) =>
+							d.divisionId === divisionId
+								? { ...d, profileIds: [...d.profileIds, profileId] }
+								: d,
+						),
+					};
+				}
+				return {
+					...search,
+					divisions: [
+						...search.divisions,
+						{ divisionId, profileIds: [profileId] },
+					],
+				};
+			},
+		});
+	};
+
+	const removeFromDivision = (divisionId: number, profileId: number) => {
+		navigate({
+			to: "/account/registrations",
+			replace: true,
+			search: (search) => ({
+				...search,
+				divisions: search.divisions
+					.map((d) =>
+						d.divisionId === divisionId
+							? { ...d, profileIds: without(d.profileIds, profileId) }
+							: d,
+					)
+					.filter((d) => d.profileIds.length > 0),
+			}),
+		});
+	};
+
+	const removeDivision = (divisionId: number) => {
+		navigate({
+			to: "/account/registrations",
+			replace: true,
+			search: (search) => ({
+				...search,
+				divisions: search.divisions.filter((d) => d.divisionId !== divisionId),
+			}),
+		});
+	};
+
 	return (
 		<DefaultLayout
 			classNames={{
@@ -105,7 +170,7 @@ function RouteComponent() {
 				<h1 className={title()}>Registration</h1>
 			</div>
 
-			<div className="grid grid-cols-6 gap-x-3 px-3 max-w-6xl mx-auto flex-1">
+			<div className="grid grid-cols-6 gap-x-3 px-3 max-w-7xl w-full mx-auto flex-1">
 				<div className="col-span-4 bg-white rounded-lg grid grid-cols-10">
 					<div className="col-span-3 border-r border-gray-200">
 						<div className="py-3 px-4 flex flex-row items-center justify-between">
@@ -128,12 +193,20 @@ function RouteComponent() {
 								onProfileRemove={removeFromMemberships}
 							/>
 						</div>
-						<div className="py-3 px-4 flex flex-row items-center justify-between">
-							<span>Tournaments</span>
+						<div className="py-3 px-4 flex flex-col gap-y-3">
+							<div className="flex flex-row items-center justify-between">
+								<span>Tournaments</span>
 
-							<Button color="primary" variant="text" size="xs">
-								<PlusIcon size={12} /> Add Tournament
-							</Button>
+								<AddTournamentForm />
+							</div>
+							<TournamentDivisionsList
+								divisions={cartDivisions}
+								registrations={divisionRegistrations}
+								profiles={profiles}
+								onProfileDrop={addToDivision}
+								onProfileRemove={removeFromDivision}
+								onRemove={removeDivision}
+							/>
 						</div>
 					</div>
 				</div>
@@ -425,6 +498,240 @@ function AddMembershipForm() {
 							<form.Footer>
 								<Button slot="close">Cancel</Button>
 
+								<form.SubmitButton>Add</form.SubmitButton>
+							</form.Footer>
+						</form.AppForm>
+					</form>
+				</div>
+			</Modal>
+		</DialogTrigger>
+	);
+}
+
+type CartDivision = ReturnType<typeof useCartDivisions>[number];
+
+function TournamentDivisionsList({
+	divisions,
+	registrations,
+	profiles,
+	onProfileDrop,
+	onProfileRemove,
+	onRemove,
+}: {
+	divisions: CartDivision[];
+	registrations: DivisionRegistration[];
+	profiles: (PlayerProfile & { registrations: number })[];
+	onProfileDrop: (divisionId: number, profileId: number) => void;
+	onProfileRemove: (divisionId: number, profileId: number) => void;
+	onRemove: (divisionId: number) => void;
+}) {
+	if (divisions.length === 0) {
+		return (
+			<div className="p-4 border-2 border-dashed rounded-md text-sm text-center text-gray-600 border-gray-300 bg-gray-50">
+				No tournaments added yet. Add a tournament first, then drag players to
+				register.
+			</div>
+		);
+	}
+
+	return (
+		<div className="flex flex-col gap-3">
+			{divisions.map((division) => {
+				const registration = registrations.find(
+					(r) => r.divisionId === division.id,
+				);
+				const registeredProfiles = (registration?.profileIds ?? [])
+					.map((id) => profiles.find((p) => p.id === id))
+					.filter(isDefined);
+
+				return (
+					<DroppableDivision
+						key={division.id}
+						division={division}
+						profiles={registeredProfiles}
+						onProfileDrop={(profileId) => onProfileDrop(division.id, profileId)}
+						onProfileRemove={(profileId) =>
+							onProfileRemove(division.id, profileId)
+						}
+						onRemove={() => onRemove(division.id)}
+					/>
+				);
+			})}
+		</div>
+	);
+}
+
+function DroppableDivision({
+	division,
+	profiles,
+	onProfileDrop,
+	onProfileRemove,
+	onRemove,
+}: {
+	division: CartDivision;
+	profiles: (PlayerProfile & { registrations: number })[];
+	onProfileDrop: (profileId: number) => void;
+	onProfileRemove: (profileId: number) => void;
+	onRemove: () => void;
+}) {
+	const [isDragOver, setIsDragOver] = useState(false);
+
+	const { dragAndDropHooks } = useDragAndDrop({
+		acceptedDragTypes: ["profile"],
+		getDropOperation: () => "copy",
+		onDropEnter: () => setIsDragOver(true),
+		onDropExit: () => setIsDragOver(false),
+		async onRootDrop(e) {
+			setIsDragOver(false);
+			const items = await Promise.all(
+				e.items.filter(isTextDropItem).map(async (item) => {
+					const text = await item.getText("profile");
+					return JSON.parse(text) as PlayerProfile;
+				}),
+			);
+			for (const item of items) {
+				onProfileDrop(item.id);
+			}
+		},
+	});
+
+	return (
+		<div
+			className={`p-3 border rounded-md transition-colors ${
+				isDragOver
+					? "border-blue-500 bg-blue-50"
+					: "border-gray-300 bg-gray-100"
+			}`}
+		>
+			<div className="flex flex-row items-start justify-between mb-2">
+				<div className="flex flex-col">
+					<span className="font-medium">
+						{division.tournament.name || division.tournament.venue.name}
+					</span>
+					<span className="text-sm text-gray-600">
+						{division.division.name} - {division.gender}
+					</span>
+					<span className="text-xs text-gray-500">
+						{division.tournament.date}
+					</span>
+				</div>
+				<Button
+					variant="text"
+					size="xs"
+					tooltip="Remove tournament"
+					onPress={onRemove}
+				>
+					<Trash2Icon size={16} />
+				</Button>
+			</div>
+
+			<ListBox
+				aria-label={`Players for ${division.division.name}`}
+				items={profiles}
+				dragAndDropHooks={dragAndDropHooks}
+				selectionMode="none"
+				renderEmptyState={() => (
+					<div
+						className={`p-3 border-2 border-dashed rounded-md text-xs text-center transition-colors ${
+							isDragOver
+								? "border-blue-500 bg-blue-100 text-blue-600"
+								: "border-gray-300 bg-white text-gray-500"
+						}`}
+					>
+						{isDragOver ? "Drop to register" : "Drag players here..."}
+					</div>
+				)}
+			>
+				{(profile) => (
+					<ListBoxItem
+						key={profile.id}
+						id={profile.id}
+						textValue={`${profile.preferredName || profile.firstName} ${profile.lastName}`}
+						className="p-2 flex flex-row items-center justify-between bg-white border border-gray-200 rounded-md mb-1 last-of-type:mb-0"
+					>
+						<div className="flex flex-row gap-x-2 items-center">
+							<ProfilePhoto {...profile} size="xs" />
+							<ProfileName {...profile} link={false} />
+						</div>
+						<Button
+							variant="text"
+							size="xs"
+							tooltip="Remove player"
+							onPress={() => onProfileRemove(profile.id)}
+						>
+							<Trash2Icon size={14} />
+						</Button>
+					</ListBoxItem>
+				)}
+			</ListBox>
+		</div>
+	);
+}
+
+function AddTournamentForm() {
+	const { divisions } = Route.useSearch();
+	const [open, setOpen] = useState(false);
+	const navigate = useNavigate();
+
+	const existingDivisionIds = divisions.map((d) => d.divisionId);
+
+	const form = useAppForm({
+		defaultValues: {
+			divisionId: null as number | null,
+		},
+		onSubmit: ({ value: { divisionId }, formApi }) => {
+			if (divisionId && !existingDivisionIds.includes(divisionId)) {
+				navigate({
+					replace: true,
+					to: "/account/registrations",
+					search: (search) => ({
+						...search,
+						divisions: [
+							...search.divisions,
+							{ divisionId, profileIds: [] },
+						],
+					}),
+				});
+			}
+
+			setOpen(false);
+			formApi.reset();
+		},
+	});
+
+	return (
+		<DialogTrigger isOpen={open} onOpenChange={setOpen}>
+			<Button color="primary" variant="text" size="xs">
+				<PlusIcon size={12} /> Add Tournament
+			</Button>
+			<Modal>
+				<div className="p-3 flex flex-col space-y-3">
+					<h2 className={title({ size: "xs" })}>Add Tournament Registration</h2>
+
+					<p className="text-sm text-gray-600">
+						Select a tournament division to register for, then drag players to
+						it.
+					</p>
+
+					<form
+						className="flex flex-col gap-y-3"
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit();
+						}}
+					>
+						<form.AppField name="divisionId">
+							{(field) => (
+								<field.TournamentDivisionPicker
+									label="Tournament"
+									field={field}
+									excludeIds={existingDivisionIds}
+								/>
+							)}
+						</form.AppField>
+						<form.AppForm>
+							<form.Footer>
+								<Button slot="close">Cancel</Button>
 								<form.SubmitButton>Add</form.SubmitButton>
 							</form.Footer>
 						</form.AppForm>

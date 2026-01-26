@@ -2,15 +2,23 @@ import { cartSchema } from "@/functions/payments/checkout";
 import { getProfilesQueryOptions } from "@/functions/profiles/get-profiles";
 import { getViewerProfilesQueryOptions } from "@/functions/profiles/get-viewer-profiles";
 import { getSettingQueryOptions } from "@/functions/settings/get-setting";
+import { getTournamentDivisionsQueryOptions } from "@/functions/tournament-divisions/get-tournament-divisions";
 import { isDefined } from "@/utils/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
 import { sum, uniqBy } from "lodash-es";
 import z from "zod";
 
+export const divisionRegistrationSchema = z.object({
+	divisionId: z.number(),
+	profileIds: z.array(z.number()),
+});
+
+export type DivisionRegistration = z.infer<typeof divisionRegistrationSchema>;
+
 export const registrationPageSchema = cartSchema.extend({
 	profiles: z.array(z.number()).default([]),
-	divisions: z.array(z.number()).default([]),
+	divisions: z.array(divisionRegistrationSchema).default([]),
 });
 
 export function useCartProfiles(checkout?: boolean) {
@@ -120,7 +128,28 @@ export function useIsRegistrationOpen({
 	return true;
 }
 
-export function useCartItems() {
+export function useCartDivisionRegistrations(checkout?: boolean) {
+	const { divisions } = useSearch({
+		from: checkout
+			? "/account/registrations/checkout"
+			: "/account/registrations/",
+	});
+
+	return divisions;
+}
+
+export function useCartDivisions(checkout?: boolean) {
+	const registrations = useCartDivisionRegistrations(checkout);
+	const divisionIds = registrations.map((r) => r.divisionId);
+
+	const { data } = useSuspenseQuery(
+		getTournamentDivisionsQueryOptions(divisionIds),
+	);
+
+	return data;
+}
+
+export function useCartMembershipItems() {
 	const { memberships } = useSearch({
 		from: "/account/registrations/",
 	});
@@ -136,10 +165,45 @@ export function useCartItems() {
 		.map((id) => profiles.find((p) => p.id === id))
 		.filter(isDefined)
 		.map((profile) => ({
+			type: "membership" as const,
 			title: "Annual Membership",
 			price: membershipPrice,
 			profile,
 		}));
+}
+
+export function useCartDivisionItems(checkout?: boolean) {
+	const registrations = useCartDivisionRegistrations(checkout);
+	const divisions = useCartDivisions(checkout);
+	const profiles = useCartProfiles(checkout);
+	const defaultPrice = useDefaultTournamentPrice();
+
+	return registrations.map((registration) => {
+		const division = divisions.find((d) => d.id === registration.divisionId);
+		const registeredProfiles = registration.profileIds
+			.map((id) => profiles.find((p) => p.id === id))
+			.filter(isDefined);
+
+		return {
+			type: "tournament" as const,
+			title: division
+				? `${division.tournament.name || division.tournament.venue.name}`
+				: "Unknown Tournament",
+			subtitle: division
+				? `${division.division.name} - ${division.gender}`
+				: "",
+			price: division?.registrationPrice ?? defaultPrice ?? 0,
+			division,
+			registration,
+			profiles: registeredProfiles,
+		};
+	});
+}
+
+export function useCartItems() {
+	const membershipItems = useCartMembershipItems();
+
+	return membershipItems;
 }
 
 export function useCartTotal(checkout?: boolean) {
@@ -151,15 +215,23 @@ export function useCartTotal(checkout?: boolean) {
 
 	const profiles = useCartProfiles(checkout);
 	const membershipPrice = useMembershipPrice();
+	const divisionItems = useCartDivisionItems(checkout);
 
-	if (membershipPrice === null) {
-		return null;
-	}
+	const membershipTotal =
+		membershipPrice !== null
+			? sum(
+					memberships
+						.map((id) => profiles.find((p) => p.id === id))
+						.filter(isDefined)
+						.map(() => membershipPrice),
+				)
+			: 0;
 
-	return sum(
-		memberships
-			.map((id) => profiles.find((p) => p.id === id))
-			.filter(isDefined)
-			.map(() => membershipPrice),
+	// Only count divisions that have players registered
+	const validDivisionItems = divisionItems.filter(
+		(item) => item.profiles.length > 0,
 	);
+	const divisionTotal = sum(validDivisionItems.map((item) => item.price));
+
+	return membershipTotal + divisionTotal;
 }

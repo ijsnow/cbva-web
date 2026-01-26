@@ -313,8 +313,10 @@ function RouteComponent() {
 								({ price }) => (
 									<Link
 										to="/account/registrations"
-										params={{
-											divisions: [activeDivision],
+										search={{
+											divisions: [
+												{ divisionId: activeDivision.id, profileIds: [] },
+											],
 										}}
 										variant="alt"
 										className={button({
