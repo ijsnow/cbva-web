@@ -105,12 +105,21 @@ function RouteComponent() {
 			to: "/account/registrations",
 			replace: true,
 			search: (search) => {
+				const division = cartDivisions.find((d) => d.id === divisionId);
+				const teamSize = division?.teamSize ?? 2; // default to 2 if not found
+
 				const existing = search.divisions.find(
 					(d) => d.divisionId === divisionId,
 				);
 
 				if (existing) {
 					if (existing.profileIds.includes(profileId)) {
+						return search;
+					}
+
+					// Check if adding would exceed teamSize
+					if (existing.profileIds.length >= teamSize) {
+						// Already at maximum capacity, don't add
 						return search;
 					}
 
@@ -122,6 +131,11 @@ function RouteComponent() {
 								: d,
 						),
 					};
+				}
+
+				// New division registration, check if teamSize > 0
+				if (teamSize <= 0) {
+					return search;
 				}
 
 				return {
@@ -578,14 +592,16 @@ function DroppableDivision({
 	onRemove: () => void;
 }) {
 	const [isDragOver, setIsDragOver] = useState(false);
+	const isFull = profiles.length >= division.teamSize;
 
 	const { dragAndDropHooks } = useDragAndDrop({
 		acceptedDragTypes: ["profile"],
-		getDropOperation: () => "copy",
+		getDropOperation: () => isFull ? "cancel" : "copy",
 		onDropEnter: () => setIsDragOver(true),
 		onDropExit: () => setIsDragOver(false),
 		async onRootDrop(e) {
 			setIsDragOver(false);
+			if (isFull) return;
 			const items = await Promise.all(
 				e.items.filter(isTextDropItem).map(async (item) => {
 					const text = await item.getText("profile");
@@ -602,9 +618,9 @@ function DroppableDivision({
 		<div
 			className={`p-3 border rounded-md transition-colors ${
 				isDragOver
-					? "border-blue-500 bg-blue-50"
+					? (isFull ? "border-red-500 bg-red-50" : "border-blue-500 bg-blue-50")
 					: "border-gray-300 bg-gray-100"
-			}`}
+			} ${isFull ? "cursor-not-allowed" : ""}`}
 		>
 			<div className="flex flex-row items-start justify-between mb-2">
 				<div className="flex flex-col">
@@ -633,15 +649,26 @@ function DroppableDivision({
 				items={profiles}
 				dragAndDropHooks={dragAndDropHooks}
 				selectionMode="none"
+				className={isFull ? "cursor-not-allowed" : ""}
 				renderEmptyState={() => (
 					<div
 						className={`p-3 border-2 border-dashed rounded-md text-xs text-center transition-colors ${
 							isDragOver
-								? "border-blue-500 bg-blue-100 text-blue-600"
-								: "border-gray-300 bg-white text-gray-500"
+								? (isFull
+									? "border-red-500 bg-red-100 text-red-600 cursor-not-allowed"
+									: "border-blue-500 bg-blue-100 text-blue-600")
+								: (isFull
+									? "border-gray-300 bg-gray-100 text-gray-500 cursor-not-allowed"
+									: "border-gray-300 bg-white text-gray-500")
 						}`}
 					>
-						{isDragOver ? "Drop to register" : "Drag players here..."}
+						{isDragOver
+							? (isFull
+								? "Team full - cannot drop"
+								: "Drop to register")
+							: (isFull
+								? "Team full"
+								: "Drag players here...")}
 					</div>
 				)}
 			>
