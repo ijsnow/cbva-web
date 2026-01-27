@@ -2,15 +2,24 @@ import { cartSchema } from "@/functions/payments/checkout";
 import { getProfilesQueryOptions } from "@/functions/profiles/get-profiles";
 import { getViewerProfilesQueryOptions } from "@/functions/profiles/get-viewer-profiles";
 import { getSettingQueryOptions } from "@/functions/settings/get-setting";
+import { getTournamentDivisionsQueryOptions } from "@/functions/tournament-divisions/get-tournament-divisions";
+import { dbg } from "@/utils/dbg";
 import { isDefined } from "@/utils/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
-import { sum, uniqBy } from "lodash-es";
+import { groupBy, sum, uniqBy } from "lodash-es";
 import z from "zod";
 
 export const registrationPageSchema = cartSchema.extend({
 	profiles: z.array(z.number()).default([]),
-	divisions: z.array(z.number()).default([]),
+	teams: z
+		.array(
+			z.object({
+				divisionId: z.number(),
+				profileIds: z.array(z.number()),
+			}),
+		)
+		.default([]),
 });
 
 export function useCartProfiles(checkout?: boolean) {
@@ -44,6 +53,41 @@ export function useCartProfiles(checkout?: boolean) {
 
 	return uniqBy(viewerProfiles.concat(otherProfiles), "id");
 }
+
+export function useCartDivisionRegistrations(checkout?: boolean) {
+	const { teams } = useSearch({
+		from: checkout
+			? "/account/registrations/checkout"
+			: "/account/registrations/",
+	});
+
+	const divisions = groupBy(teams, "divisionId");
+
+	return Object.entries(divisions).map(([divisionId, teams]) => ({
+		divisionId: Number.parseInt(divisionId, 10),
+		teams,
+	}));
+}
+
+export function useCartDivisions(checkout?: boolean) {
+	const registrations = useCartDivisionRegistrations(checkout);
+	const divisionIds = registrations.map((r) => r.divisionId);
+
+	const { data } = useSuspenseQuery({
+		...getTournamentDivisionsQueryOptions(divisionIds),
+		select: (data) =>
+			data.map((div) => ({
+				...div,
+				teams:
+					registrations.find((reg) => dbg(reg.divisionId) === dbg(div.id))
+						?.teams ?? [],
+			})),
+	});
+
+	return data;
+}
+
+export type CartDivision = ReturnType<typeof useCartDivisions>[number];
 
 export function useCart(checkout?: boolean) {
 	const data = useSearch({

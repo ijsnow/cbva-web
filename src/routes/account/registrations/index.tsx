@@ -10,6 +10,8 @@ import {
 	registrationPageSchema,
 	useCartProfiles,
 } from "@/components/registrations/context";
+import { DivisionRegistrations } from "@/components/registrations/division-registrations";
+import { RegistrationDivisions } from "@/components/registrations/registration-divisions";
 import type { PlayerProfile } from "@/db/schema";
 import { DefaultLayout } from "@/layouts/default";
 import { isDefined } from "@/utils/types";
@@ -105,7 +107,7 @@ function RouteComponent() {
 				<h1 className={title()}>Registration</h1>
 			</div>
 
-			<div className="grid grid-cols-6 gap-x-3 px-3 max-w-6xl mx-auto flex-1">
+			<div className="grid grid-cols-6 gap-x-3 px-3 max-w-6xl w-full mx-auto flex-1">
 				<div className="col-span-4 bg-white rounded-lg grid grid-cols-10">
 					<div className="col-span-3 border-r border-gray-200">
 						<div className="py-3 px-4 flex flex-row items-center justify-between">
@@ -128,12 +130,16 @@ function RouteComponent() {
 								onProfileRemove={removeFromMemberships}
 							/>
 						</div>
-						<div className="py-3 px-4 flex flex-row items-center justify-between">
-							<span>Tournaments</span>
+						<div className="py-3 px-4 flex flex-col gap-y-3 border-b border-gray-200">
+							<div className="flex flex-row items-center justify-between">
+								<span>Tournaments</span>
 
-							<Button color="primary" variant="text" size="xs">
-								<PlusIcon size={12} /> Add Tournament
-							</Button>
+								<Button color="primary" variant="text" size="xs">
+									<PlusIcon size={12} /> Add Tournament
+								</Button>
+							</div>
+
+							<RegistrationDivisions />
 						</div>
 					</div>
 				</div>
