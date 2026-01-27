@@ -1,15 +1,34 @@
+import type { PlayerProfile } from "@/db/schema";
 import { cartSchema } from "@/functions/payments/checkout";
 import { getProfilesQueryOptions } from "@/functions/profiles/get-profiles";
 import { getViewerProfilesQueryOptions } from "@/functions/profiles/get-viewer-profiles";
 import { getSettingQueryOptions } from "@/functions/settings/get-setting";
 import { getTournamentDivisionsQueryOptions } from "@/functions/tournament-divisions/get-tournament-divisions";
-import { dbg } from "@/utils/dbg";
 import { isDefined } from "@/utils/types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSearch } from "@tanstack/react-router";
 import { groupBy, sum, uniqBy } from "lodash-es";
-import z from "zod";
+import { createContext, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
+import z from "zod";
+
+// Context for tracking the currently dragged profile
+type DragContextValue = {
+	draggedProfile: PlayerProfile | null;
+	setDraggedProfile: (profile: PlayerProfile | null) => void;
+};
+
+export const DragContext = createContext<DragContextValue | null>(null);
+
+export function useDraggedProfile() {
+	const context = useContext(DragContext);
+	return context?.draggedProfile ?? null;
+}
+
+export function useSetDraggedProfile() {
+	const context = useContext(DragContext);
+	return context?.setDraggedProfile ?? (() => {});
+}
 
 export const registrationPageSchema = cartSchema.extend({
 	profiles: z.array(z.number()).default([]),

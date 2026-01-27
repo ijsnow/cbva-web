@@ -7,8 +7,10 @@ import { ProfileName } from "@/components/profiles/name";
 import { ProfilePhoto } from "@/components/profiles/photo";
 import { Cart } from "@/components/registrations/cart";
 import {
+	DragContext,
 	registrationPageSchema,
 	useCartProfiles,
+	useSetDraggedProfile,
 } from "@/components/registrations/context";
 import { DivisionRegistrations } from "@/components/registrations/division-registrations";
 import { RegistrationDivisions } from "@/components/registrations/registration-divisions";
@@ -68,6 +70,9 @@ function RouteComponent() {
 	const navigate = useNavigate();
 
 	const profiles = useCartProfiles();
+	const [draggedProfile, setDraggedProfile] = useState<PlayerProfile | null>(
+		null,
+	);
 
 	const membershipProfiles = memberships
 		.map((id) => profiles.find((profile) => profile.id === id))
@@ -98,7 +103,8 @@ function RouteComponent() {
 	};
 
 	return (
-		<DefaultLayout
+		<DragContext.Provider value={{ draggedProfile, setDraggedProfile }}>
+			<DefaultLayout
 			classNames={{
 				content: "flex flex-col py-8 space-y-6",
 			}}
@@ -147,6 +153,7 @@ function RouteComponent() {
 				<Cart />
 			</div>
 		</DefaultLayout>
+		</DragContext.Provider>
 	);
 }
 
@@ -155,6 +162,8 @@ function DraggableProfileList({
 }: {
 	profiles: (PlayerProfile & { registrations: number })[];
 }) {
+	const setDraggedProfile = useSetDraggedProfile();
+
 	const { dragAndDropHooks } = useDragAndDrop({
 		getItems(keys) {
 			return [...keys].map((key) => {
@@ -166,6 +175,16 @@ function DraggableProfileList({
 			});
 		},
 		getAllowedDropOperations: () => ["copy"],
+		onDragStart(e) {
+			const key = [...e.keys][0];
+			const profile = profiles.find((p) => p.id === key);
+			if (profile) {
+				setDraggedProfile(profile);
+			}
+		},
+		onDragEnd() {
+			setDraggedProfile(null);
+		},
 	});
 
 	return (
