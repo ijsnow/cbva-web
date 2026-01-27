@@ -330,7 +330,9 @@ const validateTeamRegistrations = createServerOnlyFn(
 			if (!existingRegistrationsByProfile.has(reg.profileId)) {
 				existingRegistrationsByProfile.set(reg.profileId, new Set<string>());
 			}
-			existingRegistrationsByProfile.get(reg.profileId).add(reg.tournamentDate);
+			existingRegistrationsByProfile
+				.get(reg.profileId)
+				?.add(reg.tournamentDate);
 		}
 
 		// Check for conflicts within the cart and with existing registrations
@@ -342,7 +344,7 @@ const validateTeamRegistrations = createServerOnlyFn(
 			for (const profileId of cartTeam.profileIds) {
 				// Check against existing registrations
 				const existingDates = existingRegistrationsByProfile.get(profileId);
-				if (existingDates && existingDates.has(tournamentDate)) {
+				if (existingDates?.has(tournamentDate)) {
 					throw new Error(
 						`Player already registered in a tournament on this date: ${tournamentDate}`,
 					);
@@ -352,7 +354,7 @@ const validateTeamRegistrations = createServerOnlyFn(
 				if (!cartProfileDates.has(profileId)) {
 					cartProfileDates.set(profileId, new Set<string>());
 				}
-				const profileDates = cartProfileDates.get(profileId);
+				const profileDates = cartProfileDates.get(profileId) ?? new Set();
 				if (profileDates.has(tournamentDate)) {
 					throw new Error(
 						`Player cannot be registered in multiple teams on the same tournament date: ${tournamentDate}`,
