@@ -7,6 +7,7 @@ import { title } from "@/components/base/primitives";
 import {
 	registrationPageSchema,
 	useCart,
+	useCartItems,
 	useCartTotal,
 } from "@/components/registrations/context";
 import {
@@ -52,6 +53,7 @@ const schema = checkoutSchema
 
 function RouteComponent() {
 	const cart = useCart(true);
+	const items = useCartItems(true);
 	const total = useCartTotal(true);
 
 	const { getPaymentKey, paymentCard } = useUsaePay();
@@ -94,20 +96,22 @@ function RouteComponent() {
 				paymentKey: result.key,
 				cart: {
 					memberships: cart.memberships,
+					teams: cart.teams.map(({ divisionId, profileIds }) => ({
+						divisionId,
+						profileIds,
+					})),
 				},
 			});
 		},
 	});
 
-	if (total === null) {
+	if (items.length === 0) {
 		return (
 			<DefaultLayout>
 				<h1 className={title({ className: "text-center" })}>Checkout</h1>
 
 				<div className="max-w-md mx-auto text-center">
-					<p className="text-lg text-default-600">
-						Memberships are not currently available for purchase.
-					</p>
+					<p className="text-lg text-default-600">Your cart is empty.</p>
 				</div>
 			</DefaultLayout>
 		);

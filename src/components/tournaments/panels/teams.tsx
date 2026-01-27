@@ -21,6 +21,7 @@ import { orderBy } from "lodash-es";
 import { useState, type ReactNode } from "react";
 import { assert } from "@/utils/assert";
 import { isDefined } from "@/utils/types";
+import { ProfileName } from "@/components/profiles/name";
 
 export function TeamsPanel({
 	tournamentDivisionId,
@@ -165,17 +166,12 @@ export function TeamsPanel({
 											</div>
 										</TableCell>
 
-										{players.map(
-											({
-												id: playerId,
-												profile: { firstName, preferredName, lastName, level },
-											}) => (
-												<TableCell key={playerId}>
-													{preferredName ?? firstName} {lastName} (
-													{getLevelDisplay(level)})
-												</TableCell>
-											),
-										)}
+										{players.map(({ id: playerId, profile }) => (
+											<TableCell key={playerId}>
+												<ProfileName {...profile} /> (
+												{getLevelDisplay(profile.level)})
+											</TableCell>
+										))}
 
 										{/* {Array.from({ length: teamSize }).map((_, i) => { */}
 										{/* 	const { */}
