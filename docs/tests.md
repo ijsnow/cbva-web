@@ -4,6 +4,11 @@ Integration tests for server logic is written with vitest and connects to a data
 
 Run them with `pnpm test`.
 
+The database is seeded with some data beforehand.
+
+- Levels: unrated, b, a, aa, aaa
+- Divisions: unrated, b, a, aa, aaa, open
+
 # Component unit tests
 
 Component unit tests are written with vitest and are ran separately from the integration tests
