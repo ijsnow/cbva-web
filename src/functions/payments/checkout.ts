@@ -1,8 +1,11 @@
 import { requireAuthenticated } from "@/auth/shared";
 import { db } from "@/db/connection";
 import {
+	divisions,
 	invoices,
+	levels,
 	memberships,
+	playerProfiles,
 	teamPlayers,
 	teams,
 	tournamentDivisionTeams,
@@ -202,6 +205,82 @@ const calculateTeamsTotal = createServerOnlyFn(
 	},
 );
 
+const validateTeamRegistrations = createServerOnlyFn(
+	async (cartTeams: z.infer<typeof cartSchema>["teams"]) => {
+		if (cartTeams.length === 0) return;
+
+		// Get all division IDs and validate they exist (with division order for level checks)
+		const divisionIds = [...new Set(cartTeams.map((t) => t.divisionId))];
+		const tournamentDivisionData = await db
+			.select({
+				id: tournamentDivisions.id,
+				gender: tournamentDivisions.gender,
+				divisionOrder: divisions.order,
+			})
+			.from(tournamentDivisions)
+			.innerJoin(divisions, eq(tournamentDivisions.divisionId, divisions.id))
+			.where(inArray(tournamentDivisions.id, divisionIds));
+
+		const divisionMap = new Map(
+			tournamentDivisionData.map((d) => [d.id, d]),
+		);
+
+		// Check all divisions exist
+		for (const divisionId of divisionIds) {
+			if (!divisionMap.has(divisionId)) {
+				throw new Error("Division not found");
+			}
+		}
+
+		// Get all profile IDs with their genders and level orders
+		const allProfileIds = [
+			...new Set(cartTeams.flatMap((t) => t.profileIds)),
+		];
+		const profiles = await db
+			.select({
+				id: playerProfiles.id,
+				gender: playerProfiles.gender,
+				levelOrder: levels.order,
+			})
+			.from(playerProfiles)
+			.leftJoin(levels, eq(playerProfiles.levelId, levels.id))
+			.where(inArray(playerProfiles.id, allProfileIds));
+
+		const profileMap = new Map(profiles.map((p) => [p.id, p]));
+
+		// Validate each team's players match the division gender and level
+		for (const cartTeam of cartTeams) {
+			const division = divisionMap.get(cartTeam.divisionId);
+			if (!division) continue;
+
+			for (const profileId of cartTeam.profileIds) {
+				const profile = profileMap.get(profileId);
+				if (!profile) {
+					throw new Error("Player profile not found");
+				}
+
+				if (profile.gender !== division.gender) {
+					throw new Error(
+						`Player gender does not match division: expected ${division.gender}, got ${profile.gender}`,
+					);
+				}
+
+				// Check level qualification: player level order must be <= division order
+				// Higher level players cannot play in lower divisions
+				if (
+					profile.levelOrder !== null &&
+					division.divisionOrder !== null &&
+					profile.levelOrder > division.divisionOrder
+				) {
+					throw new Error(
+						"Player level does not qualify for this division",
+					);
+				}
+			}
+		}
+	},
+);
+
 export const checkoutHandler = createServerOnlyFn(
 	async (viewerId: string, data: z.infer<typeof checkoutSchema>) => {
 		const {
@@ -213,6 +292,9 @@ export const checkoutHandler = createServerOnlyFn(
 		if (membershipProfileIds.length === 0 && cartTeams.length === 0) {
 			throw new Error("Cart is empty");
 		}
+
+		// Validate team registrations before processing payment
+		await validateTeamRegistrations(cartTeams);
 
 		// Calculate totals
 		let membershipsTotal = 0;

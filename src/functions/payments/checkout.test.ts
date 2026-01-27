@@ -1,6 +1,7 @@
 import { db } from "@/db/connection";
 import {
 	invoices,
+	levels,
 	memberships,
 	teamPlayers,
 	tournamentDivisionTeams,
@@ -517,5 +518,101 @@ describe("checkout", () => {
 			.where(inArray(teamPlayers.playerProfileId, profileIds));
 
 		expect(allTeamPlayers).toHaveLength(0);
+	});
+
+	test("throws error when registering for invalid division", async () => {
+		await seedDefaultTournamentPrice(50);
+
+		const [user] = await createUsers(db, 1);
+		const profiles = await createProfiles(db, [
+			{ userId: user.id, gender: "male" },
+			{ userId: user.id, gender: "male" },
+		]);
+		const profileIds = profiles.map((p) => p.id);
+
+		mockPostSale.mockResolvedValueOnce(createSuccessResponse());
+
+		await expect(
+			checkoutHandler(
+				user.id,
+				createCheckoutInput(
+					[],
+					[{ divisionId: 999999, profileIds }],
+				),
+			),
+		).rejects.toThrow("Division not found");
+
+		expect(mockPostSale).not.toHaveBeenCalled();
+	});
+
+	test("throws error when player gender does not match division", async () => {
+		await seedDefaultTournamentPrice(50);
+
+		const [user] = await createUsers(db, 1);
+		const profiles = await createProfiles(db, [
+			{ userId: user.id, gender: "female" },
+			{ userId: user.id, gender: "female" },
+		]);
+		const profileIds = profiles.map((p) => p.id);
+
+		const tournament = await bootstrapTournament(db, {
+			date: "2025-06-01",
+			startTime: "09:00",
+			divisions: [{ division: "aa", gender: "male", teams: 0 }],
+		});
+
+		mockPostSale.mockResolvedValueOnce(createSuccessResponse());
+
+		await expect(
+			checkoutHandler(
+				user.id,
+				createCheckoutInput(
+					[],
+					[{ divisionId: tournament.divisions[0], profileIds }],
+				),
+			),
+		).rejects.toThrow("gender");
+
+		expect(mockPostSale).not.toHaveBeenCalled();
+	});
+
+	test("throws error when player level does not qualify for division", async () => {
+		await seedDefaultTournamentPrice(50);
+
+		const [user] = await createUsers(db, 1);
+
+		// Get the "aaa" level (highest) - player with this level can't play in lower divisions
+		const aaaLevel = await db
+			.select()
+			.from(levels)
+			.where(eq(levels.name, "aaa"))
+			.then((rows) => rows[0]);
+
+		const profiles = await createProfiles(db, [
+			{ userId: user.id, gender: "male", levelId: aaaLevel.id },
+			{ userId: user.id, gender: "male", levelId: aaaLevel.id },
+		]);
+		const profileIds = profiles.map((p) => p.id);
+
+		// Create tournament with "b" division - lower than "aaa" player level
+		const tournament = await bootstrapTournament(db, {
+			date: "2025-06-01",
+			startTime: "09:00",
+			divisions: [{ division: "b", gender: "male", teams: 0 }],
+		});
+
+		mockPostSale.mockResolvedValueOnce(createSuccessResponse());
+
+		await expect(
+			checkoutHandler(
+				user.id,
+				createCheckoutInput(
+					[],
+					[{ divisionId: tournament.divisions[0], profileIds }],
+				),
+			),
+		).rejects.toThrow("level");
+
+		expect(mockPostSale).not.toHaveBeenCalled();
 	});
 });
