@@ -23,17 +23,20 @@ const dateFormatter = new DateFormatter("EN-US", {
 	dateStyle: "short",
 });
 
-export function getTournamentDisplay({
-	name,
-	date,
-	venue,
-}: Pick<Tournament, "name" | "date"> & {
-	venue: Pick<Venue, "name" | "city">;
-}) {
+export function getTournamentDisplay(
+	{
+		name,
+		date,
+		venue,
+	}: Pick<Tournament, "name" | "date"> & {
+		venue: Pick<Venue, "name" | "city" | "slug">;
+	},
+	short = false,
+) {
 	return [
 		name?.trim(),
 		dateFormatter.format(parseDate(date).toDate(getDefaultTimeZone())),
-		`${venue.name}, ${venue.city}`,
+		short ? venue.slug : `${venue.name}, ${venue.city}`,
 	]
 		.filter(isDefined)
 		.join(", ");

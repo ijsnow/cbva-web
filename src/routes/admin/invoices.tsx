@@ -15,9 +15,11 @@ import { useDateFormatter } from "@react-aria/i18n";
 import { parseDate } from "@internationalized/date";
 import { getDefaultTimeZone } from "@/lib/dates";
 import { ProfileName } from "@/components/profiles/name";
-
-// TODO: page for admins to update membership prices as well as tournament registration prices
-// maybe settings table is the best
+import { TeamNames } from "@/components/teams/names";
+import {
+	getTournamentDisplay,
+	getTournamentDivisionDisplay,
+} from "@/hooks/tournament";
 
 const searchSchema = z.object({
 	page: z.number().default(1),
@@ -102,6 +104,15 @@ function RouteComponent() {
 												{invoice.tournamentRegistrations.length} registration(s)
 											</span>
 										)}
+										{(invoice.memberships.length > 0 ||
+											invoice.tournamentRegistrations.length > 0) &&
+											invoice.teamRegistrations.length > 0 &&
+											", "}
+										{invoice.teamRegistrations.length > 0 && (
+											<span>
+												{invoice.teamRegistrations.length} team registration(s)
+											</span>
+										)}
 									</span>
 								</DisclosureHeader>
 								<DisclosurePanel>
@@ -152,6 +163,33 @@ function RouteComponent() {
 															</li>
 														),
 													)}
+												</ul>
+											</div>
+										)}
+										{invoice.teamRegistrations.length > 0 && (
+											<div className="flex flex-col gap-1">
+												<span className="text-xs font-medium text-gray-500">
+													Team Registrations
+												</span>
+												<ul className="space-y-1">
+													{invoice.teamRegistrations.map((teamReg) => (
+														<li
+															key={teamReg.id}
+															className="flex flex-col gap-y"
+														>
+															<span>
+																{getTournamentDisplay(
+																	teamReg.tournamentDivision.tournament,
+																)}{" "}
+																{getTournamentDivisionDisplay(
+																	teamReg.tournamentDivision,
+																)}
+															</span>
+															<span className="text-xs text-gray-600">
+																<TeamNames players={teamReg.team.players} />
+															</span>
+														</li>
+													))}
 												</ul>
 											</div>
 										)}

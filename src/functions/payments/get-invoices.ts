@@ -32,6 +32,29 @@ export const getInvoices = createServerFn({
 						},
 					},
 					tournamentRegistrations: true,
+					teamRegistrations: {
+						with: {
+							team: {
+								with: {
+									players: {
+										with: {
+											profile: true,
+										},
+									},
+								},
+							},
+							tournamentDivision: {
+								with: {
+									tournament: {
+										with: {
+											venue: true,
+										},
+									},
+									division: true,
+								},
+							},
+						},
+					},
 				},
 			},
 		});

@@ -40,6 +40,10 @@ export const relations = defineRelations(tables, (r) => ({
 		}),
 		memberships: r.many.memberships(),
 		tournamentRegistrations: r.many.tournamentRegistrations(),
+		teamRegistrations: r.many.tournamentDivisionTeams({
+			from: r.invoices.id,
+			to: r.tournamentDivisionTeams.invoiceId,
+		}),
 	},
 	tournamentRegistrations: {
 		invoice: r.one.invoices({
