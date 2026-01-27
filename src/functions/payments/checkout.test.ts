@@ -677,6 +677,61 @@ describe("checkout", () => {
 		expect(mockPostSale).not.toHaveBeenCalled();
 	});
 
+	test("throws error when same player has duplicate memberships in cart", async () => {
+		const [user] = await createUsers(db, 1);
+		const profiles = await createProfiles(db, [{ userId: user.id }]);
+		const profileId = profiles[0].id;
+
+		mockPostSale.mockResolvedValueOnce(createSuccessResponse());
+
+		// Create input with duplicate profile IDs
+		const input = {
+			billingInformation: {
+				firstName: "John",
+				lastName: "Doe",
+				address: ["123 Main St"],
+				city: "Los Angeles",
+				state: "CA",
+				postalCode: "90001",
+			},
+			paymentKey: "test-payment-key",
+			cart: {
+				memberships: [
+					{ profileId, tshirtSize: "sm" as const },
+					{ profileId, tshirtSize: "m" as const },
+				],
+				teams: [],
+			},
+		};
+
+		await expect(checkoutHandler(user.id, input)).rejects.toThrow(
+			"Duplicate memberships in cart for the same player",
+		);
+
+		expect(mockPostSale).not.toHaveBeenCalled();
+	});
+
+	test("throws error when player already has active membership", async () => {
+		const [user] = await createUsers(db, 1);
+		const profiles = await createProfiles(db, [
+			{ userId: user.id },
+			{ userId: user.id },
+		]);
+		const [profile1, profile2] = profiles;
+
+		// Create an existing active membership for profile1
+		mockPostSale.mockResolvedValueOnce(createSuccessResponse());
+		await checkoutHandler(user.id, createCheckoutInput([profile1.id]));
+
+		// Try to create another membership for profile1
+		await expect(
+			checkoutHandler(user.id, createCheckoutInput([profile1.id, profile2.id])),
+		).rejects.toThrow("already have active memberships");
+
+		// Payment should not be called for the second attempt
+		expect(mockPostSale).toHaveBeenCalledTimes(1);
+	});
+
 	test("prevents player from being registered on two teams in tournaments on the same day", async () => {
 		await seedDefaultTournamentPrice(75);
 

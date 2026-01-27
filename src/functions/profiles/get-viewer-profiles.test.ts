@@ -2,7 +2,7 @@ import { db } from "@/db/connection";
 import { createProfiles, createUsers } from "@/tests/utils/users";
 import { assert, describe, expect, test } from "vitest";
 import { getViewerProfilesHandler } from "./get-viewer-profiles";
-import { memberships } from "@/db/schema";
+import { invoices, memberships } from "@/db/schema";
 import { today } from "@internationalized/date";
 import { getDefaultTimeZone } from "@/lib/dates";
 
@@ -16,11 +16,19 @@ describe("getViewerProfiles", () => {
 
 		assert(profiles.every(({ activeMembership }) => activeMembership === null));
 
+		// Create an invoice first
+		const [{ id: invoiceId }] = await db
+			.insert(invoices)
+			.values({
+				transactionKey: "test-txn",
+				purchaserId: user.id,
+			})
+			.returning({ id: invoices.id });
+
 		const [{ id: membershipId }] = await db
 			.insert(memberships)
 			.values({
-				transactionKey: "test",
-				purchaserId: user.id,
+				invoiceId,
 				profileId: profiles[0].id,
 				validUntil: today(getDefaultTimeZone())
 					.add({
