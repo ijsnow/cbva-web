@@ -213,6 +213,37 @@ const calculateTeamsTotal = createServerOnlyFn(
 	},
 );
 
+const validateMemberships = createServerOnlyFn(
+	async (membershipItems: z.infer<typeof cartSchema>["memberships"]) => {
+		if (membershipItems.length === 0) return;
+
+		const profileIds = membershipItems.map((m) => m.profileId);
+
+		// Check for duplicate profile IDs within the cart
+		const uniqueProfileIds = new Set(profileIds);
+		if (uniqueProfileIds.size !== profileIds.length) {
+			throw new Error("Duplicate memberships in cart for the same player");
+		}
+
+		// Check for existing active memberships
+		const currentDate = today(getDefaultTimeZone()).toString();
+		const activeMemberships = await db.query.memberships.findMany({
+			where: {
+				profileId: { in: profileIds },
+				validUntil: { gte: currentDate },
+			},
+			columns: { profileId: true },
+		});
+
+		if (activeMemberships.length > 0) {
+			const activeProfileIds = activeMemberships.map((m) => m.profileId);
+			throw new Error(
+				`Player(s) already have active memberships: ${activeProfileIds.join(", ")}`,
+			);
+		}
+	},
+);
+
 const validateTeamRegistrations = createServerOnlyFn(
 	async (cartTeams: z.infer<typeof cartSchema>["teams"]) => {
 		if (cartTeams.length === 0) return;
@@ -387,6 +418,9 @@ export const checkoutHandler = createServerOnlyFn(
 		if (membershipItems.length === 0 && cartTeams.length === 0) {
 			throw new Error("Cart is empty");
 		}
+
+		// Validate memberships before processing payment
+		await validateMemberships(membershipItems);
 
 		// Validate team registrations before processing payment
 		await validateTeamRegistrations(cartTeams);

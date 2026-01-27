@@ -231,12 +231,12 @@ function DraggableProfileList({ profiles }: { profiles: CartProfile[] }) {
 }
 
 const TSHIRT_SIZE_OPTIONS: { value: TshirtSize; label: string }[] = [
-	{ value: "xs", label: "X-Small" },
-	{ value: "sm", label: "Small" },
-	{ value: "m", label: "Medium" },
-	{ value: "l", label: "Large" },
-	{ value: "xl", label: "X-Large" },
-	{ value: "xxl", label: "XX-Large" },
+	{ value: "xs", label: "XS" },
+	{ value: "sm", label: "S" },
+	{ value: "m", label: "M" },
+	{ value: "l", label: "L" },
+	{ value: "xl", label: "XL" },
+	{ value: "xxl", label: "XXL" },
 ];
 
 function DroppableMembershipsList({
