@@ -1,9 +1,10 @@
 import { Button } from "@/components/base/button";
 import { useAppForm } from "@/components/base/form";
+import { Menu, MenuItem } from "@/components/base/menu";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
 import { Radio } from "@/components/base/radio-group";
-import { Select } from "@/components/base/select";
+import type { TshirtSize } from "@/db/schema";
 import { ProfileName } from "@/components/profiles/name";
 import { ProfilePhoto } from "@/components/profiles/photo";
 import { Cart } from "@/components/registrations/cart";
@@ -21,13 +22,15 @@ import { DefaultLayout } from "@/layouts/default";
 import { isDefined } from "@/utils/types";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { uniq, uniqBy, without } from "lodash-es";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { ChevronDownIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import {
+	Button as AriaButton,
 	DialogTrigger,
 	isTextDropItem,
 	ListBox,
 	ListBoxItem,
+	MenuTrigger,
 	useDragAndDrop,
 } from "react-aria-components";
 import z from "zod";
@@ -39,8 +42,6 @@ export const Route = createFileRoute("/account/registrations/")({
 		const extras = without(membershipProfileIds, ...profiles);
 
 		if (extras.length > 0) {
-			console.log("hmmm");
-
 			throw redirect({
 				to: "/account/registrations",
 				search: {
@@ -53,8 +54,6 @@ export const Route = createFileRoute("/account/registrations/")({
 		const deduped = uniq(profiles);
 
 		if (deduped.length !== profiles.length) {
-			console.log("haaaa");
-
 			throw redirect({
 				to: "/account/registrations",
 				search: {
@@ -110,6 +109,19 @@ function RouteComponent() {
 		});
 	};
 
+	const updateTshirtSize = (profileId: number, tshirtSize: TshirtSize) => {
+		navigate({
+			to: "/account/registrations",
+			replace: true,
+			search: (search) => ({
+				...search,
+				memberships: memberships.map((item) =>
+					item.profileId === profileId ? { ...item, tshirtSize } : item,
+				),
+			}),
+		});
+	};
+
 	return (
 		<DragContext.Provider value={{ draggedProfile, setDraggedProfile }}>
 			<DefaultLayout
@@ -140,8 +152,10 @@ function RouteComponent() {
 								</div>
 								<DroppableMembershipsList
 									profiles={membershipProfiles}
+									memberships={memberships}
 									onProfileDrop={addToMemberships}
 									onProfileRemove={removeFromMemberships}
+									onTshirtSizeChange={updateTshirtSize}
 								/>
 							</div>
 							<div className="py-3 px-4 flex flex-col gap-y-3 border-b border-gray-200">
@@ -174,7 +188,7 @@ function DraggableProfileList({ profiles }: { profiles: CartProfile[] }) {
 				const item = profiles.find((p) => p.id === key);
 				return {
 					"text/plain": `${item?.preferredName || item?.firstName} ${item?.lastName}`,
-					profile: JSON.stringify(item),
+					profile: JSON.stringify({ id: item?.id }),
 				};
 			});
 		},
@@ -216,17 +230,28 @@ function DraggableProfileList({ profiles }: { profiles: CartProfile[] }) {
 	);
 }
 
+const TSHIRT_SIZE_OPTIONS: { value: TshirtSize; label: string }[] = [
+	{ value: "xs", label: "X-Small" },
+	{ value: "sm", label: "Small" },
+	{ value: "m", label: "Medium" },
+	{ value: "l", label: "Large" },
+	{ value: "xl", label: "X-Large" },
+	{ value: "xxl", label: "XX-Large" },
+];
+
 function DroppableMembershipsList({
 	profiles,
+	memberships,
 	onProfileDrop,
 	onProfileRemove,
+	onTshirtSizeChange,
 }: {
 	profiles: (PlayerProfile & { registrations: number })[];
+	memberships: { profileId: number; tshirtSize?: TshirtSize | null }[];
 	onProfileDrop: (profileId: number) => void;
 	onProfileRemove: (profileId: number) => void;
+	onTshirtSizeChange: (profileId: number, size: TshirtSize) => void;
 }) {
-	const { memberships } = Route.useSearch();
-
 	const [isDragOver, setIsDragOver] = useState(false);
 
 	const { dragAndDropHooks } = useDragAndDrop({
@@ -269,48 +294,60 @@ function DroppableMembershipsList({
 				</div>
 			)}
 		>
-			{(profile) => (
-				<ListBoxItem
-					key={profile.id}
-					id={profile.id}
-					textValue={`${profile.preferredName || profile.firstName} ${profile.lastName}`}
-					className="p-2 flex flex-row items-center justify-between bg-gray-100 border border-gray-300 rounded-md mb-2 last-of-type:mb-0"
-				>
-					<div className="flex flex-row">
-						<div className="flex flex-row gap-x-2 items-center">
-							<ProfilePhoto {...profile} />
-							<ProfileName {...profile} />
-						</div>
-						{/* <span> */}
-						{/* 	<Select */}
-						{/* 		label="T-Shirt Size" */}
-						{/* 		options={[ */}
-						{/* 			{ */}
-						{/* 				display: "Small", */}
-						{/* 				value: "sm", */}
-						{/* 			}, */}
-						{/* 			{ */}
-						{/* 				display: "Medium", */}
-						{/* 				value: "m", */}
-						{/* 			}, */}
-						{/* 			{ */}
-						{/* 				display: "Large", */}
-						{/* 				value: "l", */}
-						{/* 			}, */}
-						{/* 		]} */}
-						{/* 	/> */}
-						{/* </span> */}
-					</div>
-					<Button
-						variant="text"
-						size="xs"
-						tooltip="Remove membership"
-						onPress={() => onProfileRemove(profile.id)}
+			{(profile) => {
+				const membership = memberships.find((m) => m.profileId === profile.id);
+				const currentSize = membership?.tshirtSize;
+				const sizeLabel =
+					TSHIRT_SIZE_OPTIONS.find((o) => o.value === currentSize)?.label ??
+					"Select";
+
+				return (
+					<ListBoxItem
+						key={profile.id}
+						id={profile.id}
+						textValue={`${profile.preferredName || profile.firstName} ${profile.lastName}`}
+						className="p-2 flex flex-row items-center justify-between bg-gray-100 border border-gray-300 rounded-md mb-2 gap-x-4 last-of-type:mb-0"
 					>
-						<Trash2Icon size={16} />
-					</Button>
-				</ListBoxItem>
-			)}
+						<div className="flex flex-row gap-x-4 items-center flex-1">
+							<div className="flex flex-row gap-x-2 items-center flex-1">
+								<ProfilePhoto {...profile} />
+								<ProfileName {...profile} />
+							</div>
+							<div className="flex flex-row items-center gap-x-2">
+								<span className="text-sm">T-Shirt size:</span>
+								<MenuTrigger>
+									<AriaButton className="text-sm px-2 py-1 rounded border border-gray-300 bg-white hover:bg-gray-50 flex items-center gap-1">
+										{sizeLabel}
+										<ChevronDownIcon size={14} />
+									</AriaButton>
+
+									<Menu>
+										{TSHIRT_SIZE_OPTIONS.map((option) => (
+											<MenuItem
+												key={option.value}
+												id={option.value}
+												onAction={() =>
+													onTshirtSizeChange(profile.id, option.value)
+												}
+											>
+												{option.label}
+											</MenuItem>
+										))}
+									</Menu>
+								</MenuTrigger>
+							</div>
+						</div>
+						<Button
+							variant="text"
+							size="xs"
+							tooltip="Remove membership"
+							onPress={() => onProfileRemove(profile.id)}
+						>
+							<Trash2Icon size={16} />
+						</Button>
+					</ListBoxItem>
+				);
+			}}
 		</ListBox>
 	);
 }

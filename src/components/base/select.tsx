@@ -1,9 +1,4 @@
-import {
-	createLink,
-	Link,
-	type LinkOptions,
-	useRouter,
-} from "@tanstack/react-router";
+import type { LinkOptions } from "@tanstack/react-router";
 import clsx from "clsx";
 import { Check, ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
@@ -91,8 +86,6 @@ export const popoverStyles = tv({
 	},
 });
 
-const ListBoxItemLink = createLink(ListBoxItem);
-
 export function Select<
 	Value extends Key,
 	Mode extends "single" | "multiple" = "single",
@@ -108,8 +101,6 @@ export function Select<
 	containerClassName,
 	...props
 }: SelectFieldProps<Value, Mode>) {
-	const router = useRouter();
-
 	return (
 		<AriaSelect
 			{...props}
@@ -197,15 +188,8 @@ export function Select<
 									</>
 								);
 
-								const location = link ? router.buildLocation(link) : undefined;
-
 								return (
-									<ListBoxItem
-										key={value}
-										id={value}
-										className={itemStyles}
-										href={location?.href}
-									>
+									<ListBoxItem key={value} id={value} className={itemStyles}>
 										{renderFn}
 									</ListBoxItem>
 								);
