@@ -25,7 +25,10 @@ const { checkoutHandler } = await import("./checkout");
 function createCheckoutInput(
 	profileIds: number[],
 	teams: { divisionId: number; profileIds: number[] }[] = [],
+	options?: { includeTshirtSize?: boolean }
 ) {
+	const tshirtSizes = ["xs", "sm", "m", "l", "xl", "xxl"] as const;
+	const includeTshirtSize = options?.includeTshirtSize ?? true;
 	return {
 		billingInformation: {
 			firstName: "John",
@@ -37,7 +40,10 @@ function createCheckoutInput(
 		},
 		paymentKey: "test-payment-key",
 		cart: {
-			memberships: profileIds,
+			memberships: profileIds.map((profileId, index) => ({
+				profileId,
+				tshirtSize: includeTshirtSize ? tshirtSizes[index % tshirtSizes.length] : undefined
+			})),
 			teams,
 		},
 	};
@@ -142,6 +148,57 @@ describe("checkout", () => {
 		expect(createdMemberships.map((m) => m.profileId).sort()).toEqual(
 			profileIds.sort(),
 		);
+		// Verify tshirt sizes were saved correctly
+		const tshirtSizes = ["xs", "sm", "m", "l", "xl", "xxl"] as const;
+		const createdMembershipsMap = new Map(createdMemberships.map(m => [m.profileId, m]));
+		profileIds.forEach((profileId, index) => {
+			const membership = createdMembershipsMap.get(profileId);
+			expect(membership?.tshirtSize).toBe(tshirtSizes[index % tshirtSizes.length]);
+		});
+	});
+
+	test("creates memberships with undefined tshirt size", async () => {
+		const [user] = await createUsers(db, 1);
+		const profiles = await createProfiles(db, [
+			{ userId: user.id },
+			{ userId: user.id },
+		]);
+		const profileIds = profiles.map((p) => p.id);
+
+		mockPostSale.mockResolvedValueOnce(createSuccessResponse());
+
+		const result = await checkoutHandler(
+			user.id,
+			createCheckoutInput(profileIds, [], { includeTshirtSize: false }),
+		);
+
+		expect(result.success).toBe(true);
+		expect(result.transactionKey).toBe("txn-123");
+		expect(result.refnum).toBe("ref-456");
+
+		// Verify invoice was created
+		const [invoice] = await db
+			.select()
+			.from(invoices)
+			.where(eq(invoices.purchaserId, user.id));
+
+		expect(invoice).toBeDefined();
+		expect(invoice.transactionKey).toBe("txn-123");
+
+		// Verify memberships were created for each profile
+		const createdMemberships = await db
+			.select()
+			.from(memberships)
+			.where(eq(memberships.invoiceId, invoice.id));
+
+		expect(createdMemberships).toHaveLength(2);
+		expect(createdMemberships.map((m) => m.profileId).sort()).toEqual(
+			profileIds.sort(),
+		);
+		// Verify tshirt sizes are null
+		createdMemberships.forEach(membership => {
+			expect(membership.tshirtSize).toBeNull();
+		});
 	});
 
 	test("does not create memberships on declined payment", async () => {
@@ -411,6 +468,13 @@ describe("checkout", () => {
 			.where(eq(memberships.invoiceId, invoice.id));
 
 		expect(createdMemberships).toHaveLength(2);
+		// Verify tshirt sizes were saved correctly
+		const tshirtSizes = ["xs", "sm", "m", "l", "xl", "xxl"] as const;
+		const createdMembershipsMap = new Map(createdMemberships.map(m => [m.profileId, m]));
+		profileIds.forEach((profileId, index) => {
+			const membership = createdMembershipsMap.get(profileId);
+			expect(membership?.tshirtSize).toBe(tshirtSizes[index % tshirtSizes.length]);
+		});
 
 		// Verify team was registered
 		const registeredTeams = await db

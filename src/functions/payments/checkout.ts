@@ -11,6 +11,8 @@ import {
 	tournamentDivisionTeams,
 	tournamentDivisions,
 	tournaments,
+	tshirtSizeSchema,
+	type TshirtSize,
 } from "@/db/schema";
 import { settings } from "@/db/schema/settings";
 import { getDefaultTimeZone } from "@/lib/dates";
@@ -21,8 +23,15 @@ import { createServerFn, createServerOnlyFn } from "@tanstack/react-start";
 import { and, eq, inArray, ne } from "drizzle-orm";
 import z from "zod";
 
+export const membershipItemSchema = z.object({
+	profileId: z.number(),
+	tshirtSize: tshirtSizeSchema.optional(),
+});
+
+export type MembershipItem = z.infer<typeof membershipItemSchema>;
+
 export const cartSchema = z.object({
-	memberships: z.array(z.number()).default([]),
+	memberships: z.array(membershipItemSchema).default([]),
 	teams: z
 		.array(
 			z.object({
@@ -61,7 +70,7 @@ const createInvoice = createServerOnlyFn(
 );
 
 const createMemberships = createServerOnlyFn(
-	async (invoiceId: number, profileIds: number[]) => {
+	async (invoiceId: number, membershipItems: Array<{ profileId: number, tshirtSize?: TshirtSize }>) => {
 		const validUntil = today(getDefaultTimeZone())
 			.set({
 				day: 1,
@@ -71,11 +80,12 @@ const createMemberships = createServerOnlyFn(
 			.toString();
 
 		await Promise.all(
-			profileIds.map((profileId) =>
+			membershipItems.map((item) =>
 				db.insert(memberships).values({
-					profileId,
+					profileId: item.profileId,
 					invoiceId,
 					validUntil,
+					tshirtSize: item.tshirtSize ?? null,
 				}),
 			),
 		);
@@ -371,10 +381,10 @@ export const checkoutHandler = createServerOnlyFn(
 		const {
 			paymentKey,
 			billingInformation,
-			cart: { memberships: membershipProfileIds, teams: cartTeams },
+			cart: { memberships: membershipItems, teams: cartTeams },
 		} = data;
 
-		if (membershipProfileIds.length === 0 && cartTeams.length === 0) {
+		if (membershipItems.length === 0 && cartTeams.length === 0) {
 			throw new Error("Cart is empty");
 		}
 
@@ -383,9 +393,9 @@ export const checkoutHandler = createServerOnlyFn(
 
 		// Calculate totals
 		let membershipsTotal = 0;
-		if (membershipProfileIds.length > 0) {
+		if (membershipItems.length > 0) {
 			const membershipPrice = await getMembershipPrice();
-			membershipsTotal = membershipProfileIds.length * membershipPrice;
+			membershipsTotal = membershipItems.length * membershipPrice;
 		}
 
 		const teamsTotal = await calculateTeamsTotal(cartTeams);
@@ -393,8 +403,8 @@ export const checkoutHandler = createServerOnlyFn(
 
 		// Build description
 		const descriptionParts: string[] = [];
-		if (membershipProfileIds.length > 0) {
-			descriptionParts.push(`Membership (${membershipProfileIds.length})`);
+		if (membershipItems.length > 0) {
+			descriptionParts.push(`Membership (${membershipItems.length})`);
 		}
 		if (cartTeams.length > 0) {
 			descriptionParts.push(`Team Registration (${cartTeams.length})`);
@@ -423,8 +433,8 @@ export const checkoutHandler = createServerOnlyFn(
 		const invoiceId = await createInvoice(viewerId, transaction.key);
 
 		// Create memberships
-		if (membershipProfileIds.length > 0) {
-			await createMemberships(invoiceId, membershipProfileIds);
+		if (membershipItems.length > 0) {
+			await createMemberships(invoiceId, membershipItems);
 		}
 
 		// Create team registrations

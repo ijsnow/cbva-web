@@ -3,6 +3,7 @@ import { useAppForm } from "@/components/base/form";
 import { Modal } from "@/components/base/modal";
 import { title } from "@/components/base/primitives";
 import { Radio } from "@/components/base/radio-group";
+import { Select } from "@/components/base/select";
 import { ProfileName } from "@/components/profiles/name";
 import { ProfilePhoto } from "@/components/profiles/photo";
 import { Cart } from "@/components/registrations/cart";
@@ -19,7 +20,7 @@ import type { PlayerProfile } from "@/db/schema";
 import { DefaultLayout } from "@/layouts/default";
 import { isDefined } from "@/utils/types";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { uniq, without } from "lodash-es";
+import { uniq, uniqBy, without } from "lodash-es";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -34,9 +35,12 @@ import z from "zod";
 export const Route = createFileRoute("/account/registrations/")({
 	validateSearch: registrationPageSchema,
 	beforeLoad: ({ search: { profiles, memberships } }) => {
-		const extras = without(memberships, ...profiles);
+		const membershipProfileIds = memberships.map((m) => m.profileId);
+		const extras = without(membershipProfileIds, ...profiles);
 
 		if (extras.length > 0) {
+			console.log("hmmm");
+
 			throw redirect({
 				to: "/account/registrations",
 				search: {
@@ -49,6 +53,8 @@ export const Route = createFileRoute("/account/registrations/")({
 		const deduped = uniq(profiles);
 
 		if (deduped.length !== profiles.length) {
+			console.log("haaaa");
+
 			throw redirect({
 				to: "/account/registrations",
 				search: {
@@ -68,6 +74,7 @@ export const Route = createFileRoute("/account/registrations/")({
 
 function RouteComponent() {
 	const { memberships } = Route.useSearch();
+	const membershipProfileIds = memberships.map((m) => m.profileId);
 	const navigate = useNavigate();
 
 	const profiles = useCartProfiles();
@@ -76,17 +83,17 @@ function RouteComponent() {
 	);
 
 	const membershipProfiles = memberships
-		.map((id) => profiles.find((profile) => profile.id === id))
+		.map((item) => profiles.find((profile) => profile.id === item.profileId))
 		.filter(isDefined);
 
 	const addToMemberships = (profileId: number) => {
-		if (!memberships.includes(profileId)) {
+		if (!membershipProfileIds.includes(profileId)) {
 			navigate({
 				to: "/account/registrations",
 				replace: true,
 				search: (search) => ({
 					...search,
-					memberships: [...memberships, profileId],
+					memberships: [...memberships, { profileId, tshirtSize: null }],
 				}),
 			});
 		}
@@ -98,7 +105,7 @@ function RouteComponent() {
 			replace: true,
 			search: (search) => ({
 				...search,
-				memberships: without(memberships, profileId),
+				memberships: memberships.filter((item) => item.profileId !== profileId),
 			}),
 		});
 	};
@@ -232,7 +239,7 @@ function DroppableMembershipsList({
 			const items = await Promise.all(
 				e.items.filter(isTextDropItem).map(async (item) => {
 					const text = await item.getText("profile");
-					return JSON.parse(text) as PlayerProfile;
+					return JSON.parse(text) as CartProfile;
 				}),
 			);
 			for (const item of items) {
@@ -274,7 +281,25 @@ function DroppableMembershipsList({
 							<ProfilePhoto {...profile} />
 							<ProfileName {...profile} />
 						</div>
-						<span>T-shirt size</span>
+						{/* <span> */}
+						{/* 	<Select */}
+						{/* 		label="T-Shirt Size" */}
+						{/* 		options={[ */}
+						{/* 			{ */}
+						{/* 				display: "Small", */}
+						{/* 				value: "sm", */}
+						{/* 			}, */}
+						{/* 			{ */}
+						{/* 				display: "Medium", */}
+						{/* 				value: "m", */}
+						{/* 			}, */}
+						{/* 			{ */}
+						{/* 				display: "Large", */}
+						{/* 				value: "l", */}
+						{/* 			}, */}
+						{/* 		]} */}
+						{/* 	/> */}
+						{/* </span> */}
 					</div>
 					<Button
 						variant="text"
@@ -359,12 +384,13 @@ function AddPlayerForm() {
 
 function AddMembershipForm() {
 	const { memberships } = Route.useSearch();
+	const membershipProfileIds = memberships.map((m) => m.profileId);
 
 	const profiles = useCartProfiles();
 
 	const availableProfiles = profiles.filter(
 		({ id, activeMembership }) =>
-			activeMembership === null && !memberships.includes(id),
+			activeMembership === null && !membershipProfileIds.includes(id),
 	);
 
 	const [open, setOpen] = useState(false);
@@ -387,7 +413,16 @@ function AddMembershipForm() {
 					to: "/account/registrations",
 					search: (search) => ({
 						...search,
-						memberships: uniq((search.memberships ?? []).concat(profileIds)),
+						memberships: uniqBy(
+							[
+								...(search.memberships ?? []),
+								...profileIds.map((profileId) => ({
+									profileId,
+									tshirtSize: undefined,
+								})),
+							],
+							(item) => item.profileId,
+						),
 					}),
 				});
 			}

@@ -1,4 +1,3 @@
-import type { PlayerProfile } from "@/db/schema";
 import { cartSchema } from "@/functions/payments/checkout";
 import { getProfilesQueryOptions } from "@/functions/profiles/get-profiles";
 import { getViewerProfilesQueryOptions } from "@/functions/profiles/get-viewer-profiles";
@@ -201,13 +200,17 @@ export function useMembershipItems(checkout?: boolean) {
 	}
 
 	return memberships
-		.map((id) => profiles.find((p) => p.id === id))
-		.filter(isDefined)
-		.map((profile) => ({
+		.map((item) => ({
+			profile: profiles.find((p) => p.id === item.profileId),
+			tshirtSize: item.tshirtSize,
+		}))
+		.filter(({ profile }) => isDefined(profile))
+		.map(({ profile, tshirtSize }) => ({
 			type: "membership" as const,
 			title: "Annual Membership",
 			price: membershipPrice,
-			profiles: [profile],
+			profiles: [profile!],
+			tshirtSize,
 		}));
 }
 

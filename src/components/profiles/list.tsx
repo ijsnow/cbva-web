@@ -67,7 +67,7 @@ export function ProfileList({
 									className={tagStyles({ color: "red" })}
 									to="/account/registrations"
 									search={{
-										memberships: [id],
+										memberships: [{ profileId: id, tshirtSize: undefined }],
 									}}
 								>
 									Inactive
