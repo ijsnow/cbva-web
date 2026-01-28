@@ -25,7 +25,7 @@ import { ProfilePickerField } from "./fields/profile-picker";
 import { PaymentCardField } from "./fields/payment-card";
 import { ExpiryField } from "./fields/expiry";
 import { PaymentKeyField } from "./fields/payment-key";
-import { dbg } from "@/utils/dbg";
+import { DivisionPickerField } from "./fields/division-picker";
 
 function Alert({ className, ...props }: AlertProps) {
 	return <BaseAlert className={className} {...props} />;
@@ -221,6 +221,7 @@ export const { useAppForm } = createFormHook({
 		PaymentCard: PaymentCardField,
 		Expiry: ExpiryField,
 		PaymentKey: PaymentKeyField,
+		DivisionPicker: DivisionPickerField,
 	},
 	formComponents: {
 		Alert,

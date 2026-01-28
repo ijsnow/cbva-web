@@ -23,6 +23,7 @@ import { DefaultLayout } from "@/layouts/default";
 import { isDefined } from "@/utils/types";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { uniq, uniqBy, without } from "lodash-es";
+import { v4 as uuidv4 } from "uuid";
 import { ChevronDownIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -166,9 +167,7 @@ function RouteComponent() {
 								<div className="flex flex-row items-center justify-between">
 									<span>Tournaments</span>
 
-									<Button color="primary" variant="text" size="xs">
-										<PlusIcon size={12} /> Add Tournament
-									</Button>
+									<AddTournamentForm />
 								</div>
 
 								<RegistrationDivisions />
@@ -584,6 +583,80 @@ function AddMembershipForm() {
 									label="Search"
 									field={field}
 									selectedProfileIds={field.state.value}
+								/>
+							)}
+						</form.AppField>
+						<form.AppForm>
+							<form.Footer>
+								<Button slot="close">Cancel</Button>
+
+								<form.SubmitButton>Add</form.SubmitButton>
+							</form.Footer>
+						</form.AppForm>
+					</form>
+				</div>
+			</Modal>
+		</DialogTrigger>
+	);
+}
+
+function AddTournamentForm() {
+	const { teams } = Route.useSearch();
+	const selectedDivisionIds = teams.map((t) => t.divisionId);
+
+	const [open, setOpen] = useState(false);
+
+	const navigate = useNavigate();
+
+	const form = useAppForm({
+		defaultValues: {
+			divisionId: null as number | null,
+		},
+		onSubmit: ({ value: { divisionId }, formApi }) => {
+			if (divisionId) {
+				navigate({
+					replace: true,
+					to: "/account/registrations",
+					search: (search) => ({
+						...search,
+						teams: [
+							...(search.teams ?? []),
+							{
+								id: uuidv4(),
+								divisionId,
+								profileIds: [],
+							},
+						],
+					}),
+				});
+			}
+
+			setOpen(false);
+			formApi.reset();
+		},
+	});
+
+	return (
+		<DialogTrigger isOpen={open} onOpenChange={setOpen}>
+			<Button color="primary" variant="text" size="xs">
+				<PlusIcon size={12} /> Add Tournament
+			</Button>
+			<Modal>
+				<div className="p-3 flex flex-col space-y-3 min-w-lg">
+					<h2 className={title({ size: "sm" })}>Select Tournament</h2>
+
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							form.handleSubmit();
+						}}
+					>
+						<form.AppField name="divisionId">
+							{(field) => (
+								<field.DivisionPicker
+									label="Tournament Division"
+									field={field}
+									selectedDivisionIds={selectedDivisionIds}
 								/>
 							)}
 						</form.AppField>
