@@ -2,7 +2,6 @@ import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { JSDOM } from "jsdom";
 import type { SerializedEditorState } from "lexical";
 import { Suspense } from "react";
 import type { LexicalState } from "@/db/schema/shared";
@@ -15,7 +14,8 @@ export type RichTextDisplayProps = {
 	onSave?: (state: LexicalState) => Promise<void>;
 };
 
-function setupDom() {
+async function setupDom() {
+	const { JSDOM } = await import(/* @vite-ignore */ "jsdom");
 	const dom = new JSDOM();
 
 	const _window = global.window;
@@ -39,6 +39,8 @@ const generateHtml = createIsomorphicFn()
 	// }))
 	// .handler(async ({ data: { name, state } }) => {
 	.server(async (name: string, state: string) => {
+		const cleanup = await setupDom();
+
 		return await new Promise<string>((resolve) => {
 			const editor = createHeadlessEditor({
 				...EDITOR_CONFIG_DEFAULTS,
@@ -52,7 +54,6 @@ const generateHtml = createIsomorphicFn()
 
 			editor.update(() => {
 				try {
-					const cleanup = setupDom();
 					const _html = $generateHtmlFromNodes(editor, null);
 					cleanup();
 

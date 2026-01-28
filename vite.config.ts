@@ -15,6 +15,7 @@ const config = defineConfig({
 	},
 	ssr: {
 		noExternal: [/^@?lexical/],
+		external: ["jsdom"],
 	},
 	plugins: [
 		devtools(),
@@ -39,6 +40,9 @@ const config = defineConfig({
 	nitro: {
 		compatibilityDate: "latest",
 		preset: "vercel",
+		rollupConfig: {
+			external: ["jsdom"],
+		},
 	},
 });
 

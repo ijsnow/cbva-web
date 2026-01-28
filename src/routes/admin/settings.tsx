@@ -70,8 +70,8 @@ function RouteComponent() {
 				</h2>
 
 				<DisclosureGroup className="bg-white">
-					{settings?.map((setting) => (
-						<Disclosure key={setting.key}>
+					{settings?.map(({ key, ...setting }) => (
+						<Disclosure key={key}>
 							<DisclosureHeader
 								size="sm"
 								contentClassName="flex-1 flex flex-row justify-start items-center gap-4"
@@ -84,7 +84,7 @@ function RouteComponent() {
 								</span>
 							</DisclosureHeader>
 							<DisclosurePanel>
-								<UpdateSettingsForm {...setting} settingKey={setting.key} />
+								<UpdateSettingsForm {...setting} settingKey={key} />
 							</DisclosurePanel>
 						</Disclosure>
 					))}
