@@ -154,6 +154,15 @@ export function useDefaultTournamentPrice() {
 	return data;
 }
 
+export function useIsSeasonOpen() {
+	const { data } = useSuspenseQuery({
+		...getSettingQueryOptions("default-tournament-price"),
+		select: (setting) => isDefined(setting),
+	});
+
+	return data;
+}
+
 /**
  * Determines if registration is open for a tournament division.
  *

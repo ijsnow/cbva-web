@@ -15,6 +15,7 @@ import {
 	useCartProfiles,
 	useDraggedProfile,
 	useSetDraggedProfile,
+	useIsSeasonOpen,
 } from "@/components/registrations/context";
 import { DraggableProfile } from "@/components/registrations/draggable-profile";
 import { RegistrationDivisions } from "@/components/registrations/registration-divisions";
@@ -604,6 +605,8 @@ function AddTournamentForm() {
 	const { teams } = Route.useSearch();
 	const selectedDivisionIds = teams.map((t) => t.divisionId);
 
+	const isSeasonOpen = useIsSeasonOpen();
+
 	const [open, setOpen] = useState(false);
 
 	const navigate = useNavigate();
@@ -638,7 +641,12 @@ function AddTournamentForm() {
 
 	return (
 		<DialogTrigger isOpen={open} onOpenChange={setOpen}>
-			<Button color="primary" variant="text" size="xs">
+			<Button
+				color="primary"
+				variant="text"
+				size="xs"
+				isDisabled={!isSeasonOpen}
+			>
 				<PlusIcon size={12} /> Add Tournament
 			</Button>
 			<Modal>

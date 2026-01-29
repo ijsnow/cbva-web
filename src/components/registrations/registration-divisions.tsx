@@ -1,5 +1,8 @@
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
-import { useCartDivisions } from "./context";
+import {
+	useCartDivisions,
+	useIsSeasonOpen as useIsSeasonOpen,
+} from "./context";
 import { getDefaultTimeZone } from "@/lib/dates";
 import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
@@ -8,6 +11,16 @@ import { RegistrationTeam } from "./registration-team";
 export function RegistrationDivisions() {
 	const divisions = useCartDivisions();
 	const dateFormatter = useDateFormatter();
+
+	const isSeasonOpen = useIsSeasonOpen();
+
+	if (!isSeasonOpen) {
+		return (
+			<div className="py-6 px-2 text-center border border-gray-300 rounded-lg bg-gray-100 text-gray-500">
+				Tournament registration not open.
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col gap-y-4">
