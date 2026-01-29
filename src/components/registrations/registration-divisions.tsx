@@ -1,8 +1,5 @@
 import { getTournamentDivisionDisplay } from "@/hooks/tournament";
-import {
-	useCartDivisions,
-	useIsSeasonOpen as useIsSeasonOpen,
-} from "./context";
+import { useCartDivisions, useIsSeasonOpen } from "./context";
 import { getDefaultTimeZone } from "@/lib/dates";
 import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";

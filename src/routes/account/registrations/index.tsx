@@ -140,7 +140,7 @@ function RouteComponent() {
 				</div>
 
 				<div className="grid grid-cols-6 gap-x-3 px-3 max-w-6xl w-full mx-auto flex-1">
-					<div className="col-span-4 bg-white rounded-lg grid grid-cols-10">
+					<div className="col-span-full md:col-span-4 bg-white rounded-lg grid grid-cols-1 md:grid-cols-10">
 						<div className="col-span-3 border-r border-gray-200">
 							<div className="py-3 px-4 flex flex-row items-center justify-between">
 								<span>Players</span>
@@ -176,7 +176,7 @@ function RouteComponent() {
 						</div>
 					</div>
 
-					<Cart />
+					<Cart className="hidden md:flex" />
 				</div>
 			</DefaultLayout>
 		</DragContext.Provider>

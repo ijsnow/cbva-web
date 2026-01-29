@@ -39,8 +39,8 @@ export function ProfilePickerField({
 	});
 
 	const { data: selectedProfile } = useQuery({
-		...getProfilesQueryOptions({ ids: selectedProfileIds }),
-		enabled: selectedProfileIds.length > 0,
+		...getProfilesQueryOptions({ ids: selectedProfileIds ?? [] }),
+		enabled: (selectedProfileIds?.length ?? 0) > 0,
 		select: (data) => data.find(({ id }) => id === field.state.value),
 	});
 
