@@ -18,12 +18,15 @@ export function RadioGroupField({
 }: RadioGroupFieldProps) {
 	const isMounted = useIsMounted();
 
+	// Convert value to string for react-aria RadioGroup (expects string values)
+	const value = field.state.value != null ? String(field.state.value) : undefined;
+
 	return (
 		<RadioGroup
 			{...props}
 			isDisabled={!isMounted || props.isDisabled}
 			isInvalid={field.state.meta.isBlurred && !field.state.meta.isValid}
-			value={field.state.value}
+			value={value}
 			onChange={(v) =>
 				field.handleChange(mode === "string" ? v : Number.parseInt(v, 10))
 			}
