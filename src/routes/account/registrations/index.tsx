@@ -642,7 +642,7 @@ function AddTournamentForm() {
 				<PlusIcon size={12} /> Add Tournament
 			</Button>
 			<Modal>
-				<div className="p-3 flex flex-col space-y-3 min-w-lg">
+				<div className="p-3 flex flex-col space-y-3">
 					<h2 className={title({ size: "sm" })}>Select Tournament</h2>
 
 					<form

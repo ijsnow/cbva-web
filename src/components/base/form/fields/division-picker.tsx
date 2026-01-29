@@ -22,7 +22,13 @@ import {
 	type SearchTournamentDivisionsInput,
 } from "@/functions/tournament-divisions/get-tournament-divisions";
 import { focusRing } from "@/components/base/utils";
-import { Description, Errors, type FieldProps, inputStyles, Label } from "./shared";
+import {
+	Description,
+	Errors,
+	type FieldProps,
+	inputStyles,
+	Label,
+} from "./shared";
 import { itemStyles, popoverStyles } from "./multi-select";
 
 export type DivisionPickerFieldProps = FieldProps & {
@@ -58,7 +64,12 @@ function formatTournamentDivision(td: {
 	};
 }) {
 	const divisionDisplay = td.division.display ?? td.division.name.toUpperCase();
-	const genderDisplay = td.gender === "male" ? "Men's" : td.gender === "female" ? "Women's" : "Coed";
+	const genderDisplay =
+		td.gender === "male"
+			? "Men's"
+			: td.gender === "female"
+				? "Women's"
+				: "Coed";
 	const name = td.name ? `${td.name} ` : "";
 	const date = new Date(td.tournament.date).toLocaleDateString("en-US", {
 		month: "short",
@@ -93,7 +104,9 @@ function FilterDropdown<T extends number>({
 					)
 				}
 			>
-				<span className={selectedValues.size === 0 ? "text-placeholder italic" : ""}>
+				<span
+					className={selectedValues.size === 0 ? "text-placeholder italic" : ""}
+				>
 					{selectedValues.size === 0
 						? label
 						: `${label} (${selectedValues.size})`}
@@ -161,7 +174,9 @@ export function DivisionPickerField({
 	const [filterVenueIds, setFilterVenueIds] = useState<Set<number>>(
 		() => new Set(initialVenueIds ?? []),
 	);
-	const [filterStartDate, setFilterStartDate] = useState<DateValue | null>(null);
+	const [filterStartDate, setFilterStartDate] = useState<DateValue | null>(
+		null,
+	);
 	const [filterEndDate, setFilterEndDate] = useState<DateValue | null>(null);
 
 	const { data: divisions } = useSuspenseQuery({
@@ -206,8 +221,14 @@ export function DivisionPickerField({
 					isDisabled={isDisabled}
 					className="flex-shrink-0"
 				>
-					<DateInput className={(renderProps) => inputStyles({ ...renderProps, class: "px-2 py-1 text-sm" })}>
-						{(segment) => <DateSegment segment={segment} className={segmentStyles} />}
+					<DateInput
+						className={(renderProps) =>
+							inputStyles({ ...renderProps, class: "px-2 py-1 text-sm" })
+						}
+					>
+						{(segment) => (
+							<DateSegment segment={segment} className={segmentStyles} />
+						)}
 					</DateInput>
 				</DateField>
 
@@ -220,8 +241,14 @@ export function DivisionPickerField({
 					isDisabled={isDisabled}
 					className="flex-shrink-0"
 				>
-					<DateInput className={(renderProps) => inputStyles({ ...renderProps, class: "px-2 py-1 text-sm" })}>
-						{(segment) => <DateSegment segment={segment} className={segmentStyles} />}
+					<DateInput
+						className={(renderProps) =>
+							inputStyles({ ...renderProps, class: "px-2 py-1 text-sm" })
+						}
+					>
+						{(segment) => (
+							<DateSegment segment={segment} className={segmentStyles} />
+						)}
 					</DateInput>
 				</DateField>
 
@@ -244,7 +271,9 @@ export function DivisionPickerField({
 				aria-label="Tournament divisions"
 				selectionMode="single"
 				disallowEmptySelection={false}
-				selectedKeys={field.state.value != null ? new Set([field.state.value]) : new Set()}
+				selectedKeys={
+					field.state.value != null ? new Set([field.state.value]) : new Set()
+				}
 				onSelectionChange={(keys) => {
 					if (keys !== "all" && keys.size > 0) {
 						const selectedId = Array.from(keys)[0] as number;

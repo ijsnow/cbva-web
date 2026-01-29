@@ -123,6 +123,7 @@ export const searchTournamentDivisions = createServerFn({
 					division: true,
 				},
 				orderBy: (td, { asc }) => asc(td.tournamentId),
+				limit: 5,
 			});
 		},
 	);
