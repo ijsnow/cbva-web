@@ -68,10 +68,12 @@ function SubmitButton({
 	className,
 	children = <>Submit</>,
 	requireChange = true,
+	allowInvalid = false,
 	...props
 }: Omit<ButtonProps, "type" | "children"> & {
 	children?: ReactNode;
 	requireChange?: boolean;
+	allowInvalid?: boolean;
 }) {
 	const form = useFormContext();
 
@@ -93,10 +95,12 @@ function SubmitButton({
 					data-require-change={requireChange}
 					data-is-default-value={isDefaultValue}
 					isDisabled={
-						!canSubmit ||
-						isSubmitting ||
-						isDisabled ||
-						(requireChange && isDefaultValue)
+						allowInvalid
+							? isDisabled
+							: !canSubmit ||
+								isSubmitting ||
+								isDisabled ||
+								(requireChange && isDefaultValue)
 					}
 					{...props}
 				>

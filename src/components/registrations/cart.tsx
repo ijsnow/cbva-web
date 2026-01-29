@@ -3,7 +3,12 @@ import { getTournamentDivisionDisplay } from "@/hooks/tournament";
 import { parseDate } from "@internationalized/date";
 import { useDateFormatter } from "@react-aria/i18n";
 import { ProfileName } from "../profiles/name";
-import { useCartItems, useCartTotal, useCartValidation } from "./context";
+import {
+	useCart,
+	useCartItems,
+	useCartTotal,
+	useCartValidation,
+} from "./context";
 import { Link } from "../base/link";
 import { button } from "../base/button";
 import { twMerge } from "tailwind-merge";
@@ -23,6 +28,7 @@ export function Cart({
 }) {
 	const items = useCartItems(checkout);
 	const total = useCartTotal(checkout);
+	const cart = useCart(checkout);
 	const dateFormatter = useDateFormatter();
 	const { isValid, errors, isLoading } = useCartValidation(checkout);
 
@@ -31,7 +37,10 @@ export function Cart({
 	return (
 		<Disclosure
 			defaultExpanded
-			className={twMerge("col-span-2 bg-white rounded-lg border-0", className)}
+			className={twMerge(
+				"col-span-full md:col-span-2 bg-white rounded-lg border-0",
+				className,
+			)}
 		>
 			<DisclosureHeader card={false} className="px-4 py-3">
 				<span className="flex-1 mr-2">Cart</span>
@@ -97,6 +106,7 @@ export function Cart({
 								isDisabled: !canCheckout,
 							})}
 							to="/account/registrations/checkout"
+							search={cart}
 							disabled={!canCheckout}
 						>
 							{isLoading ? "Validating..." : "Checkout"}

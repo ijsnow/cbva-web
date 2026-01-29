@@ -82,7 +82,11 @@ function RouteComponent() {
 		validators: {
 			onChange: schema,
 		},
-		onSubmit: async ({ value: { billingInformation } }) => {
+		onSubmit: async ({ value: { billingInformation }, formApi }) => {
+			if (!formApi.state.isValid) {
+				return;
+			}
+
 			// Get payment key from USAePay here
 			const result = await getPaymentKey();
 
@@ -122,9 +126,9 @@ function RouteComponent() {
 		<DefaultLayout>
 			<h1 className={title({ className: "text-center" })}>Checkout</h1>
 
-			<div className="w-full max-w-2xl grid grid-cols-8 mx-auto items-start gap-x-4">
+			<div className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-8 mx-auto items-start gap-x-4 gap-y-4">
 				<form
-					className="flex flex-col gap-4 col-span-5"
+					className="flex flex-col gap-4 col-span-full md:col-span-5 order-2 md:order-1"
 					onSubmit={(e) => {
 						e.preventDefault();
 
@@ -231,13 +235,16 @@ function RouteComponent() {
 					</form.AppField>
 
 					<form.AppForm>
-						<form.SubmitButton size="lg" radius="full">
+						<form.SubmitButton size="lg" radius="full" allowInvalid={true}>
 							Pay ${total}
 						</form.SubmitButton>
 					</form.AppForm>
 				</form>
 
-				<Cart checkout={true} className="col-span-3" />
+				<Cart
+					checkout={true}
+					className="col-span-full md:col-span-3 order-1 md:order-2"
+				/>
 			</div>
 		</DefaultLayout>
 	);

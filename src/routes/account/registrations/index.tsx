@@ -335,14 +335,6 @@ function DroppableMembershipsList({
 						)
 						.with("valid", () => "Drop to add memb!ership")
 						.otherwise(() => "Drag players here to add memberships...")}
-
-					{/* {dragState === "already-in-cart" */}
-					{/* 	? "Player already in cart" */}
-					{/* 	: dragState === "already-existing" */}
-					{/* 		? "Player already has an active membership" */}
-					{/* 		: dragState === "valid" */}
-					{/* 			? "Drop to add membership" */}
-					{/* 			: "Drag players here to add memberships..."} */}
 				</div>
 			) : (
 				<div className="flex flex-col gap-2">
@@ -360,12 +352,12 @@ function DroppableMembershipsList({
 								key={profile.id}
 								className="p-2 flex flex-row items-center justify-between bg-gray-100 border border-gray-300 rounded-md gap-x-4"
 							>
-								<div className="flex flex-row gap-x-4 items-center flex-1">
+								<div className="flex md:flex-row gap-x-4 items-center flex-1">
 									<div className="flex flex-row gap-x-2 items-center flex-1">
 										<ProfilePhoto {...profile} />
 										<ProfileName {...profile} />
 									</div>
-									<div className="flex flex-row items-center gap-x-2">
+									<div className="flex flex-col md:flex-row items-center gap-x-2">
 										<Label isRequired={true}>T-Shirt size</Label>
 										<MenuTrigger>
 											<AriaButton className="text-sm px-2 py-1 rounded border border-gray-300 bg-white hover:bg-gray-50 flex items-center gap-1">
